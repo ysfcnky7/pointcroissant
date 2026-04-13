@@ -1,10 +1,10 @@
 const NAV_LINKS = [
   { href: "index.html", label: "Anasayfa" },
-  { href: "index.html#hikaye", label: "Hikayemiz" },
-  { href: "menu.html", label: "Kruvasanlarimiz" },
+  { href: "hikayemiz.html", label: "Hikayemiz" },
+  { href: "lezzetler.html", label: "Lezzetler" },
   { href: "index.html#galeri", label: "Galeri" },
   { href: "blog.html", label: "Tarifler" },
-  { href: "index.html#iletisim", label: "Iletisim" }
+  { href: "index.html#iletisim", label: "İletişim" }
 ];
 
 const renderHeader = () => {
@@ -25,7 +25,7 @@ const renderHeader = () => {
       </label>
       <nav class="nav-links">
         ${NAV_LINKS.map((link) => `<a href="${link.href}">${link.label}</a>`).join("")}
-        <a class="btn btn-small" href="reservation.html">Siparis Ver</a>
+        <a class="btn btn-small" href="reservation.html">Sipariş Ver</a>
       </nav>
     </div>
   `;
@@ -38,12 +38,14 @@ const renderFooter = () => {
     <div class="container footer-grid">
       <div>
         <h3>Point Croissant</h3>
-        <p>Antalya'da premium kruvasan ve cafe deneyimi.</p>
+        <p>Antalya’da premium kruvasan ve kafe deneyimi.</p>
       </div>
       <div>
-        <h4>Kesfet</h4>
+        <h4>Keşfet</h4>
         <a href="index.html">Anasayfa</a>
-        <a href="menu.html">Menu</a>
+        <a href="hikayemiz.html">Hikayemiz</a>
+        <a href="lezzetler.html">Lezzetler</a>
+        <a href="menu.html">Menü</a>
         <a href="blog.html">Blog</a>
         <a href="events.html">Etkinlikler</a>
       </div>
@@ -56,15 +58,14 @@ const renderFooter = () => {
       </div>
       <div>
         <h4>Yasal</h4>
-        <a href="privacy.html">Gizlilik</a>
-        <a href="terms.html">Kullanim Sartlari</a>
-        <a href="cookies.html">Cerezler</a>
-        <a href="admin.html">Admin Panel</a>
+        <a href="privacy.html">Gizlilik Politikası</a>
+        <a href="terms.html">Kullanım Şartları</a>
+        <a href="cookies.html">Çerez Politikası</a>
       </div>
     </div>
     <div class="container footer-bottom">
       <span>© 2026 Point Croissant Cafe & Bakery</span>
-      <span>Antalya, Turkiye</span>
+      <span>Antalya, Türkiye</span>
       <a class="designed-by" href="https://softenwise.com/" target="_blank" rel="noopener noreferrer">Designed by SoftenWise</a>
     </div>
   `;

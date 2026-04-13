@@ -1,10 +1,10 @@
 const SETTINGS_KEY = "pc_settings_v1";
 
 const DEFAULT_SETTINGS = {
-  phoneDisplay: "+90 (242) 456 78 90",
-  phoneTel: "+902424567890",
-  whatsappDisplay: "+90 (532) 123 45 67",
-  whatsappNumber: "905321234567",
+  phoneDisplay: "+90 507 421 66 88",
+  phoneTel: "+905074216688",
+  whatsappDisplay: "+90 507 421 66 88",
+  whatsappNumber: "905074216688",
   email: "hello@pointcroissant.com",
   address: "Şirinyalı Mah. Lara Cd. No:128/A, Muratpaşa / Antalya",
   mapQuery: "Şirinyalı Mah. Lara Cd. No:128/A, Muratpaşa / Antalya"
@@ -51,9 +51,14 @@ setHref(
   `https://wa.me/${settings.whatsappNumber}?text=${whatsappMessage}`
 );
 setHref(
+  "contact-whatsapp-cta",
+  `https://wa.me/${settings.whatsappNumber}?text=${whatsappMessage}`
+);
+setHref(
   "whatsapp-float-link",
   `https://wa.me/${settings.whatsappNumber}?text=${whatsappMessage}`
 );
+setHref("call-float-link", `tel:${settings.phoneTel}`);
 setHref(
   "route-link",
   `https://www.google.com/maps/dir/?api=1&destination=${routeDestination}&travelmode=driving`

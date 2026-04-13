@@ -9,134 +9,152 @@
   </head>
   <body>
     <header class="topbar" id="site-header"></header>
-
-    <section class="page-hero">
-      <div class="container">
-        <div class="breadcrumbs"><a href="index.html">Anasayfa</a><span>/</span><span>Yonetim</span></div>
-        <h1>Urun ve Fiyat Yonetimi</h1>
-        <p>Buradan girdigin urunler ana sayfa ve menu sayfasina otomatik yansir.</p>
-      </div>
-    </section>
-
     <main class="subpage-main">
-      <section class="page-section">
-        <div class="container admin-layout">
-          <section class="card admin-form-card">
-            <h2>Urun Ekle / Guncelle</h2>
-            <form id="product-form" class="admin-form">
-              <input type="hidden" id="product-id" />
-              <label for="product-name">Urun Adi</label>
-              <input id="product-name" type="text" required />
-
-              <label for="product-desc">Aciklama</label>
-              <textarea id="product-desc" rows="3" required></textarea>
-
-              <div class="admin-form-grid">
-                <div>
-                  <label for="product-price">Fiyat (TL)</label>
-                  <input id="product-price" type="number" min="0" step="1" required />
-                </div>
-                <div>
-                  <label for="product-tag">Etiket</label>
-                  <input id="product-tag" type="text" placeholder="Yeni, Premium..." />
-                </div>
-              </div>
-
+      <section class="page-section" id="admin-lock-screen">
+        <div class="container">
+          <article class="card admin-auth-card">
+            <p class="eyebrow">Yetkili Girisi</p>
+            <h1>Admin Panel Kilitli</h1>
+            <p>Sadece yetkili kullanici sifresi ile erisim saglanir.</p>
+            <form id="admin-auth-form" class="admin-form admin-auth-form" autocomplete="off">
+              <label for="admin-password">Sifre</label>
+              <input id="admin-password" name="password" type="password" required />
               <div class="admin-actions">
-                <button class="btn" type="submit">Kaydet</button>
-                <button class="btn" type="button" id="clear-form">Temizle</button>
-                <button class="btn" type="button" id="reset-defaults">Varsayilana Don</button>
+                <button class="btn" type="submit">Giris Yap</button>
               </div>
             </form>
-            <p id="admin-feedback"></p>
-          </section>
-
-          <section class="card admin-form-card">
-            <h2>Iletisim ve Konum Ayarlari</h2>
-            <form id="settings-form" class="admin-form">
-              <label for="setting-phone-display">Telefon (gosterim)</label>
-              <input id="setting-phone-display" type="text" required />
-
-              <label for="setting-phone-tel">Telefon (tel format)</label>
-              <input id="setting-phone-tel" type="text" placeholder="+902424567890" required />
-
-              <label for="setting-whatsapp-display">WhatsApp (gosterim)</label>
-              <input id="setting-whatsapp-display" type="text" required />
-
-              <label for="setting-whatsapp-number">WhatsApp (numara, ulke kodlu)</label>
-              <input id="setting-whatsapp-number" type="text" placeholder="905321234567" required />
-
-              <label for="setting-email">E-Posta</label>
-              <input id="setting-email" type="email" required />
-
-              <label for="setting-address">Adres</label>
-              <textarea id="setting-address" rows="2" required></textarea>
-
-              <label for="setting-map-query">Harita Konum Metni</label>
-              <input id="setting-map-query" type="text" />
-
-              <div class="admin-actions">
-                <button class="btn" type="submit">Ayarları Kaydet</button>
-                <button class="btn" type="button" id="reset-settings">Varsayilan Ayarlar</button>
-              </div>
-            </form>
-            <p id="settings-feedback"></p>
-          </section>
-
-          <section class="card admin-form-card">
-            <h2>Canli Icerik Duzenleyici (Tum Sayfalar)</h2>
-            <p>
-              Istegin sayfayi secip duzenleme modunu ac. Acilan sayfada
-              <strong>Shift + Tikla</strong> ile metin, link ve gorselleri aninda duzenle.
-            </p>
-            <label for="cms-page-select">Duzenlenecek Sayfa</label>
-            <select id="cms-page-select">
-              <option value="index.html">Anasayfa</option>
-              <option value="menu.html">Menu</option>
-              <option value="blog.html">Blog</option>
-              <option value="events.html">Etkinlikler</option>
-              <option value="corporate.html">Kurumsal</option>
-              <option value="faq.html">SSS</option>
-              <option value="reservation.html">Rezervasyon</option>
-              <option value="delivery.html">Teslimat</option>
-              <option value="wholesale.html">Toptan</option>
-              <option value="privacy.html">Gizlilik</option>
-              <option value="terms.html">Kullanim Sartlari</option>
-              <option value="cookies.html">Cerez Politikasi</option>
-            </select>
-            <div class="admin-actions">
-              <button class="btn" id="cms-open-editor" type="button">Duzenleme Modunu Ac</button>
-              <button class="btn" id="cms-disable-editor" type="button">Duzenleme Modunu Kapat</button>
-              <button class="btn" id="cms-clear-all" type="button">Tum Duzenlemeleri Sifirla</button>
-            </div>
-            <p id="cms-feedback"></p>
-          </section>
-
-          <section class="card">
-            <h2>Mevcut Urunler</h2>
-            <div class="table-wrap">
-              <table class="menu-table">
-                <thead>
-                  <tr>
-                    <th>Urun</th>
-                    <th>Fiyat</th>
-                    <th>Etiket</th>
-                    <th>Islem</th>
-                  </tr>
-                </thead>
-                <tbody id="admin-products-body"></tbody>
-              </table>
-            </div>
-          </section>
+            <p id="admin-auth-feedback"></p>
+          </article>
         </div>
+      </section>
+
+      <section id="admin-app" hidden>
+        <section class="page-hero">
+          <div class="container">
+            <div class="breadcrumbs"><a href="index.html">Anasayfa</a><span>/</span><span>Yonetim</span></div>
+            <h1>Urun ve Fiyat Yonetimi</h1>
+            <p>Buradan girdigin urunler ana sayfa ve menu sayfasina otomatik yansir.</p>
+          </div>
+        </section>
+
+        <section class="page-section">
+          <div class="container admin-layout">
+            <section class="card admin-form-card">
+              <h2>Urun Ekle / Guncelle</h2>
+              <form id="product-form" class="admin-form">
+                <input type="hidden" id="product-id" />
+                <label for="product-name">Urun Adi</label>
+                <input id="product-name" type="text" required />
+
+                <label for="product-desc">Aciklama</label>
+                <textarea id="product-desc" rows="3" required></textarea>
+
+                <div class="admin-form-grid">
+                  <div>
+                    <label for="product-price">Fiyat (TL)</label>
+                    <input id="product-price" type="number" min="0" step="1" required />
+                  </div>
+                  <div>
+                    <label for="product-tag">Etiket</label>
+                    <input id="product-tag" type="text" placeholder="Yeni, Premium..." />
+                  </div>
+                </div>
+
+                <div class="admin-actions">
+                  <button class="btn" type="submit">Kaydet</button>
+                  <button class="btn" type="button" id="clear-form">Temizle</button>
+                  <button class="btn" type="button" id="reset-defaults">Varsayilana Don</button>
+                </div>
+              </form>
+              <p id="admin-feedback"></p>
+            </section>
+
+            <section class="card admin-form-card">
+              <h2>Iletisim ve Konum Ayarlari</h2>
+              <form id="settings-form" class="admin-form">
+                <label for="setting-phone-display">Telefon (gosterim)</label>
+                <input id="setting-phone-display" type="text" required />
+
+                <label for="setting-phone-tel">Telefon (tel format)</label>
+                <input id="setting-phone-tel" type="text" placeholder="+905074216688" required />
+
+                <label for="setting-whatsapp-display">WhatsApp (gosterim)</label>
+                <input id="setting-whatsapp-display" type="text" required />
+
+                <label for="setting-whatsapp-number">WhatsApp (numara, ulke kodlu)</label>
+                <input id="setting-whatsapp-number" type="text" placeholder="905074216688" required />
+
+                <label for="setting-email">E-Posta</label>
+                <input id="setting-email" type="email" required />
+
+                <label for="setting-address">Adres</label>
+                <textarea id="setting-address" rows="2" required></textarea>
+
+                <label for="setting-map-query">Harita Konum Metni</label>
+                <input id="setting-map-query" type="text" />
+
+                <div class="admin-actions">
+                  <button class="btn" type="submit">Ayarları Kaydet</button>
+                  <button class="btn" type="button" id="reset-settings">Varsayilan Ayarlar</button>
+                </div>
+              </form>
+              <p id="settings-feedback"></p>
+            </section>
+
+            <section class="card admin-form-card">
+              <h2>Canli Icerik Duzenleyici (Tum Sayfalar)</h2>
+              <p>
+                Istegin sayfayi secip duzenleme modunu ac. Acilan sayfada
+                <strong>Shift + Tikla</strong> ile metin, link ve gorselleri aninda duzenle.
+              </p>
+              <label for="cms-page-select">Duzenlenecek Sayfa</label>
+              <select id="cms-page-select">
+                <option value="index.html">Anasayfa</option>
+                <option value="hikayemiz.html">Hikayemiz</option>
+                <option value="menu.html">Menu</option>
+                <option value="blog.html">Blog</option>
+                <option value="events.html">Etkinlikler</option>
+                <option value="corporate.html">Kurumsal</option>
+                <option value="faq.html">SSS</option>
+                <option value="reservation.html">Rezervasyon</option>
+                <option value="delivery.html">Teslimat</option>
+                <option value="wholesale.html">Toptan</option>
+                <option value="privacy.html">Gizlilik</option>
+                <option value="terms.html">Kullanim Sartlari</option>
+                <option value="cookies.html">Cerez Politikasi</option>
+              </select>
+              <div class="admin-actions">
+                <button class="btn" id="cms-open-editor" type="button">Duzenleme Modunu Ac</button>
+                <button class="btn" id="cms-disable-editor" type="button">Duzenleme Modunu Kapat</button>
+                <button class="btn" id="cms-clear-all" type="button">Tum Duzenlemeleri Sifirla</button>
+              </div>
+              <p id="cms-feedback"></p>
+            </section>
+
+            <section class="card">
+              <h2>Mevcut Urunler</h2>
+              <div class="table-wrap">
+                <table class="menu-table">
+                  <thead>
+                    <tr>
+                      <th>Urun</th>
+                      <th>Fiyat</th>
+                      <th>Etiket</th>
+                      <th>Islem</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-products-body"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </section>
       </section>
     </main>
 
     <footer class="footer-detailed" id="site-footer"></footer>
 
     <script src="layout.js" defer></script>
-    <script src="cms-runtime.js" defer></script>
-    <script src="cms-admin.js" defer></script>
-    <script src="admin.js" defer></script>
+    <script src="admin-auth.js" defer></script>
   </body>
 </html>
