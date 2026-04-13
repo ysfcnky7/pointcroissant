@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Point Croissant menu ve fiyatlar." />
+    <title>Menu | Point Croissant</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar" id="site-header"></header>
+    <main class="subpage-main">
+      <section class="page-hero">
+        <div class="container">
+          <p class="eyebrow">Menu</p>
+          <h1>Taze Uretim Kruvasanlar</h1>
+          <p>Urunler admin panelinden otomatik guncellenir.</p>
+        </div>
+      </section>
+      <section class="section">
+        <div class="container">
+          <div class="table-wrap card">
+            <table class="menu-table">
+              <thead>
+                <tr>
+                  <th>Urun</th>
+                  <th>Aciklama</th>
+                  <th>Etiket</th>
+                  <th>Fiyat</th>
+                </tr>
+              </thead>
+              <tbody id="menu-products-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="footer-detailed" id="site-footer"></footer>
+    <script src="layout.js" defer></script>
+    <script src="cms-runtime.js" defer></script>
+    <script src="catalog.js" defer></script>
+  </body>
+</html>

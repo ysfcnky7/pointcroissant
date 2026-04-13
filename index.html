@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Point Croissant Antalya premium kruvasan cafe." />
+    <title>Point Croissant | Cafe & Bakery</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar" id="site-header"></header>
+
+    <main>
+      <section class="hero" id="anasayfa">
+        <div class="overlay"></div>
+        <img src="assets/interior-main.png" alt="Point Croissant mekan" class="hero-image" />
+        <div class="container hero-content">
+          <img src="assets/logo-point-croissant.png" alt="Point Croissant logo" class="hero-emblem reveal" />
+          <p class="eyebrow reveal">Antalya'da yeni nesil kruvasan deneyimi</p>
+          <h1>Gune Lezzetli Bir Baslangic</h1>
+          <p>Citir katmanlar, ozel receteler ve premium sunum. Her lokmada ozen var.</p>
+          <div class="hero-actions">
+            <a class="btn" href="#urunler">Lezzetleri Kesfet</a>
+            <a class="btn btn-ghost" href="#iletisim">Bize Ulas</a>
+          </div>
+          <div class="hero-mini-stats reveal">
+            <div><strong data-target="12">0</strong><span>Yillik Ustalik</span></div>
+            <div><strong data-target="40">0</strong><span>Ozel Tarif</span></div>
+            <div><strong data-target="1200">0</strong><span>Gunluk Servis</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="hikaye">
+        <div class="container split">
+          <div class="reveal">
+            <p class="eyebrow">Hikayemiz</p>
+            <h2>Kruvasan uzun zamandir hayalimizdaydi</h2>
+            <p>
+              Gercekten iyi kruvasanin pesine dustuk. Aylarca hamur, mayalanma ve firin
+              denemeleri yaptik. Point Croissant bu arayistan dogdu.
+            </p>
+          </div>
+          <img src="assets/toi-06.png" alt="Kruvasan uretim" class="gallery-image reveal" loading="lazy" decoding="async" />
+        </div>
+      </section>
+
+      <section class="section products" id="urunler">
+        <div class="container">
+          <p class="eyebrow center">One Cikanlar</p>
+          <h2 class="center">Imza Kruvasanlarimiz</h2>
+          <div class="product-grid" id="featured-products"></div>
+        </div>
+      </section>
+
+      <section class="section gallery" id="galeri">
+        <div class="container">
+          <div class="gallery-head">
+            <p class="eyebrow">Galeri</p>
+            <h2>Lezzet Galerisi</h2>
+            <p>Hizli acilan filtreli galeri deneyimi.</p>
+          </div>
+          <div class="gallery-filters" id="gallery-filters">
+            <button class="gallery-filter active" type="button" data-filter="all">Tumu</button>
+            <button class="gallery-filter" type="button" data-filter="tatli">Tatli</button>
+            <button class="gallery-filter" type="button" data-filter="meyveli">Meyveli</button>
+            <button class="gallery-filter" type="button" data-filter="premium">Premium</button>
+          </div>
+          <div class="gallery-grid" id="gallery-grid">
+            <article class="gallery-item" data-category="tatli premium"><img src="assets/toi-01.png" alt="Galeri 1" loading="lazy" decoding="async" /></article>
+            <article class="gallery-item" data-category="tatli"><img src="assets/toi-02.png" alt="Galeri 2" loading="lazy" decoding="async" /></article>
+            <article class="gallery-item" data-category="tatli"><img src="assets/toi-03.png" alt="Galeri 3" loading="lazy" decoding="async" /></article>
+            <article class="gallery-item" data-category="premium"><img src="assets/toi-04.png" alt="Galeri 4" loading="lazy" decoding="async" /></article>
+            <article class="gallery-item" data-category="meyveli"><img src="assets/toi-05.png" alt="Galeri 5" loading="lazy" decoding="async" /></article>
+            <article class="gallery-item" data-category="meyveli premium"><img src="assets/toi-06.png" alt="Galeri 6" loading="lazy" decoding="async" /></article>
+            <article class="gallery-item" data-category="premium"><img src="assets/toi-07.png" alt="Galeri 7" loading="lazy" decoding="async" /></article>
+            <article class="gallery-item" data-category="meyveli"><img src="assets/toi-08.png" alt="Galeri 8" loading="lazy" decoding="async" /></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section request-form-section" id="talep-formu">
+        <div class="container split request-wrap">
+          <div class="request-intro reveal">
+            <p class="eyebrow">Talep Formu</p>
+            <h2>Ozel Uretim Talebini Gonder</h2>
+            <p>Oteller, etkinlikler ve toplu siparisler icin mesajini ilet. Hemen geri donelim.</p>
+          </div>
+          <form class="card request-form reveal" id="request-form">
+            <label for="rf-name">Ad Soyad</label>
+            <input id="rf-name" name="name" type="text" required />
+            <label for="rf-city">Sehir</label>
+            <input id="rf-city" name="city" type="text" required />
+            <label for="rf-email">E-Posta</label>
+            <input id="rf-email" name="email" type="email" required />
+            <label for="rf-phone">Telefon</label>
+            <input id="rf-phone" name="phone" type="text" required />
+            <label for="rf-message">Mesaj</label>
+            <textarea id="rf-message" name="message" rows="5" required></textarea>
+            <div class="request-actions">
+              <button class="btn" type="submit">Talebi Gonder</button>
+              <a class="btn btn-ghost request-call" id="request-whatsapp-link" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+            </div>
+            <small id="request-feedback"></small>
+          </form>
+        </div>
+      </section>
+
+      <section class="section location" id="konum">
+        <div class="container">
+          <div class="location-card reveal">
+            <div class="location-head">
+              <div class="location-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="presentation"><path d="M12 2c-3.87 0-7 3.13-7 7 0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"></path></svg>
+              </div>
+              <div>
+                <p class="eyebrow">Konumumuz</p>
+                <h2>Point Croissant Antalya Subesi</h2>
+              </div>
+            </div>
+            <p class="location-address"><strong>Adres:</strong> <span id="location-address-text">Sirinyali Mah. Lara Cd. No:128/A, Muratpasa / Antalya</span></p>
+            <a id="route-link" class="btn" href="https://www.google.com/maps/dir/?api=1&destination=Sirinyali+Mah.+Lara+Cd.+No:128/A+Muratpasa+Antalya&travelmode=driving" target="_blank" rel="noopener noreferrer">Konuma Git</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section contact" id="iletisim">
+        <div class="container split contact-wrap">
+          <div class="contact-card reveal" id="siparis">
+            <h2>Iletisim Bilgileri</h2>
+            <ul>
+              <li><strong>Adres:</strong> <span id="contact-address-text">Sirinyali Mah. Lara Cd. No:128/A, Muratpasa / Antalya</span></li>
+              <li><strong>Telefon:</strong> <a id="contact-phone-link" href="tel:+902424567890"><span id="contact-phone-text">+90 (242) 456 78 90</span></a></li>
+              <li><strong>E-Posta:</strong> <a id="contact-email-link" href="mailto:hello@pointcroissant.com"><span id="contact-email-text">hello@pointcroissant.com</span></a></li>
+              <li><strong>WhatsApp:</strong> <a id="contact-whatsapp-link" href="https://wa.me/905321234567" target="_blank" rel="noopener noreferrer"><span id="contact-whatsapp-text">+90 (532) 123 45 67</span></a></li>
+            </ul>
+          </div>
+          <div class="contact-card alt reveal">
+            <h3>Toptan Cozumler</h3>
+            <p>Otel, restoran ve cafeler icin standardize uretim ve tedarik destegi.</p>
+            <a class="btn btn-ghost" id="contact-call-btn" href="tel:+902424567890">Hemen Ara</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer-detailed" id="site-footer"></footer>
+
+    <a class="whatsapp-float" id="whatsapp-float-link" href="https://wa.me/905321234567" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp ile iletisime gec">WhatsApp</a>
+    <script src="layout.js" defer></script>
+    <script src="cms-runtime.js" defer></script>
+    <script src="site-settings.js" defer></script>
+    <script src="catalog.js" defer></script>
+    <script src="script.js" defer></script>
+    <script src="share.js" defer></script>
+    <script src="request-form.js" defer></script>
+  </body>
+</html>
