@@ -13,14 +13,14 @@
       <section class="page-section" id="admin-lock-screen">
         <div class="container">
           <article class="card admin-auth-card">
-            <p class="eyebrow">Yetkili Girisi</p>
+            <p class="eyebrow">Yetkili Girişi</p>
             <h1>Admin Panel Kilitli</h1>
-            <p>Sadece yetkili kullanici sifresi ile erisim saglanir.</p>
+            <p>Sadece yetkili kullanıcı şifresi ile erişim sağlanır.</p>
             <form id="admin-auth-form" class="admin-form admin-auth-form" autocomplete="off">
-              <label for="admin-password">Sifre</label>
+              <label for="admin-password">Şifre</label>
               <input id="admin-password" name="password" type="password" required />
               <div class="admin-actions">
-                <button class="btn" type="submit">Giris Yap</button>
+                <button class="btn" type="submit">Giriş Yap</button>
               </div>
             </form>
             <p id="admin-auth-feedback"></p>
@@ -31,88 +31,204 @@
       <section id="admin-app" hidden>
         <section class="page-hero">
           <div class="container">
-            <div class="breadcrumbs"><a href="index.html">Anasayfa</a><span>/</span><span>Yonetim</span></div>
-            <h1>Urun ve Fiyat Yonetimi</h1>
-            <p>Buradan girdigin urunler ana sayfa ve menu sayfasina otomatik yansir.</p>
+            <div class="breadcrumbs"><a href="index.html">Anasayfa</a><span>/</span><span>Yönetim</span></div>
+            <h1>Ürün ve Fiyat Yönetimi</h1>
+            <p>Buradan girdiğin ürünler ana sayfa ve menü sayfasına otomatik yansır.</p>
           </div>
         </section>
 
         <section class="page-section">
-          <div class="container admin-layout">
-            <section class="card admin-form-card">
-              <h2>Urun Ekle / Guncelle</h2>
+          <div class="container admin-shell">
+            <aside class="card admin-sidebar" aria-label="Yönetim menüsü">
+              <h2>Yönetim Menüsü</h2>
+              <nav class="admin-nav">
+                <a href="#panel-products">Ürün Yönetimi</a>
+                <a href="#panel-contact">İletişim Ayarları</a>
+                <a href="#panel-cms">İçerik Düzenleme</a>
+                <a href="#panel-list">Ürün Listesi</a>
+              </nav>
+              <p class="admin-sidebar-note">
+                Önce ürün/ayar bilgilerini kaydet, sonra içerik düzenleyiciden ilgili sayfayı aç.
+              </p>
+            </aside>
+
+            <div class="admin-content">
+              <section class="card admin-panel" id="panel-overview">
+                <div class="admin-panel-head">
+                  <h2>Yönetim Özeti</h2>
+                  <span class="admin-badge">Dashboard</span>
+                </div>
+                <div class="admin-kpi-grid">
+                  <article class="admin-kpi-card">
+                    <small>Toplam Ürün</small>
+                    <strong id="kpi-total-products">0</strong>
+                  </article>
+                  <article class="admin-kpi-card">
+                    <small>Ortalama Fiyat</small>
+                    <strong id="kpi-avg-price">0 TL</strong>
+                  </article>
+                  <article class="admin-kpi-card">
+                    <small>En Yüksek Fiyat</small>
+                    <strong id="kpi-max-price">0 TL</strong>
+                  </article>
+                  <article class="admin-kpi-card">
+                    <small>Çeviri Eksiği (EN/RU)</small>
+                    <strong id="kpi-missing-i18n">0</strong>
+                  </article>
+                </div>
+              </section>
+
+              <section class="card admin-form-card admin-panel" id="panel-products">
+                <div class="admin-panel-head">
+                  <h2>Ürün Ekle / Güncelle</h2>
+                  <span class="admin-badge">Catalog</span>
+                </div>
               <form id="product-form" class="admin-form">
                 <input type="hidden" id="product-id" />
-                <label for="product-name">Urun Adi</label>
-                <input id="product-name" type="text" required />
+                <div class="admin-lang-tabs" role="tablist" aria-label="Ürün dilleri">
+                  <button type="button" class="admin-lang-tab active" data-tab-group="product" data-lang="tr" aria-selected="true">TR</button>
+                  <button type="button" class="admin-lang-tab" data-tab-group="product" data-lang="en" aria-selected="false">EN</button>
+                  <button type="button" class="admin-lang-tab" data-tab-group="product" data-lang="ru" aria-selected="false">RU</button>
+                </div>
 
-                <label for="product-desc">Aciklama</label>
-                <textarea id="product-desc" rows="3" required></textarea>
+                <div class="admin-lang-pane active" data-tab-group="product" data-lang="tr">
+                  <label for="product-name-tr">Ürün Adı (TR)</label>
+                  <input id="product-name-tr" type="text" maxlength="70" required />
+                  <label for="product-desc-tr">Açıklama (TR)</label>
+                  <textarea id="product-desc-tr" rows="3" maxlength="320" required></textarea>
+                  <label for="product-tag-tr">Etiket (TR)</label>
+                  <input id="product-tag-tr" type="text" maxlength="26" placeholder="Yeni, Premium..." />
+                  <label for="product-image-tr">Ürün Görsel URL (TR)</label>
+                  <input
+                    id="product-image-tr"
+                    type="url"
+                    maxlength="500"
+                    placeholder="assets/logo-point-croissant.webp veya https://..."
+                  />
+                </div>
+
+                <div class="admin-lang-pane" data-tab-group="product" data-lang="en">
+                  <label for="product-name-en">Ürün Adı (EN)</label>
+                  <input id="product-name-en" type="text" maxlength="70" placeholder="Boşsa TR kullanılır" />
+                  <label for="product-desc-en">Açıklama (EN)</label>
+                  <textarea id="product-desc-en" rows="2" maxlength="320" placeholder="Boşsa TR kullanılır"></textarea>
+                  <label for="product-tag-en">Etiket (EN)</label>
+                  <input id="product-tag-en" type="text" maxlength="26" placeholder="New, Premium..." />
+                  <label for="product-image-en">Ürün Görsel URL (EN)</label>
+                  <input
+                    id="product-image-en"
+                    type="url"
+                    maxlength="500"
+                    placeholder="Boşsa TR kullanılır"
+                  />
+                </div>
+
+                <div class="admin-lang-pane" data-tab-group="product" data-lang="ru">
+                  <label for="product-name-ru">Ürün Adı (RU)</label>
+                  <input id="product-name-ru" type="text" maxlength="70" placeholder="Boşsa TR kullanılır" />
+                  <label for="product-desc-ru">Açıklama (RU)</label>
+                  <textarea id="product-desc-ru" rows="2" maxlength="320" placeholder="Boşsa TR kullanılır"></textarea>
+                  <label for="product-tag-ru">Etiket (RU)</label>
+                  <input id="product-tag-ru" type="text" maxlength="26" placeholder="Новинка, Премиум..." />
+                  <label for="product-image-ru">Ürün Görsel URL (RU)</label>
+                  <input
+                    id="product-image-ru"
+                    type="url"
+                    maxlength="500"
+                    placeholder="Boşsa TR kullanılır"
+                  />
+                </div>
 
                 <div class="admin-form-grid">
                   <div>
                     <label for="product-price">Fiyat (TL)</label>
-                    <input id="product-price" type="number" min="0" step="1" required />
-                  </div>
-                  <div>
-                    <label for="product-tag">Etiket</label>
-                    <input id="product-tag" type="text" placeholder="Yeni, Premium..." />
+                    <input id="product-price" type="number" min="0" max="100000" step="1" required />
                   </div>
                 </div>
 
                 <div class="admin-actions">
                   <button class="btn" type="submit">Kaydet</button>
                   <button class="btn" type="button" id="clear-form">Temizle</button>
-                  <button class="btn" type="button" id="reset-defaults">Varsayilana Don</button>
+                  <button class="btn" type="button" id="reset-defaults">Varsayılana Dön</button>
                 </div>
               </form>
               <p id="admin-feedback"></p>
-            </section>
+              </section>
 
-            <section class="card admin-form-card">
-              <h2>Iletisim ve Konum Ayarlari</h2>
+              <section class="card admin-form-card admin-panel" id="panel-contact">
+                <div class="admin-panel-head">
+                  <h2>İletişim ve Konum Ayarları</h2>
+                  <span class="admin-badge">Settings</span>
+                </div>
               <form id="settings-form" class="admin-form">
-                <label for="setting-phone-display">Telefon (gosterim)</label>
-                <input id="setting-phone-display" type="text" required />
+                <label for="setting-phone-display">Telefon (gösterim)</label>
+                <input id="setting-phone-display" type="text" maxlength="24" required />
 
                 <label for="setting-phone-tel">Telefon (tel format)</label>
-                <input id="setting-phone-tel" type="text" placeholder="+905074216688" required />
+                <input id="setting-phone-tel" type="text" maxlength="24" placeholder="+905323150777" required />
 
-                <label for="setting-whatsapp-display">WhatsApp (gosterim)</label>
-                <input id="setting-whatsapp-display" type="text" required />
+                <label for="setting-whatsapp-display">WhatsApp (gösterim)</label>
+                <input id="setting-whatsapp-display" type="text" maxlength="24" required />
 
-                <label for="setting-whatsapp-number">WhatsApp (numara, ulke kodlu)</label>
-                <input id="setting-whatsapp-number" type="text" placeholder="905074216688" required />
+                <label for="setting-whatsapp-number">WhatsApp (numara, ülke kodlu)</label>
+                <input id="setting-whatsapp-number" type="text" maxlength="24" placeholder="905323150777" required />
 
                 <label for="setting-email">E-Posta</label>
-                <input id="setting-email" type="email" required />
+                <input id="setting-email" type="email" maxlength="120" required />
 
-                <label for="setting-address">Adres</label>
-                <textarea id="setting-address" rows="2" required></textarea>
+                <div class="admin-lang-tabs" role="tablist" aria-label="Adres dilleri">
+                  <button type="button" class="admin-lang-tab active" data-tab-group="settings" data-lang="tr" aria-selected="true">TR</button>
+                  <button type="button" class="admin-lang-tab" data-tab-group="settings" data-lang="en" aria-selected="false">EN</button>
+                  <button type="button" class="admin-lang-tab" data-tab-group="settings" data-lang="ru" aria-selected="false">RU</button>
+                </div>
 
-                <label for="setting-map-query">Harita Konum Metni</label>
-                <input id="setting-map-query" type="text" />
+                <div class="admin-lang-pane active" data-tab-group="settings" data-lang="tr">
+                  <label for="setting-address-tr">Adres (TR)</label>
+                  <textarea id="setting-address-tr" rows="2" maxlength="220" required></textarea>
+                  <label for="setting-map-query-tr">Harita Konum Metni (TR)</label>
+                  <input id="setting-map-query-tr" type="text" maxlength="220" />
+                </div>
+
+                <div class="admin-lang-pane" data-tab-group="settings" data-lang="en">
+                  <label for="setting-address-en">Adres (EN)</label>
+                  <textarea id="setting-address-en" rows="2" maxlength="220" placeholder="Boşsa TR kullanılır"></textarea>
+                  <label for="setting-map-query-en">Harita Konum Metni (EN)</label>
+                  <input id="setting-map-query-en" type="text" maxlength="220" placeholder="Boşsa TR kullanılır" />
+                </div>
+
+                <div class="admin-lang-pane" data-tab-group="settings" data-lang="ru">
+                  <label for="setting-address-ru">Adres (RU)</label>
+                  <textarea id="setting-address-ru" rows="2" maxlength="220" placeholder="Boşsa TR kullanılır"></textarea>
+                  <label for="setting-map-query-ru">Harita Konum Metni (RU)</label>
+                  <input id="setting-map-query-ru" type="text" maxlength="220" placeholder="Boşsa TR kullanılır" />
+                </div>
 
                 <div class="admin-actions">
                   <button class="btn" type="submit">Ayarları Kaydet</button>
-                  <button class="btn" type="button" id="reset-settings">Varsayilan Ayarlar</button>
+                  <button class="btn" type="button" id="reset-settings">Varsayılan Ayarlar</button>
                 </div>
               </form>
               <p id="settings-feedback"></p>
-            </section>
+              </section>
 
-            <section class="card admin-form-card">
-              <h2>Canli Icerik Duzenleyici (Tum Sayfalar)</h2>
+              <section class="card admin-form-card admin-panel" id="panel-cms">
+                <div class="admin-panel-head">
+                  <h2>Canlı İçerik Düzenleyici (Tüm Sayfalar)</h2>
+                  <span class="admin-badge">CMS</span>
+                </div>
               <p>
-                Istegin sayfayi secip duzenleme modunu ac. Acilan sayfada
-                <strong>Shift + Tikla</strong> ile metin, link ve gorselleri aninda duzenle.
+                İstediğin sayfayı seçip düzenleme modunu aç. Açılan sayfada
+                <strong>Shift + Tıkla</strong> ile metin, link ve görselleri anında düzenle.
               </p>
-              <label for="cms-page-select">Duzenlenecek Sayfa</label>
+              <label for="cms-page-select">Düzenlenecek Sayfa</label>
               <select id="cms-page-select">
                 <option value="index.html">Anasayfa</option>
                 <option value="hikayemiz.html">Hikayemiz</option>
-                <option value="menu.html">Menu</option>
+                <option value="lezzetler.html">Lezzetler</option>
+                <option value="menu.html">Menü</option>
                 <option value="blog.html">Blog</option>
+                <option value="blog-imza-kruvasan.html">Blog: İmza Kruvasan</option>
+                <option value="blog-kahve-eslesmesi.html">Blog: Kahve Eşleşmesi</option>
                 <option value="events.html">Etkinlikler</option>
                 <option value="corporate.html">Kurumsal</option>
                 <option value="faq.html">SSS</option>
@@ -120,33 +236,63 @@
                 <option value="delivery.html">Teslimat</option>
                 <option value="wholesale.html">Toptan</option>
                 <option value="privacy.html">Gizlilik</option>
-                <option value="terms.html">Kullanim Sartlari</option>
-                <option value="cookies.html">Cerez Politikasi</option>
+                <option value="terms.html">Kullanım Şartları</option>
+                <option value="cookies.html">Çerez Politikası</option>
               </select>
               <div class="admin-actions">
-                <button class="btn" id="cms-open-editor" type="button">Duzenleme Modunu Ac</button>
-                <button class="btn" id="cms-disable-editor" type="button">Duzenleme Modunu Kapat</button>
-                <button class="btn" id="cms-clear-all" type="button">Tum Duzenlemeleri Sifirla</button>
+                <button class="btn" id="cms-open-editor" type="button">Düzenleme Modunu Aç</button>
+                <button class="btn" id="cms-disable-editor" type="button">Düzenleme Modunu Kapat</button>
+                <button class="btn" id="cms-clear-all" type="button">Tüm Düzenlemeleri Sıfırla</button>
               </div>
+              <h3 class="admin-subtitle">Kayıtlı içerik özeti</h3>
+              <div id="cms-summary" class="admin-summary"></div>
               <p id="cms-feedback"></p>
-            </section>
+              </section>
 
-            <section class="card">
-              <h2>Mevcut Urunler</h2>
+              <section class="card admin-panel" id="panel-list">
+                <div class="admin-panel-head">
+                  <h2>Mevcut Ürünler</h2>
+                  <span class="admin-badge">Table</span>
+                </div>
+              <div class="admin-toolbar">
+                <input id="product-search" type="search" placeholder="Ürün ara (ad/açıklama/etiket)" />
+                <select id="product-lang-filter">
+                  <option value="tr">TR alanı</option>
+                  <option value="en">EN alanı</option>
+                  <option value="ru">RU alanı</option>
+                </select>
+                <select id="product-sort">
+                  <option value="created-desc">Yeni eklenen (son)</option>
+                  <option value="price-desc">Fiyat (yüksekten düşüğe)</option>
+                  <option value="price-asc">Fiyat (düşükten yükseğe)</option>
+                  <option value="name-asc">Ürün adı (A-Z)</option>
+                </select>
+                <button class="btn btn-small" type="button" id="product-reset-filters">Filtreleri Sıfırla</button>
+              </div>
+              <div class="admin-toolbar">
+                <button class="btn btn-small" type="button" id="export-products-json">Ürünleri JSON Dışa Aktar</button>
+                <button class="btn btn-small" type="button" id="import-products-json-btn">JSON İçeri Aktar</button>
+                <input id="import-products-json" type="file" accept=".json,application/json" hidden />
+              </div>
+              <p id="admin-products-count" class="admin-count"></p>
               <div class="table-wrap">
                 <table class="menu-table">
                   <thead>
                     <tr>
-                      <th>Urun</th>
+                      <th>Görsel</th>
+                      <th>Ürün</th>
                       <th>Fiyat</th>
                       <th>Etiket</th>
-                      <th>Islem</th>
+                      <th>İşlem</th>
                     </tr>
                   </thead>
                   <tbody id="admin-products-body"></tbody>
                 </table>
               </div>
-            </section>
+              <h3 class="admin-subtitle">Ürün önizleme</h3>
+              <div id="admin-products-preview" class="admin-products-preview"></div>
+              </section>
+            </div>
           </div>
         </section>
       </section>

@@ -1,6 +1,6 @@
 const shareUrl = encodeURIComponent(window.location.href);
 const shareText = encodeURIComponent(
-  "Point Croissant Antalya - premium kruvasan ve cafe deneyimi."
+  "Point Croissant Antalya"
 );
 
 const links = {
@@ -27,9 +27,9 @@ if (elCopy) {
   elCopy.addEventListener("click", async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      if (elFeedback) elFeedback.textContent = "Link kopyalandi.";
+      if (elFeedback) elFeedback.textContent = "Link kopyalandı.";
     } catch {
-      if (elFeedback) elFeedback.textContent = "Link kopyalanamadi.";
+      if (elFeedback) elFeedback.textContent = "Link kopyalanamadı.";
     }
   });
 }
@@ -37,18 +37,18 @@ if (elCopy) {
 if (elNative) {
   elNative.addEventListener("click", async () => {
     if (!navigator.share) {
-      if (elFeedback) elFeedback.textContent = "Bu cihazda paylasim ozelligi yok.";
+      if (elFeedback) elFeedback.textContent = "Bu cihazda paylaşım özelliği yok.";
       return;
     }
     try {
       await navigator.share({
         title: "Point Croissant | Cafe & Bakery",
-        text: "Antalya'da premium kruvasan ve artisan kahve deneyimi.",
+        text: "Point Croissant Antalya",
         url: window.location.href
       });
-      if (elFeedback) elFeedback.textContent = "Paylasim basarili.";
+      if (elFeedback) elFeedback.textContent = "Paylaşım başarılı.";
     } catch {
-      if (elFeedback) elFeedback.textContent = "Paylasim iptal edildi.";
+      if (elFeedback) elFeedback.textContent = "Paylaşım iptal edildi.";
     }
   });
 }

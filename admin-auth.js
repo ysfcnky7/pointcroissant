@@ -44,13 +44,13 @@ if (entryKey === ADMIN_ENTRY_KEY && hasValidSession()) {
     event.preventDefault();
     const password = passwordInput?.value || "";
     if (!password.trim()) {
-      if (authFeedback) authFeedback.textContent = "Sifre gerekli.";
+      if (authFeedback) authFeedback.textContent = "Şifre gerekli.";
       return;
     }
 
     const hashed = await hashText(password.trim());
     if (hashed !== ADMIN_PASSWORD_SHA256) {
-      if (authFeedback) authFeedback.textContent = "Sifre hatali.";
+      if (authFeedback) authFeedback.textContent = "Şifre hatalı.";
       if (passwordInput) passwordInput.value = "";
       return;
     }

@@ -1,5 +1,19 @@
+(() => {
 const CMS_KEY = "pc_cms_content_v1";
 const CMS_ADMIN_MODE_KEY = "pc_admin_mode_v1";
+const CMS_SCHEMA_KEY = "pc_cms_schema_v1";
+const CMS_SCHEMA_VERSION = "3";
+
+const ensureCmsSchema = () => {
+  try {
+    const schema = localStorage.getItem(CMS_SCHEMA_KEY);
+    if (schema === CMS_SCHEMA_VERSION) return;
+    localStorage.removeItem(CMS_KEY);
+    localStorage.setItem(CMS_SCHEMA_KEY, CMS_SCHEMA_VERSION);
+  } catch {
+    // Ignore storage errors and continue with defaults
+  }
+};
 
 const getPageKey = () => {
   const page = window.location.pathname.split("/").pop();
@@ -68,9 +82,9 @@ const mountAdminToolbar = () => {
   const bar = document.createElement("div");
   bar.className = "cms-toolbar";
   bar.innerHTML = `
-    <span>Duzenleme modu acik - Shift + Tikla duzenle</span>
+    <span>Düzenleme modu açık - Shift + Tıkla düzenle</span>
     <button type="button" id="cms-disable-mode">Kapat</button>
-    <button type="button" id="cms-clear-page">Bu sayfayi sifirla</button>
+    <button type="button" id="cms-clear-page">Bu sayfayı sıfırla</button>
   `;
   document.body.appendChild(bar);
 
@@ -105,7 +119,7 @@ const mountAdminToolbar = () => {
     if (!data[pageKey]) data[pageKey] = {};
 
     if (editable.tagName === "IMG") {
-      const src = window.prompt("Gorsel URL", editable.getAttribute("src") || "");
+      const src = window.prompt("Görsel URL", editable.getAttribute("src") || "");
       if (!src) return;
       const alt = window.prompt("Alt metni", editable.getAttribute("alt") || "");
       data[pageKey][id] = { ...(data[pageKey][id] || {}), src, alt: alt || "" };
@@ -126,5 +140,7 @@ const mountAdminToolbar = () => {
   });
 };
 
+ensureCmsSchema();
 applyCms();
 mountAdminToolbar();
+})();

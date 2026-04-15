@@ -91,12 +91,22 @@ if (toiTrack && toiDots) {
   const slides = [...toiTrack.querySelectorAll(".toi-slide")];
   let activeIndex = 0;
   let timerId = null;
+  const lang =
+    (typeof window.__pcGetLang === "function" && window.__pcGetLang()) ||
+    document.documentElement.lang ||
+    "tr";
+  const slideLabelMap = {
+    tr: "Görsel",
+    en: "Slide",
+    ru: "Слайд"
+  };
+  const slideLabel = slideLabelMap[lang] || slideLabelMap.tr;
 
   const buildDots = () => {
     toiDots.innerHTML = slides
       .map(
         (_, idx) =>
-          `<button class="toi-dot${idx === 0 ? " active" : ""}" type="button" data-slide="${idx}" aria-label="Gorsel ${idx + 1}"></button>`
+          `<button class="toi-dot${idx === 0 ? " active" : ""}" type="button" data-slide="${idx}" aria-label="${slideLabel} ${idx + 1}"></button>`
       )
       .join("");
   };
@@ -139,6 +149,11 @@ if (galleryFilters && galleryGrid) {
   const filterButtons = [...galleryFilters.querySelectorAll(".gallery-filter")];
   const galleryItems = [...galleryGrid.querySelectorAll(".gallery-item")];
 
+  filterButtons.forEach((btn) => {
+    const isActive = btn.classList.contains("active");
+    btn.setAttribute("aria-pressed", String(isActive));
+  });
+
   galleryFilters.addEventListener("click", (event) => {
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
@@ -146,7 +161,11 @@ if (galleryFilters && galleryGrid) {
     if (!selected) return;
 
     filterButtons.forEach((btn) =>
-      btn.classList.toggle("active", btn.dataset.filter === selected)
+      {
+        const isActive = btn.dataset.filter === selected;
+        btn.classList.toggle("active", isActive);
+        btn.setAttribute("aria-pressed", String(isActive));
+      }
     );
 
     galleryItems.forEach((item) => {

@@ -1,13 +1,30 @@
+(() => {
 const SETTINGS_KEY = "pc_settings_v1";
+const toLocalized = (tr = "", en = "", ru = "") => ({ tr, en, ru });
+const normalizeLocalized = (value, fallback = "") => {
+  if (value && typeof value === "object") {
+    return {
+      tr: String(value.tr || fallback || "").trim(),
+      en: String(value.en || "").trim(),
+      ru: String(value.ru || "").trim()
+    };
+  }
+  const tr = typeof value === "string" ? value.trim() : String(fallback || "").trim();
+  return toLocalized(tr, "", "");
+};
+const getLocalized = (value, lang) => {
+  const normalized = normalizeLocalized(value);
+  return normalized[lang] || normalized.tr || "";
+};
 
 const DEFAULT_SETTINGS = {
-  phoneDisplay: "+90 507 421 66 88",
-  phoneTel: "+905074216688",
-  whatsappDisplay: "+90 507 421 66 88",
-  whatsappNumber: "905074216688",
+  phoneDisplay: "+90 532 315 07 77",
+  phoneTel: "+905323150777",
+  whatsappDisplay: "+90 532 315 07 77",
+  whatsappNumber: "905323150777",
   email: "hello@pointcroissant.com",
-  address: "Şirinyalı Mah. Lara Cd. No:128/A, Muratpaşa / Antalya",
-  mapQuery: "Şirinyalı Mah. Lara Cd. No:128/A, Muratpaşa / Antalya"
+  address: toLocalized("Şirinyalı Mah. Lara Cd. No:128/A, Muratpaşa / Antalya"),
+  mapQuery: toLocalized("Şirinyalı Mah. Lara Cd. No:128/A, Muratpaşa / Antalya")
 };
 
 const loadSettings = () => {
@@ -15,7 +32,12 @@ const loadSettings = () => {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (!raw) return DEFAULT_SETTINGS;
     const parsed = JSON.parse(raw);
-    return { ...DEFAULT_SETTINGS, ...parsed };
+    const merged = { ...DEFAULT_SETTINGS, ...parsed };
+    return {
+      ...merged,
+      address: normalizeLocalized(merged.address, DEFAULT_SETTINGS.address.tr),
+      mapQuery: normalizeLocalized(merged.mapQuery, DEFAULT_SETTINGS.mapQuery.tr)
+    };
   } catch {
     return DEFAULT_SETTINGS;
   }
@@ -32,13 +54,23 @@ const setHref = (id, value) => {
 };
 
 const settings = loadSettings();
+const activeLang =
+  (typeof window.__pcGetLang === "function" && window.__pcGetLang()) ||
+  document.documentElement.lang ||
+  "tr";
+const whatsappGreetingByLang = {
+  tr: "Merhaba Point Croissant, bilgi almak istiyorum.",
+  en: "Hello Point Croissant, I would like to get information.",
+  ru: "Здравствуйте, Point Croissant, я хотел(а) бы получить информацию."
+};
 const whatsappMessage = encodeURIComponent(
-  "Merhaba Point Croissant, bilgi almak istiyorum."
+  whatsappGreetingByLang[activeLang] || whatsappGreetingByLang.tr
 );
-const routeDestination = encodeURIComponent(settings.mapQuery || settings.address);
+const localizedAddress = getLocalized(settings.address, activeLang);
+const localizedMapQuery = getLocalized(settings.mapQuery, activeLang) || localizedAddress;
 
-setText("contact-address-text", settings.address);
-setText("location-address-text", settings.address);
+setText("contact-address-text", localizedAddress);
+setText("location-address-text", localizedAddress);
 setText("contact-phone-text", settings.phoneDisplay);
 setText("contact-email-text", settings.email);
 setText("contact-whatsapp-text", settings.whatsappDisplay);
@@ -61,5 +93,6 @@ setHref(
 setHref("call-float-link", `tel:${settings.phoneTel}`);
 setHref(
   "route-link",
-  `https://www.google.com/maps/dir/?api=1&destination=${routeDestination}&travelmode=driving`
+  `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(localizedMapQuery)}&travelmode=driving`
 );
+})();
