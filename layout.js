@@ -16,12 +16,58 @@ const originalTitle = document.title;
 let activeLang = "tr";
 let i18nObserver = null;
 const SITE_ORIGIN = "https://pointcroissant.com";
+const SOFTENWISE_ORIGIN = "https://softenwise.com";
+const SCHEMA_IDS = {
+  website: `${SITE_ORIGIN}/#website`,
+  localBusiness: `${SITE_ORIGIN}/#localbusiness`,
+  softenwiseOrg: `${SOFTENWISE_ORIGIN}/#organization`
+};
+const SCHEMA_CONTACT = {
+  telephone: "+905323150777",
+  email: "hello@pointcroissant.com",
+  streetAddress: "Şirinyalı Mah. Lara Cd. No:128/A",
+  addressLocality: "Muratpaşa",
+  addressRegion: "Antalya",
+  postalCode: "07230",
+  addressCountry: "TR"
+};
+/** Marka + arama yazımı varyantları (yalnızca şema / ana sayfa keywords; içerik doldurma değil). */
+const BRAND_ALTERNATE_NAMES = [
+  "Point Croissant Cafe & Bakery",
+  "pointcroissant",
+  "Point Croissant Antalya",
+  "Point kruvasan",
+  "point kruvasan",
+  "Point kruvasan Antalya"
+];
+
+const SEO_HOME_KEYWORDS =
+  "Point Croissant, Point Croissant Antalya, point kruvasan, Point kruvasan, point croissant, Antalya kruvasan cafe, Lara Muratpaşa";
+
+const BREADCRUMB_NAMES = {
+  "hikayemiz.html": "Hikayemiz",
+  "lezzetler.html": "Lezzetler",
+  "menu.html": "Menü",
+  "blog.html": "Blog",
+  "blog-imza-kruvasan.html": "İmza Kruvasan Rehberi",
+  "blog-kahve-eslesmesi.html": "Kahve Eşleşmesi",
+  "events.html": "Etkinlikler",
+  "corporate.html": "Kurumsal",
+  "faq.html": "Sıkça Sorulan Sorular",
+  "reservation.html": "Rezervasyon",
+  "delivery.html": "Teslimat",
+  "wholesale.html": "Toptan Satış",
+  "privacy.html": "Gizlilik Politikası",
+  "terms.html": "Kullanım Şartları",
+  "cookies.html": "Çerez Politikası"
+};
 
 const SEO_DESCRIPTIONS = {
-  "index.html": "Point Croissant Antalya resmi web sitesi. İmza kruvasanlar, iletişim ve güncel bilgiler.",
+  "index.html":
+    "Point Croissant Antalya resmi web sitesi. Lara, Muratpaşa’da cafe ve bakery: imza kruvasanlar, menü, rezervasyon ve iletişim.",
   "hikayemiz.html": "Point Croissant hikayesi, üretim anlayışı ve marka yolculuğu.",
-  "lezzetler.html": "Point Croissant lezzetleri, öne çıkan ürünler ve sipariş için iletişim bilgileri.",
-  "menu.html": "Point Croissant menü sayfası. Kategorili ürün listesi ve güncel fiyatlar.",
+  "lezzetler.html": "Point Croissant Antalya lezzetleri: imza kruvasanlar, öne çıkan ürünler ve sipariş için iletişim bilgileri.",
+  "menu.html": "Point Croissant Antalya menü: güncel fiyatlar, kategorili kruvasan ve cafe ürünleri.",
   "blog.html": "Kruvasan, kahve ve servis önerileri için Point Croissant blog içerikleri.",
   "blog-imza-kruvasan.html": "İmza kruvasan hazırlama rehberi, püf noktaları ve üretim önerileri.",
   "blog-kahve-eslesmesi.html": "Kahve ve kruvasan eşleşmesi için pratik öneriler ve lezzet uyumları.",
@@ -191,6 +237,7 @@ const I18N_TEXT = {
     "Bu cihazda paylaşım özelliği yok.": "Sharing is not available on this device.",
     "Paylaşım başarılı.": "Shared successfully.",
     "Paylaşım iptal edildi.": "Sharing was cancelled.",
+    "Point Croissant Antalya | Cafe, Bakery & İmza Kruvasan": "Point Croissant Antalya | Cafe, Bakery & Signature Croissants",
     "Blog | Point Croissant": "Blog | Point Croissant",
     "Hikayemiz | Point Croissant": "Our Story | Point Croissant",
     "Lezzetler | Point Croissant": "Flavors | Point Croissant",
@@ -415,10 +462,10 @@ const I18N_TEXT = {
     "Şirinyalı Mah. Lara Cd. No:128/A, Muratpaşa / Antalya": "Sirinyali Neighborhood, Lara Street No:128/A, Muratpasa / Antalya",
     "Merhaba Point Croissant, bilgi almak istiyorum.": "Hello Point Croissant, I would like to get information.",
     "Merhaba Point Croissant,\n\nİstek / Dilek / Öneri Formu:\nAd Soyad: ${data.name}\nE-Posta: ${data.email}\nTelefon: ${data.phone}\nMesaj: ${data.message}": "Hello Point Croissant,\n\nRequest / Suggestion Form:\nFull Name: ${data.name}\nE-mail: ${data.email}\nPhone: ${data.phone}\nMessage: ${data.message}",
-    "Point Croissant Antalya resmi web sitesi. İmza kruvasanlar, iletişim ve güncel bilgiler.": "Official Point Croissant Antalya website. Signature croissants, contact details, and current information.",
+    "Point Croissant Antalya resmi web sitesi. Lara, Muratpaşa’da cafe ve bakery: imza kruvasanlar, menü, rezervasyon ve iletişim.": "Official Point Croissant Antalya website. Cafe and bakery in Lara, Muratpasa: signature croissants, menu, reservations, and contact.",
+    "Point Croissant Antalya lezzetleri: imza kruvasanlar, öne çıkan ürünler ve sipariş için iletişim bilgileri.": "Point Croissant Antalya flavors: signature croissants, featured products, and contact details for ordering.",
+    "Point Croissant Antalya menü: güncel fiyatlar, kategorili kruvasan ve cafe ürünleri.": "Point Croissant Antalya menu: current prices, categorized croissants and cafe items.",
     "Point Croissant hikayesi, üretim anlayışı ve marka yolculuğu.": "Point Croissant story, production philosophy, and brand journey.",
-    "Point Croissant lezzetleri, öne çıkan ürünler ve sipariş için iletişim bilgileri.": "Point Croissant flavors, featured products, and contact details for ordering.",
-    "Point Croissant menü sayfası. Kategorili ürün listesi ve güncel fiyatlar.": "Point Croissant menu page. Categorized product list and current prices.",
     "Kruvasan, kahve ve servis önerileri için Point Croissant blog içerikleri.": "Point Croissant blog content for croissant, coffee, and service tips.",
     "İmza kruvasan hazırlama rehberi, püf noktaları ve üretim önerileri.": "Signature croissant preparation guide, tips, and production recommendations.",
     "Kahve ve kruvasan eşleşmesi için pratik öneriler ve lezzet uyumları.": "Practical tips and flavor pairings for coffee and croissants.",
@@ -430,7 +477,9 @@ const I18N_TEXT = {
     "Toptan ve kurumsal tedarik çözümleri için teklif ve iletişim bilgileri.": "Quote and contact information for wholesale and corporate supply solutions.",
     "Point Croissant Gizlilik Politikası metni ve kişisel veri işleme esasları.": "Point Croissant Privacy Policy text and principles of personal data processing.",
     "Point Croissant Kullanım Şartları ve site kullanımına ilişkin kurallar.": "Point Croissant Terms of Use and rules regarding site usage.",
-    "Point Croissant Çerez Politikası ve çerez tercihleri hakkında bilgiler.": "Point Croissant Cookie Policy and information about cookie preferences."
+    "Point Croissant Çerez Politikası ve çerez tercihleri hakkında bilgiler.": "Point Croissant Cookie Policy and information about cookie preferences.",
+    "Web sitesi ve yazılım: SoftenWise": "Website & software: SoftenWise",
+    "SoftenWise — yazılım ve web geliştirme": "SoftenWise — software and web development"
   },
   ru: {
     "Anasayfa": "Главная",
@@ -582,6 +631,7 @@ const I18N_TEXT = {
     "Bu cihazda paylaşım özelliği yok.": "На этом устройстве функция \"Поделиться\" недоступна.",
     "Paylaşım başarılı.": "Успешно отправлено.",
     "Paylaşım iptal edildi.": "Отправка отменена.",
+    "Point Croissant Antalya | Cafe, Bakery & İmza Kruvasan": "Point Croissant Анталья | кафе, пекарня и фирменные круассаны",
     "Blog | Point Croissant": "Блог | Point Croissant",
     "Hikayemiz | Point Croissant": "О нас | Point Croissant",
     "Lezzetler | Point Croissant": "Вкусы | Point Croissant",
@@ -808,10 +858,10 @@ const I18N_TEXT = {
     "Şirinyalı Mah. Lara Cd. No:128/A, Muratpaşa / Antalya": "Шириньялы, ул. Лара, No:128/A, Муратпаша / Анталья",
     "Merhaba Point Croissant, bilgi almak istiyorum.": "Здравствуйте, Point Croissant, я хотел(а) бы получить информацию.",
     "Merhaba Point Croissant,\n\nİstek / Dilek / Öneri Formu:\nAd Soyad: ${data.name}\nE-Posta: ${data.email}\nTelefon: ${data.phone}\nMesaj: ${data.message}": "Здравствуйте, Point Croissant,\n\nФорма запроса / предложения:\nИмя и фамилия: ${data.name}\nE-mail: ${data.email}\nТелефон: ${data.phone}\nСообщение: ${data.message}",
-    "Point Croissant Antalya resmi web sitesi. İmza kruvasanlar, iletişim ve güncel bilgiler.": "Официальный сайт Point Croissant Antalya. Фирменные круассаны, контакты и актуальная информация.",
+    "Point Croissant Antalya resmi web sitesi. Lara, Muratpaşa’da cafe ve bakery: imza kruvasanlar, menü, rezervasyon ve iletişim.": "Официальный сайт Point Croissant в Анталье. Кафе и пекарня в Ларе, Муратпаша: фирменные круассаны, меню, бронирование и контакты.",
+    "Point Croissant Antalya lezzetleri: imza kruvasanlar, öne çıkan ürünler ve sipariş için iletişim bilgileri.": "Вкусы Point Croissant в Анталье: фирменные круассаны, популярные позиции и контакты для заказа.",
+    "Point Croissant Antalya menü: güncel fiyatlar, kategorili kruvasan ve cafe ürünleri.": "Меню Point Croissant в Анталье: актуальные цены, круассаны по категориям и позиции кафе.",
     "Point Croissant hikayesi, üretim anlayışı ve marka yolculuğu.": "История Point Croissant, подход к производству и путь бренда.",
-    "Point Croissant lezzetleri, öne çıkan ürünler ve sipariş için iletişim bilgileri.": "Вкусы Point Croissant, популярные позиции и контакты для заказа.",
-    "Point Croissant menü sayfası. Kategorili ürün listesi ve güncel fiyatlar.": "Страница меню Point Croissant. Категоризированный список товаров и актуальные цены.",
     "Kruvasan, kahve ve servis önerileri için Point Croissant blog içerikleri.": "Материалы блога Point Croissant о круассанах, кофе и сервисе.",
     "İmza kruvasan hazırlama rehberi, püf noktaları ve üretim önerileri.": "Гид по приготовлению фирменного круассана, советы и рекомендации по производству.",
     "Kahve ve kruvasan eşleşmesi için pratik öneriler ve lezzet uyumları.": "Практические советы и вкусовые сочетания кофе и круассанов.",
@@ -823,7 +873,9 @@ const I18N_TEXT = {
     "Toptan ve kurumsal tedarik çözümleri için teklif ve iletişim bilgileri.": "Контакты и информация для запроса по оптовым и корпоративным поставкам.",
     "Point Croissant Gizlilik Politikası metni ve kişisel veri işleme esasları.": "Текст Политики конфиденциальности Point Croissant и принципы обработки персональных данных.",
     "Point Croissant Kullanım Şartları ve site kullanımına ilişkin kurallar.": "Условия использования Point Croissant и правила работы с сайтом.",
-    "Point Croissant Çerez Politikası ve çerez tercihleri hakkında bilgiler.": "Политика cookie Point Croissant и информация о настройках cookie."
+    "Point Croissant Çerez Politikası ve çerez tercihleri hakkında bilgiler.": "Политика cookie Point Croissant и информация о настройках cookie.",
+    "Web sitesi ve yazılım: SoftenWise": "Сайт и разработка ПО: SoftenWise",
+    "SoftenWise — yazılım ve web geliştirme": "SoftenWise — разработка ПО и веб-сайтов"
   }
 };
 
@@ -876,6 +928,33 @@ const ensureSeoMeta = () => {
   ensureMetaTag('meta[name="twitter:title"]', { name: "twitter:title" }, seoTitle);
   ensureMetaTag('meta[name="twitter:description"]', { name: "twitter:description" }, description);
   ensureMetaTag('meta[name="twitter:image"]', { name: "twitter:image" }, ogImage);
+  ensureMetaTag('meta[property="og:image:alt"]', { property: "og:image:alt" }, "Point Croissant logosu");
+  ensureMetaTag('meta[property="og:locale"]', { property: "og:locale" }, "tr_TR");
+  ensureMetaTag('meta[name="robots"]', { name: "robots" }, "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1");
+  ensureMetaTag('meta[name="theme-color"]', { name: "theme-color" }, "#3d2914");
+  ensureMetaTag('meta[name="author"]', { name: "author" }, "Point Croissant");
+  ensureMetaTag('meta[name="publisher"]', { name: "publisher" }, "Point Croissant");
+  if (isHome) {
+    ensureMetaTag('meta[name="keywords"]', { name: "keywords" }, SEO_HOME_KEYWORDS);
+    ensureMetaTag('meta[name="application-name"]', { name: "application-name" }, "Point Croissant");
+  }
+
+  document.querySelectorAll('meta[property="og:locale:alternate"][data-pc-seo="1"]').forEach((node) => node.remove());
+  ["en_US", "ru_RU"].forEach((locale) => {
+    const alt = document.createElement("meta");
+    alt.setAttribute("property", "og:locale:alternate");
+    alt.setAttribute("content", locale);
+    alt.setAttribute("data-pc-seo", "1");
+    document.head.appendChild(alt);
+  });
+
+  if (!document.head.querySelector('link[rel="dns-prefetch"][data-pc-seo="1"]')) {
+    const pre = document.createElement("link");
+    pre.rel = "dns-prefetch";
+    pre.href = SOFTENWISE_ORIGIN;
+    pre.setAttribute("data-pc-seo", "1");
+    document.head.appendChild(pre);
+  }
 
   let canonical = document.head.querySelector('link[rel="canonical"]');
   if (!canonical) {
@@ -884,6 +963,108 @@ const ensureSeoMeta = () => {
     document.head.appendChild(canonical);
   }
   canonical.setAttribute("href", canonicalUrl);
+};
+
+const buildSeoJsonLd = (pageFile, canonicalUrl, seoTitle, description) => {
+  const softenwiseOrg = {
+    "@type": "Organization",
+    "@id": SCHEMA_IDS.softenwiseOrg,
+    name: "SoftenWise",
+    alternateName: ["Soften Wise", "softenwise"],
+    url: `${SOFTENWISE_ORIGIN}/`,
+    description:
+      "Profesyonel yazılım ve web geliştirme. Point Croissant web sitesinin tasarım ve geliştirme ortağı."
+  };
+
+  const localBusiness = {
+    "@type": ["Bakery", "CafeOrCoffeeShop", "FoodEstablishment"],
+    "@id": SCHEMA_IDS.localBusiness,
+    name: "Point Croissant",
+    alternateName: BRAND_ALTERNATE_NAMES,
+    description: SEO_DESCRIPTIONS["index.html"],
+    url: SITE_ORIGIN,
+    image: [`${SITE_ORIGIN}/assets/logo-point-croissant.webp`],
+    logo: `${SITE_ORIGIN}/assets/logo-point-croissant.webp`,
+    telephone: SCHEMA_CONTACT.telephone,
+    email: SCHEMA_CONTACT.email,
+    servesCuisine: "French",
+    priceRange: "$$",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: SCHEMA_CONTACT.streetAddress,
+      addressLocality: SCHEMA_CONTACT.addressLocality,
+      addressRegion: SCHEMA_CONTACT.addressRegion,
+      postalCode: SCHEMA_CONTACT.postalCode,
+      addressCountry: SCHEMA_CONTACT.addressCountry
+    }
+  };
+
+  const website = {
+    "@type": "WebSite",
+    "@id": SCHEMA_IDS.website,
+    url: SITE_ORIGIN,
+    name: "Point Croissant",
+    alternateName: BRAND_ALTERNATE_NAMES,
+    inLanguage: ["tr", "en", "ru"],
+    publisher: { "@id": SCHEMA_IDS.localBusiness }
+  };
+
+  const webPage = {
+    "@type": "WebPage",
+    "@id": `${canonicalUrl}#webpage`,
+    url: canonicalUrl,
+    name: seoTitle,
+    description,
+    isPartOf: { "@id": SCHEMA_IDS.website },
+    about: { "@id": SCHEMA_IDS.localBusiness },
+    creator: { "@id": SCHEMA_IDS.softenwiseOrg },
+    inLanguage: document.documentElement.lang || "tr"
+  };
+
+  const graph = [softenwiseOrg, localBusiness, website, webPage];
+
+  if (pageFile !== "index.html" && BREADCRUMB_NAMES[pageFile]) {
+    graph.push({
+      "@type": "BreadcrumbList",
+      "@id": `${canonicalUrl}#breadcrumb`,
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Anasayfa",
+          item: `${SITE_ORIGIN}/`
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: BREADCRUMB_NAMES[pageFile],
+          item: canonicalUrl
+        }
+      ]
+    });
+  }
+
+  return { "@context": "https://schema.org", "@graph": graph };
+};
+
+const ensureJsonLd = () => {
+  const hasNoIndex = !!document.head.querySelector('meta[name="robots"][content*="noindex"]');
+  if (hasNoIndex) return;
+
+  document.querySelectorAll('script[type="application/ld+json"][data-pc-seo-jsonld="1"]').forEach((node) => node.remove());
+
+  const pageFile = getPageFile();
+  const isHome = pageFile === "index.html";
+  const pagePath = isHome ? "/" : `/${pageFile}`;
+  const canonicalUrl = `${SITE_ORIGIN}${pagePath}`;
+  const description = SEO_DESCRIPTIONS[pageFile] || SEO_DESCRIPTIONS["index.html"];
+  const seoTitle = document.title || "Point Croissant";
+
+  const script = document.createElement("script");
+  script.type = "application/ld+json";
+  script.setAttribute("data-pc-seo-jsonld", "1");
+  script.textContent = JSON.stringify(buildSeoJsonLd(pageFile, canonicalUrl, seoTitle, description));
+  document.head.appendChild(script);
 };
 
 const shouldSkipLazyImage = (img) =>
@@ -1108,7 +1289,7 @@ const renderFooter = () => {
     <div class="container footer-bottom">
       <span>© 2026 Point Croissant Cafe & Bakery</span>
       <span>Antalya, Türkiye</span>
-      <a class="designed-by" href="https://softenwise.com/" target="_blank" rel="noopener noreferrer">Designed by SoftenWise</a>
+      <a class="designed-by" href="${SOFTENWISE_ORIGIN}/" target="_blank" rel="noopener noreferrer" title="SoftenWise — yazılım ve web geliştirme">Web sitesi ve yazılım: SoftenWise</a>
     </div>
   `;
 };
@@ -1157,6 +1338,7 @@ renderHeader();
 renderFooter();
 ensureMobileViewport();
 ensureSeoMeta();
+ensureJsonLd();
 applyLazyMediaDefaults(document);
 mountLazyVideoObserver();
 applyA11yEnhancements();
