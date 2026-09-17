@@ -10,6 +10,7 @@ try {
   if (window.PCStore && typeof window.PCStore.loadSettings === "function") {
     const stored = window.PCStore.loadSettings();
     if (stored?.whatsappNumber) requestSettings.whatsappNumber = stored.whatsappNumber;
+    if (stored?.formWebhook) requestSettings.formWebhook = stored.formWebhook;
   } else {
     const requestSettingsRaw =
       localStorage.getItem("pc_settings_v3") || localStorage.getItem("pc_settings_v2");
@@ -80,6 +81,30 @@ if (requestForm) {
     if (!isRequestDataValid(data)) {
       if (requestFeedback) requestFeedback.textContent = textSet.fillAll;
       return;
+    }
+
+    if (window.PCStore && typeof window.PCStore.loadInbox === "function") {
+      const inbox = window.PCStore.loadInbox();
+      inbox.unshift({
+        id: `msg_${Date.now()}`,
+        ...data,
+        lang,
+        createdAt: new Date().toISOString()
+      });
+      try {
+        window.PCStore.saveInbox(inbox.slice(0, 100));
+      } catch {
+        // ignore quota
+      }
+    }
+
+    const webhook = requestSettings.formWebhook;
+    if (webhook) {
+      fetch(webhook, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(data)
+      }).catch(() => {});
     }
 
     const text = encodeURIComponent(

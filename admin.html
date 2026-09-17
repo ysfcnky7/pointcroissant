@@ -16,7 +16,7 @@
     <link rel="manifest" href="site.webmanifest" />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body class="admin-page">
     <header class="topbar" id="site-header"></header>
     <main id="main-content" class="subpage-main">
       <section class="page-section" id="admin-lock-screen">
@@ -25,14 +25,19 @@
             <p class="eyebrow">Yetkili Girişi</p>
             <h1>Admin Panel Kilitli</h1>
             <p>Sadece yetkili kullanıcı şifresi ile erişim sağlanır.</p>
-            <form id="admin-auth-form" class="admin-form admin-auth-form" autocomplete="off">
+            <p class="admin-callout">
+              <strong>Dikkat</strong>
+              Bu sayfa müşterilerin gördüğü internet sitesini değiştirir. Şifreyi yalnızca yetkili kişi yazmalıdır. Şifreyi kimseyle paylaşmayın. Yanlış yazarsanız giriş olmaz; kutuyu boşaltıp tekrar deneyin.
+            </p>
+            <form id="admin-auth-form" class="admin-form admin-auth-form" autocomplete="off" novalidate>
               <label for="admin-password">Şifre</label>
-              <input id="admin-password" name="password" type="password" required />
+              <input id="admin-password" name="password" type="password" />
+              <span class="admin-field-hint">Klavyeden şifreyi yazın, sonra Giriş Yap’a basın. Enter tuşu da aynı işi yapar.</span>
               <div class="admin-actions">
                 <button class="btn" type="submit">Giriş Yap</button>
               </div>
             </form>
-            <p id="admin-auth-feedback"></p>
+            <p id="admin-auth-feedback" class="admin-status" data-no-i18n></p>
           </article>
         </div>
       </section>
@@ -41,8 +46,8 @@
         <section class="page-hero">
           <div class="container">
             <div class="breadcrumbs"><a href="index.html">Anasayfa</a><span>/</span><span>Yönetim</span></div>
-            <h1>Ürün ve Fiyat Yönetimi</h1>
-            <p>Buradan girdiğin ürünler ana sayfa ve menü sayfasına otomatik yansır.</p>
+            <h1>Yönetim Paneli</h1>
+            <p>Soldaki menüden bir bölüm seçin. Sadece o bölümün ayarları açılır.</p>
           </div>
         </section>
 
@@ -50,26 +55,34 @@
           <div class="container admin-shell">
             <aside class="card admin-sidebar" aria-label="Yönetim menüsü">
               <h2>Yönetim Menüsü</h2>
-              <nav class="admin-nav">
-                <a href="#panel-products">Ürün Yönetimi</a>
-                <a href="#panel-contact">İletişim Ayarları</a>
-                <a href="#panel-brand">Marka ve Sayaçlar</a>
-                <a href="#panel-nav">Menü Yapısı</a>
-                <a href="#panel-gallery">Galeri</a>
-                <a href="#panel-events">Etkinlikler</a>
-                <a href="#panel-blog">Blog Yazıları</a>
-                <a href="#panel-menucats">Menü Kategorileri</a>
-                <a href="#panel-seo">SEO ve Google</a>
-                <a href="#panel-cms">İçerik Düzenleme</a>
-                <a href="#panel-list">Ürün Listesi</a>
+              <nav class="admin-nav" aria-label="Yönetim bölümleri">
+                <a href="#panel-overview" data-admin-view="overview" class="is-active" aria-current="page">Yönetim Özeti</a>
+                <a href="#panel-products" data-admin-view="products">Ürün Yönetimi</a>
+                <a href="#panel-contact" data-admin-view="contact">İletişim Ayarları</a>
+                <a href="#panel-brand" data-admin-view="brand">Marka ve Sayaçlar</a>
+                <a href="#panel-nav" data-admin-view="nav">Menü Yapısı</a>
+                <a href="#panel-footer" data-admin-view="footer">Alt Menü (Footer)</a>
+                <a href="#panel-gallery" data-admin-view="gallery">Galeri</a>
+                <a href="#panel-events" data-admin-view="events">Etkinlikler</a>
+                <a href="#panel-blog" data-admin-view="blog">Blog Yazıları</a>
+                <a href="#panel-faq" data-admin-view="faq">SSS</a>
+                <a href="#panel-pages" data-admin-view="pages">Sayfa Metinleri</a>
+                <a href="#panel-menucats" data-admin-view="menucats">Menü Kategorileri</a>
+                <a href="#panel-seo" data-admin-view="seo">SEO ve Google</a>
+                <a href="#panel-inbox" data-admin-view="inbox">Gelen Kutusu</a>
+                <a href="#panel-backup" data-admin-view="backup">Yedek, Yayın, Şifre</a>
+                <a href="#panel-cms" data-admin-view="cms">İçerik Düzenleme</a>
               </nav>
+              <div class="admin-actions admin-sidebar-actions">
+                <button class="btn btn-small" type="button" id="admin-logout">Çıkış Yap</button>
+              </div>
               <p class="admin-sidebar-note">
-                Önce ürün/ayar bilgilerini kaydet, sonra içerik düzenleyiciden ilgili sayfayı aç.
+                Önce soldaki bölümü açın, formu doldurun, Kaydet’e basın. Kaydetmeden sayfayı kapatırsanız yazdıklarınız kaybolur. Ürün ve ayarlar kaydolduktan sonra içerik düzenleyiciden ilgili sayfayı açın.
               </p>
             </aside>
 
             <div class="admin-content">
-              <section class="card admin-panel" id="panel-overview">
+              <section class="card admin-panel is-active" id="panel-overview" data-admin-view="overview">
                 <div class="admin-panel-head">
                   <h2>Yönetim Özeti</h2>
                   <span class="admin-badge">Dashboard</span>
@@ -91,15 +104,27 @@
                     <small>Çeviri Eksiği (EN/RU/AR/DE)</small>
                     <strong id="kpi-missing-i18n">0</strong>
                   </article>
+                  <article class="admin-kpi-card">
+                    <small>Gizli ürün</small>
+                    <strong id="kpi-hidden-products">0</strong>
+                  </article>
+                  <article class="admin-kpi-card">
+                    <small>Gelen mesaj</small>
+                    <strong id="kpi-inbox">0</strong>
+                  </article>
                 </div>
               </section>
 
-              <section class="card admin-form-card admin-panel" id="panel-products">
+              <section class="card admin-form-card admin-panel" id="panel-products" data-admin-view="products" hidden>
                 <div class="admin-panel-head">
                   <h2>Ürün Ekle / Güncelle</h2>
                   <span class="admin-badge">Catalog</span>
                 </div>
-              <form id="product-form" class="admin-form">
+                <p class="admin-callout">
+                  <strong>Kaydetmeden önce okuyun</strong>
+                  Kaydet = bu ürün müşterinin gördüğü anasayfa ve menüde görünür. Sil = ürün siteden kalkar, geri gelmez. Varsayılana Dön = sizin eklediğiniz bütün ürünler silinir, eski örnek ürünler gelir. Türkçe ad, açıklama ve fiyat zorunludur. Diğer diller boş kalırsa Türkçe gösterilir.
+                </p>
+              <form id="product-form" class="admin-form" novalidate>
                 <input type="hidden" id="product-id" />
                 <div class="admin-lang-tabs" role="tablist" aria-label="Ürün dilleri">
                   <button type="button" class="admin-lang-tab active" data-tab-group="product" data-lang="tr" aria-selected="true">TR</button>
@@ -111,18 +136,21 @@
 
                 <div class="admin-lang-pane active" data-tab-group="product" data-lang="tr">
                   <label for="product-name-tr">Ürün Adı (TR)</label>
-                  <input id="product-name-tr" type="text" maxlength="70" required />
+                  <input id="product-name-tr" type="text" maxlength="70" />
+                  <span class="admin-field-hint">Müşterinin menüde göreceği isim. Örnek: Antep Fıstıklı Kruvasan.</span>
                   <label for="product-desc-tr">Açıklama (TR)</label>
-                  <textarea id="product-desc-tr" rows="3" maxlength="320" required></textarea>
+                  <textarea id="product-desc-tr" rows="3" maxlength="320"></textarea>
+                  <span class="admin-field-hint">Kısa anlatım. Örnek: Antep fıstık kreması ve tereyağlı hamur.</span>
                   <label for="product-tag-tr">Etiket (TR)</label>
                   <input id="product-tag-tr" type="text" maxlength="26" placeholder="Yeni, Premium..." />
-                  <label for="product-image-tr">Ürün Görsel URL (TR)</label>
+                  <span class="admin-field-hint">İsteğe bağlı küçük yazı. Örnek: Yeni, En Çok Satan. Boş bırakabilirsiniz.</span>
+                  <label for="product-image-tr">Ürün fotoğrafı (TR)</label>
                   <input
                     id="product-image-tr"
-                    type="url"
-                    maxlength="500"
-                    placeholder="assets/logo-point-croissant.webp veya https://..."
+                    type="text"
+                    placeholder="Fotoğraf seçin veya adres yapıştırın"
                   />
+                  <span class="admin-field-hint">Telefondan veya bilgisayardan fotoğraf seçin. Kaydet’e basınca menüde görünür. Diğer diller boşsa bu fotoğraf kullanılır.</span>
                 </div>
 
                 <div class="admin-lang-pane" data-tab-group="product" data-lang="en">
@@ -132,11 +160,10 @@
                   <textarea id="product-desc-en" rows="2" maxlength="320" placeholder="Boşsa TR kullanılır"></textarea>
                   <label for="product-tag-en">Etiket (EN)</label>
                   <input id="product-tag-en" type="text" maxlength="26" placeholder="New, Premium..." />
-                  <label for="product-image-en">Ürün Görsel URL (EN)</label>
+                  <label for="product-image-en">Ürün görseli (EN)</label>
                   <input
                     id="product-image-en"
-                    type="url"
-                    maxlength="500"
+                    type="text"
                     placeholder="Boşsa TR kullanılır"
                   />
                 </div>
@@ -148,11 +175,10 @@
                   <textarea id="product-desc-ru" rows="2" maxlength="320" placeholder="Boşsa TR kullanılır"></textarea>
                   <label for="product-tag-ru">Etiket (RU)</label>
                   <input id="product-tag-ru" type="text" maxlength="26" placeholder="Новинка, Премиум..." />
-                  <label for="product-image-ru">Ürün Görsel URL (RU)</label>
+                  <label for="product-image-ru">Ürün fotoğrafı (RU)</label>
                   <input
                     id="product-image-ru"
-                    type="url"
-                    maxlength="500"
+                    type="text"
                     placeholder="Boşsa TR kullanılır"
                   />
                 </div>
@@ -164,11 +190,10 @@
                   <textarea id="product-desc-ar" rows="2" maxlength="320" placeholder="Boşsa TR kullanılır" dir="rtl"></textarea>
                   <label for="product-tag-ar">Etiket (AR)</label>
                   <input id="product-tag-ar" type="text" maxlength="26" placeholder="جديد، مميز..." dir="rtl" />
-                  <label for="product-image-ar">Ürün Görsel URL (AR)</label>
+                  <label for="product-image-ar">Ürün fotoğrafı (AR)</label>
                   <input
                     id="product-image-ar"
-                    type="url"
-                    maxlength="500"
+                    type="text"
                     placeholder="Boşsa TR kullanılır"
                   />
                 </div>
@@ -180,11 +205,10 @@
                   <textarea id="product-desc-de" rows="2" maxlength="320" placeholder="Boşsa TR kullanılır"></textarea>
                   <label for="product-tag-de">Etiket (DE)</label>
                   <input id="product-tag-de" type="text" maxlength="26" placeholder="Neu, Premium..." />
-                  <label for="product-image-de">Ürün Görsel URL (DE)</label>
+                  <label for="product-image-de">Ürün fotoğrafı (DE)</label>
                   <input
                     id="product-image-de"
-                    type="url"
-                    maxlength="500"
+                    type="text"
                     placeholder="Boşsa TR kullanılır"
                   />
                 </div>
@@ -192,7 +216,8 @@
                 <div class="admin-form-grid">
                   <div>
                     <label for="product-price">Fiyat (TL)</label>
-                    <input id="product-price" type="number" min="0" max="100000" step="1" required />
+                    <input id="product-price" type="number" min="0" max="100000" step="1" />
+                    <span class="admin-field-hint">Sadece sayı yazın, TL yazmayın. Örnek: 120. Virgül değil, nokta da kullanmayın.</span>
                   </div>
                   <div>
                     <label for="product-category">Kategori</label>
@@ -200,8 +225,17 @@
                       <option value="sweet">Tatlı</option>
                       <option value="savory">Tuzlu</option>
                     </select>
+                    <span class="admin-field-hint">Yeni kategori Menü Kategorileri bölümünden eklenir.</span>
+                  </div>
+                  <div>
+                    <label for="product-stock">Stok (boş = sınırsız)</label>
+                    <input id="product-stock" type="number" min="0" max="100000" step="1" />
                   </div>
                 </div>
+                <label class="admin-check">
+                  <input id="product-visible" type="checkbox" checked />
+                  Sitede göster
+                </label>
                 <label class="admin-check">
                   <input id="product-signature" type="checkbox" />
                   İmza / özel seçkiye ekle
@@ -213,35 +247,115 @@
                   <button class="btn" type="button" id="reset-defaults">Varsayılana Dön</button>
                 </div>
               </form>
-              <p id="admin-feedback"></p>
+              <p id="admin-feedback" class="admin-status" data-no-i18n></p>
               </section>
 
-              <section class="card admin-form-card admin-panel" id="panel-contact">
+              <section class="card admin-panel" id="panel-list" data-admin-view="products" hidden>
+                <div class="admin-panel-head">
+                  <h2>Mevcut Ürünler</h2>
+                  <span class="admin-badge">Table</span>
+                </div>
+              <p class="admin-callout">
+                <strong>Dikkat</strong>
+                Sil kalıcıdır, ürün siteden kalkar. Çoğalt aynı üründen bir tane daha oluşturur (sitede iki ürün görünür). JSON İçeri Aktar listedeki bütün ürünlerin yerine dosyadaki ürünleri koyar; sizin listeniz silinir. JSON Dışa Aktar yedek dosya indirir, sitedeki ürünleri silmez.
+              </p>
+              <div class="admin-toolbar">
+                <input id="product-search" type="search" placeholder="Ürün ara (ad/açıklama/etiket)" />
+                <select id="product-lang-filter">
+                  <option value="tr">TR alanı</option>
+                  <option value="en">EN alanı</option>
+                  <option value="ru">RU alanı</option>
+                  <option value="ar">AR alanı</option>
+                  <option value="de">DE alanı</option>
+                </select>
+                <select id="product-sort">
+                  <option value="order-asc">Sıra (yukarıdan aşağı)</option>
+                  <option value="created-desc">Yeni eklenen (son)</option>
+                  <option value="price-desc">Fiyat (yüksekten düşüğe)</option>
+                  <option value="price-asc">Fiyat (düşükten yükseğe)</option>
+                  <option value="name-asc">Ürün adı (A-Z)</option>
+                </select>
+                <button class="btn btn-small" type="button" id="product-reset-filters">Filtreleri Sıfırla</button>
+              </div>
+              <div class="admin-toolbar">
+                <button class="btn btn-small" type="button" id="export-products-json">Ürünleri JSON Dışa Aktar</button>
+                <button class="btn btn-small" type="button" id="import-products-json-btn">JSON İçeri Aktar</button>
+                <input id="import-products-json" type="file" accept=".json,application/json" hidden />
+              </div>
+              <p id="admin-products-count" class="admin-count"></p>
+              <div class="table-wrap">
+                <table class="menu-table">
+                  <thead>
+                    <tr>
+                      <th>Görsel</th>
+                      <th>Ürün</th>
+                      <th>Fiyat</th>
+                      <th>Etiket</th>
+                      <th>Kategori</th>
+                      <th>Durum</th>
+                      <th>Sıra</th>
+                      <th>İşlem</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-products-body"></tbody>
+                </table>
+              </div>
+              <h3 class="admin-subtitle">Ürün önizleme</h3>
+              <div id="admin-products-preview" class="admin-products-preview"></div>
+              </section>
+
+              <section class="card admin-form-card admin-panel" id="panel-contact" data-admin-view="contact" hidden>
                 <div class="admin-panel-head">
                   <h2>İletişim ve Konum Ayarları</h2>
                   <span class="admin-badge">Settings</span>
                 </div>
-              <form id="settings-form" class="admin-form">
+                <p class="admin-callout">
+                  <strong>Kaydetmeden önce okuyun</strong>
+                  Buradaki telefon, WhatsApp, e-posta ve adres müşterinin sizi araması içindir. Yanlış numara yazarsanız kimse ulaşamaz. Kaydet deyince sitedeki iletişim bilgileri değişir. Varsayılan Ayarlar, sizin yazdığınız iletişim bilgilerini siler ve eski örneği geri koyar.
+                </p>
+              <form id="settings-form" class="admin-form" novalidate>
                 <label for="setting-phone-display">Telefon (gösterim)</label>
-                <input id="setting-phone-display" type="text" maxlength="24" required />
+                <input id="setting-phone-display" type="text" maxlength="24" />
+                <span class="admin-field-hint">Ekranda görünen yazı. Boşluk bırakabilirsiniz. Örnek: 0532 315 07 77</span>
 
                 <label for="setting-phone-tel">Telefon (tel format)</label>
-                <input id="setting-phone-tel" type="text" maxlength="24" placeholder="+905323150777" required />
+                <input id="setting-phone-tel" type="text" maxlength="24" placeholder="+905323150777" />
+                <span class="admin-field-hint">Arama için. Başında +90 olsun, boşluk ve çizgi olmasın. Örnek: +905323150777</span>
 
                 <label for="setting-whatsapp-display">WhatsApp (gösterim)</label>
-                <input id="setting-whatsapp-display" type="text" maxlength="24" required />
+                <input id="setting-whatsapp-display" type="text" maxlength="24" />
+                <span class="admin-field-hint">Ekranda görünen WhatsApp yazısı. Örnek: 0532 315 07 77</span>
 
                 <label for="setting-whatsapp-number">WhatsApp (numara, ülke kodlu)</label>
-                <input id="setting-whatsapp-number" type="text" maxlength="24" placeholder="905323150777" required />
+                <input id="setting-whatsapp-number" type="text" maxlength="24" placeholder="905323150777" />
+                <span class="admin-field-hint">Sadece rakam. + işareti yok. Ülke kodu 90 ile başlasın. Örnek: 905323150777</span>
 
                 <label for="setting-email">E-Posta</label>
-                <input id="setting-email" type="email" maxlength="120" required />
+                <input id="setting-email" type="email" maxlength="120" />
+                <span class="admin-field-hint">@ işareti olan adres. Örnek: hello@pointcroissant.com</span>
 
                 <label for="setting-instagram">Instagram URL</label>
                 <input id="setting-instagram" type="url" maxlength="220" placeholder="https://instagram.com/..." />
 
                 <label for="setting-facebook">Facebook URL</label>
                 <input id="setting-facebook" type="url" maxlength="220" placeholder="https://facebook.com/..." />
+
+                <label for="setting-tiktok">TikTok URL</label>
+                <input id="setting-tiktok" type="url" maxlength="220" placeholder="https://tiktok.com/@..." />
+
+                <label for="setting-youtube">YouTube URL</label>
+                <input id="setting-youtube" type="url" maxlength="220" placeholder="https://youtube.com/..." />
+
+                <label for="setting-twitter">X / Twitter URL</label>
+                <input id="setting-twitter" type="url" maxlength="220" placeholder="https://x.com/..." />
+
+                <label for="setting-map-embed">Harita gömme (Google Maps iframe src)</label>
+                <textarea id="setting-map-embed" rows="2" maxlength="900" placeholder="https://www.google.com/maps/embed?pb=..."></textarea>
+                <span class="admin-field-hint">Google Haritalar > Paylaş > Haritayı yerleştir > src adresini yapıştırın. Boşsa harita kutusu gizlenir.</span>
+
+                <label for="setting-form-webhook">Form webhook (isteğe bağlı)</label>
+                <input id="setting-form-webhook" type="url" maxlength="220" placeholder="https://formspree.io/f/..." />
+                <span class="admin-field-hint">İstek formu hem WhatsApp açar hem buraya kopya gönderir. Boş bırakabilirsiniz.</span>
 
                 <label for="setting-opening-spec">Google çalışma saati (şema)</label>
                 <input id="setting-opening-spec" type="text" maxlength="80" placeholder="Mo-Su 09:00-22:00" />
@@ -256,7 +370,8 @@
 
                 <div class="admin-lang-pane active" data-tab-group="settings" data-lang="tr">
                   <label for="setting-address-tr">Adres (TR)</label>
-                  <textarea id="setting-address-tr" rows="2" maxlength="220" required></textarea>
+                  <textarea id="setting-address-tr" rows="2" maxlength="220"></textarea>
+                  <span class="admin-field-hint">Müşterinin okuyacağı açık adres. Mahalle, cadde, no, ilçe, şehir yazın.</span>
                   <label for="setting-map-query-tr">Harita Konum Metni (TR)</label>
                   <input id="setting-map-query-tr" type="text" maxlength="220" />
                   <label for="setting-hours-tr">Çalışma Saatleri (TR)</label>
@@ -314,23 +429,37 @@
                   <button class="btn" type="button" id="reset-settings">Varsayılan Ayarlar</button>
                 </div>
               </form>
-              <p id="settings-feedback"></p>
+              <p id="settings-feedback" class="admin-status" data-no-i18n></p>
               </section>
 
-              <section class="card admin-form-card admin-panel" id="panel-brand">
+              <section class="card admin-form-card admin-panel" id="panel-brand" data-admin-view="brand" hidden>
                 <div class="admin-panel-head">
                   <h2>Marka, Logo ve Sayaçlar</h2>
                   <span class="admin-badge">Brand</span>
                 </div>
-                <form id="brand-form" class="admin-form">
+                <p class="admin-callout">
+                  <strong>Kaydetmeden önce okuyun</strong>
+                  Marka adı, logo ve slogan sitede hemen her sayfada görünür. Logoyu ve arka planı buradan yükleyebilirsiniz. Kaydet deyince değişiklik tüm sitede uygulanır.
+                </p>
+                <form id="brand-form" class="admin-form" novalidate>
                   <label for="brand-name">Marka adı</label>
-                  <input id="brand-name" type="text" maxlength="80" required />
-                  <label for="brand-logo">Logo URL</label>
-                  <input id="brand-logo" type="text" maxlength="500" />
-                  <label for="brand-hero-image">Anasayfa arka plan görseli</label>
-                  <input id="brand-hero-image" type="text" maxlength="500" />
+                  <input id="brand-name" type="text" maxlength="80" />
+                  <span class="admin-field-hint">Sitenin en üstünde görünen isim. Örnek: Point Croissant</span>
+                  <label for="brand-logo">Logo fotoğrafı</label>
+                  <input id="brand-logo" type="text" placeholder="Fotoğraf seçin veya adres yapıştırın" />
+                  <span class="admin-field-hint">Sitenin üstündeki logo. Telefondan veya bilgisayardan fotoğraf seçin.</span>
+                  <label for="brand-hero-image">Anasayfa arka plan fotoğrafı</label>
+                  <input id="brand-hero-image" type="text" placeholder="Fotoğraf seçin veya adres yapıştırın" />
+                  <span class="admin-field-hint">Anasayfanın büyük arka plan resmi. Telefondan veya bilgisayardan fotoğraf seçin.</span>
+                  <label for="brand-og-image">Paylaşım görseli (WhatsApp / Google)</label>
+                  <input id="brand-og-image" type="text" placeholder="Fotoğraf seçin veya adres yapıştırın" />
+                  <span class="admin-field-hint">Link paylaşılınca çıkan resim. Önerilen 1200×630 px.</span>
+                  <label for="brand-marquee">Anasayfa lezzet şeridi (TR, virgülle ayırın)</label>
+                  <textarea id="brand-marquee" rows="2" maxlength="400"></textarea>
+                  <span class="admin-field-hint">Örnek: Tereyağlı, Çikolatalı, Fıstıklı. Diğer diller boşsa Türkçe kullanılır.</span>
                   <label for="brand-cta-href">Üst menü buton linki</label>
                   <input id="brand-cta-href" type="text" maxlength="180" />
+                  <span class="admin-field-hint">Sağ üstteki düğmenin gideceği sayfa. Örnek: reservation.html</span>
                   <div class="admin-form-grid">
                     <div>
                       <label for="stat-years">Yıllık ustalık</label>
@@ -349,6 +478,8 @@
                     <button type="button" class="admin-lang-tab active" data-tab-group="brand" data-lang="tr" aria-selected="true">TR</button>
                     <button type="button" class="admin-lang-tab" data-tab-group="brand" data-lang="en" aria-selected="false">EN</button>
                     <button type="button" class="admin-lang-tab" data-tab-group="brand" data-lang="ru" aria-selected="false">RU</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="brand" data-lang="ar" aria-selected="false">AR</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="brand" data-lang="de" aria-selected="false">DE</button>
                   </div>
                   <div class="admin-lang-pane active" data-tab-group="brand" data-lang="tr">
                     <label for="brand-tagline-tr">Slogan (TR)</label>
@@ -392,20 +523,52 @@
                     <label for="stat-daily-label-ru">Sayaç 3 etiketi (RU)</label>
                     <input id="stat-daily-label-ru" type="text" maxlength="40" />
                   </div>
+                  <div class="admin-lang-pane" data-tab-group="brand" data-lang="ar">
+                    <label for="brand-tagline-ar">Slogan (AR)</label>
+                    <input id="brand-tagline-ar" type="text" maxlength="80" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                    <label for="brand-footer-ar">Footer metni (AR)</label>
+                    <textarea id="brand-footer-ar" rows="2" maxlength="220" placeholder="Boşsa TR kullanılır" dir="rtl"></textarea>
+                    <label for="brand-cta-ar">Üst menü buton metni (AR)</label>
+                    <input id="brand-cta-ar" type="text" maxlength="40" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                    <label for="stat-years-label-ar">Sayaç 1 etiketi (AR)</label>
+                    <input id="stat-years-label-ar" type="text" maxlength="40" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                    <label for="stat-recipes-label-ar">Sayaç 2 etiketi (AR)</label>
+                    <input id="stat-recipes-label-ar" type="text" maxlength="40" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                    <label for="stat-daily-label-ar">Sayaç 3 etiketi (AR)</label>
+                    <input id="stat-daily-label-ar" type="text" maxlength="40" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="brand" data-lang="de">
+                    <label for="brand-tagline-de">Slogan (DE)</label>
+                    <input id="brand-tagline-de" type="text" maxlength="80" placeholder="Boşsa TR kullanılır" />
+                    <label for="brand-footer-de">Footer metni (DE)</label>
+                    <textarea id="brand-footer-de" rows="2" maxlength="220" placeholder="Boşsa TR kullanılır"></textarea>
+                    <label for="brand-cta-de">Üst menü buton metni (DE)</label>
+                    <input id="brand-cta-de" type="text" maxlength="40" placeholder="Boşsa TR kullanılır" />
+                    <label for="stat-years-label-de">Sayaç 1 etiketi (DE)</label>
+                    <input id="stat-years-label-de" type="text" maxlength="40" placeholder="Boşsa TR kullanılır" />
+                    <label for="stat-recipes-label-de">Sayaç 2 etiketi (DE)</label>
+                    <input id="stat-recipes-label-de" type="text" maxlength="40" placeholder="Boşsa TR kullanılır" />
+                    <label for="stat-daily-label-de">Sayaç 3 etiketi (DE)</label>
+                    <input id="stat-daily-label-de" type="text" maxlength="40" placeholder="Boşsa TR kullanılır" />
+                  </div>
                   <div class="admin-actions">
                     <button class="btn" type="submit">Marka Ayarlarını Kaydet</button>
                   </div>
                 </form>
-                <p id="brand-feedback"></p>
+                <p id="brand-feedback" class="admin-status" data-no-i18n></p>
               </section>
 
-              <section class="card admin-form-card admin-panel" id="panel-nav">
+              <section class="card admin-form-card admin-panel" id="panel-nav" data-admin-view="nav" hidden>
                 <div class="admin-panel-head">
                   <h2>Üst Menü Yapısı</h2>
                   <span class="admin-badge">Nav</span>
                 </div>
                 <p>Görünen menü linklerini düzenle, gizle veya yeni link ekle.</p>
-                <form id="nav-form" class="admin-form">
+                <p class="admin-callout">
+                  <strong>Kaydetmeden önce okuyun</strong>
+                  Üst menü, sitenin en üstündeki tıklanabilir yazılardır (Anasayfa, Menü gibi). Yanlış link yazarsanız düğme boş veya hatalı sayfaya gider. Sil o satırı kaldırır. Menüyü Kaydet demeden tarayıcıyı kapatırsanız değişiklik uygulanmaz. Varsayılan Menü, sizin eklediğiniz linkleri siler.
+                </p>
+                <form id="nav-form" class="admin-form" novalidate>
                   <div id="nav-rows"></div>
                   <div class="admin-actions">
                     <button class="btn" type="button" id="nav-add-row">Link Ekle</button>
@@ -413,22 +576,56 @@
                     <button class="btn" type="button" id="nav-reset">Varsayılan Menü</button>
                   </div>
                 </form>
-                <p id="nav-feedback"></p>
+                <p id="nav-feedback" class="admin-status" data-no-i18n></p>
               </section>
 
-              <section class="card admin-form-card admin-panel" id="panel-gallery">
+              <section class="card admin-form-card admin-panel" id="panel-footer" data-admin-view="footer" hidden>
+                <div class="admin-panel-head">
+                  <h2>Alt Menü (Footer)</h2>
+                  <span class="admin-badge">Footer</span>
+                </div>
+                <p class="admin-callout">
+                  <strong>Kaydetmeden önce okuyun</strong>
+                  Sitenin en altındaki Keşfet / Hizmetler / Yasal linkleri buradan değişir. Yanlış adres yazarsanız tıklama boş sayfaya gider.
+                </p>
+                <form id="footer-form" class="admin-form" novalidate>
+                  <h3 class="admin-subtitle">Keşfet</h3>
+                  <div id="footer-rows-explore"></div>
+                  <button class="btn btn-small" type="button" data-footer-add="explore">Link Ekle</button>
+                  <h3 class="admin-subtitle">Hizmetler</h3>
+                  <div id="footer-rows-services"></div>
+                  <button class="btn btn-small" type="button" data-footer-add="services">Link Ekle</button>
+                  <h3 class="admin-subtitle">Yasal</h3>
+                  <div id="footer-rows-legal"></div>
+                  <button class="btn btn-small" type="button" data-footer-add="legal">Link Ekle</button>
+                  <div class="admin-actions">
+                    <button class="btn" type="submit">Alt Menüyü Kaydet</button>
+                    <button class="btn" type="button" id="footer-reset">Varsayılan Alt Menü</button>
+                  </div>
+                </form>
+                <p id="footer-feedback" class="admin-status" data-no-i18n></p>
+              </section>
+
+              <section class="card admin-form-card admin-panel" id="panel-gallery" data-admin-view="gallery" hidden>
                 <div class="admin-panel-head">
                   <h2>Galeri Yönetimi</h2>
                   <span class="admin-badge">Gallery</span>
                 </div>
-                <form id="gallery-form" class="admin-form">
+                <p class="admin-callout">
+                  <strong>Kaydetmeden önce okuyun</strong>
+                  Buraya eklediğiniz resim Galeri bölümünde, TR / EN / RU / AR / DE dillerinin hepsinde aynı görünür. Bilgisayardan görsel yükleyebilir veya URL yapıştırabilirsiniz. 8 MB üstü dosyalar kabul edilmez. Sil, resmi siteden kaldırır ve geri getirmez.
+                </p>
+                <form id="gallery-form" class="admin-form" novalidate>
                   <input type="hidden" id="gallery-id" />
-                  <label for="gallery-src">Görsel URL</label>
-                  <input id="gallery-src" type="text" maxlength="500" required />
-                  <div class="admin-lang-tabs" role="tablist" aria-label="Galeri dilleri">
+                  <label for="gallery-src">Galeri fotoğrafı</label>
+                  <input id="gallery-src" type="text" placeholder="Fotoğraf seçin veya adres yapıştırın" />
+                  <span class="admin-field-hint">Telefondan veya bilgisayardan fotoğraf seçin. Boş bırakırsanız kayıt olmaz.</span>
+                  <div class="admin-lang-tabs" role="tablist" aria-label="Galeri alt metin dilleri">
                     <button type="button" class="admin-lang-tab active" data-tab-group="gallery" data-lang="tr" aria-selected="true">TR</button>
                     <button type="button" class="admin-lang-tab" data-tab-group="gallery" data-lang="en" aria-selected="false">EN</button>
                     <button type="button" class="admin-lang-tab" data-tab-group="gallery" data-lang="ru" aria-selected="false">RU</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="gallery" data-lang="ar" aria-selected="false">AR</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="gallery" data-lang="de" aria-selected="false">DE</button>
                   </div>
                   <div class="admin-lang-pane active" data-tab-group="gallery" data-lang="tr">
                     <label for="gallery-alt-tr">Alt metin (TR)</label>
@@ -436,24 +633,42 @@
                   </div>
                   <div class="admin-lang-pane" data-tab-group="gallery" data-lang="en">
                     <label for="gallery-alt-en">Alt metin (EN)</label>
-                    <input id="gallery-alt-en" type="text" maxlength="120" />
+                    <input id="gallery-alt-en" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" />
                   </div>
                   <div class="admin-lang-pane" data-tab-group="gallery" data-lang="ru">
                     <label for="gallery-alt-ru">Alt metin (RU)</label>
-                    <input id="gallery-alt-ru" type="text" maxlength="120" />
+                    <input id="gallery-alt-ru" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" />
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="gallery" data-lang="ar">
+                    <label for="gallery-alt-ar">Alt metin (AR)</label>
+                    <input id="gallery-alt-ar" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="gallery" data-lang="de">
+                    <label for="gallery-alt-de">Alt metin (DE)</label>
+                    <input id="gallery-alt-de" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" />
                   </div>
                   <p>Filtreler</p>
-                  <div class="admin-check-row">
-                    <label class="admin-check"><input type="checkbox" id="gallery-cat-tatli" value="tatli" /> Tatlı</label>
-                    <label class="admin-check"><input type="checkbox" id="gallery-cat-meyveli" value="meyveli" /> Meyveli</label>
-                    <label class="admin-check"><input type="checkbox" id="gallery-cat-premium" value="premium" /> Premium</label>
+                  <span class="admin-field-hint">Bu görsele hangi etiketler uygulansın? Yeni etiket aşağıdan eklenir.</span>
+                  <div id="gallery-filter-checks" class="admin-check-row"></div>
+                  <div class="admin-form-grid">
+                    <div>
+                      <label for="gallery-filter-new-id">Yeni filtre kodu</label>
+                      <input id="gallery-filter-new-id" type="text" maxlength="24" placeholder="kahve" />
+                    </div>
+                    <div>
+                      <label for="gallery-filter-new-label">Yeni filtre adı (TR)</label>
+                      <input id="gallery-filter-new-label" type="text" maxlength="40" placeholder="Kahve" />
+                    </div>
+                  </div>
+                  <div class="admin-actions">
+                    <button class="btn btn-small" type="button" id="gallery-filter-add">Filtre Ekle</button>
                   </div>
                   <div class="admin-actions">
                     <button class="btn" type="submit">Görseli Kaydet</button>
                     <button class="btn" type="button" id="gallery-clear">Temizle</button>
                   </div>
                 </form>
-                <p id="gallery-feedback"></p>
+                <p id="gallery-feedback" class="admin-status" data-no-i18n></p>
                 <div class="table-wrap">
                   <table class="menu-table">
                     <thead>
@@ -464,185 +679,240 @@
                 </div>
               </section>
 
-              <section class="card admin-form-card admin-panel" id="panel-events">
+              <section class="card admin-form-card admin-panel" id="panel-events" data-admin-view="events" hidden>
                 <div class="admin-panel-head">
                   <h2>Etkinlikler</h2>
                   <span class="admin-badge">Events</span>
                 </div>
-                <form id="event-form" class="admin-form">
+                <p class="admin-callout">
+                  <strong>Kaydetmeden önce okuyun</strong>
+                  Kaydet, bu etkinliği Etkinlikler sayfasına yazar. Türkçe başlık ve açıklama zorunludur. Sil, etkinliği siteden kaldırır ve geri getirmez.
+                </p>
+                <form id="event-form" class="admin-form" novalidate>
                   <input type="hidden" id="event-id" />
+                  <label for="event-image">Etkinlik fotoğrafı</label>
+                  <input id="event-image" type="text" placeholder="Fotoğraf seçin veya adres yapıştırın" />
+                  <span class="admin-field-hint">İsteğe bağlı. Telefondan veya bilgisayardan fotoğraf seçin.</span>
+                  <div class="admin-form-grid">
+                    <div>
+                      <label for="event-date">Tarih</label>
+                      <input id="event-date" type="date" />
+                    </div>
+                    <div>
+                      <label for="event-time">Saat</label>
+                      <input id="event-time" type="time" />
+                    </div>
+                  </div>
                   <div class="admin-lang-tabs" role="tablist" aria-label="Etkinlik dilleri">
                     <button type="button" class="admin-lang-tab active" data-tab-group="event" data-lang="tr" aria-selected="true">TR</button>
                     <button type="button" class="admin-lang-tab" data-tab-group="event" data-lang="en" aria-selected="false">EN</button>
                     <button type="button" class="admin-lang-tab" data-tab-group="event" data-lang="ru" aria-selected="false">RU</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="event" data-lang="ar" aria-selected="false">AR</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="event" data-lang="de" aria-selected="false">DE</button>
                   </div>
                   <div class="admin-lang-pane active" data-tab-group="event" data-lang="tr">
                     <label for="event-title-tr">Başlık (TR)</label>
-                    <input id="event-title-tr" type="text" maxlength="80" required />
+                    <input id="event-title-tr" type="text" maxlength="80" />
+                    <span class="admin-field-hint">Etkinliğin kısa adı. Örnek: Pazar Brunch</span>
                     <label for="event-desc-tr">Açıklama (TR)</label>
-                    <textarea id="event-desc-tr" rows="2" maxlength="220" required></textarea>
+                    <textarea id="event-desc-tr" rows="2" maxlength="220"></textarea>
+                    <span class="admin-field-hint">Ne zaman, ne olacak kısaca yazın.</span>
+                    <label for="event-location-tr">Yer (TR)</label>
+                    <input id="event-location-tr" type="text" maxlength="120" />
                   </div>
                   <div class="admin-lang-pane" data-tab-group="event" data-lang="en">
                     <label for="event-title-en">Başlık (EN)</label>
-                    <input id="event-title-en" type="text" maxlength="80" />
+                    <input id="event-title-en" type="text" maxlength="80" placeholder="Boşsa TR kullanılır" />
                     <label for="event-desc-en">Açıklama (EN)</label>
-                    <textarea id="event-desc-en" rows="2" maxlength="220"></textarea>
+                    <textarea id="event-desc-en" rows="2" maxlength="220" placeholder="Boşsa TR kullanılır"></textarea>
+                    <label for="event-location-en">Yer (EN)</label>
+                    <input id="event-location-en" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" />
                   </div>
                   <div class="admin-lang-pane" data-tab-group="event" data-lang="ru">
                     <label for="event-title-ru">Başlık (RU)</label>
-                    <input id="event-title-ru" type="text" maxlength="80" />
+                    <input id="event-title-ru" type="text" maxlength="80" placeholder="Boşsa TR kullanılır" />
                     <label for="event-desc-ru">Açıklama (RU)</label>
-                    <textarea id="event-desc-ru" rows="2" maxlength="220"></textarea>
+                    <textarea id="event-desc-ru" rows="2" maxlength="220" placeholder="Boşsa TR kullanılır"></textarea>
+                    <label for="event-location-ru">Yer (RU)</label>
+                    <input id="event-location-ru" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" />
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="event" data-lang="ar">
+                    <label for="event-title-ar">Başlık (AR)</label>
+                    <input id="event-title-ar" type="text" maxlength="80" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                    <label for="event-desc-ar">Açıklama (AR)</label>
+                    <textarea id="event-desc-ar" rows="2" maxlength="220" placeholder="Boşsa TR kullanılır" dir="rtl"></textarea>
+                    <label for="event-location-ar">Yer (AR)</label>
+                    <input id="event-location-ar" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="event" data-lang="de">
+                    <label for="event-title-de">Başlık (DE)</label>
+                    <input id="event-title-de" type="text" maxlength="80" placeholder="Boşsa TR kullanılır" />
+                    <label for="event-desc-de">Açıklama (DE)</label>
+                    <textarea id="event-desc-de" rows="2" maxlength="220" placeholder="Boşsa TR kullanılır"></textarea>
+                    <label for="event-location-de">Yer (DE)</label>
+                    <input id="event-location-de" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" />
                   </div>
                   <div class="admin-actions">
                     <button class="btn" type="submit">Etkinliği Kaydet</button>
                     <button class="btn" type="button" id="event-clear">Temizle</button>
                   </div>
                 </form>
-                <p id="event-feedback"></p>
+                <p id="event-feedback" class="admin-status" data-no-i18n></p>
                 <div class="table-wrap">
                   <table class="menu-table">
                     <thead>
-                      <tr><th>Başlık</th><th>Açıklama</th><th>İşlem</th></tr>
+                      <tr><th>Görsel</th><th>Başlık</th><th>Tarih</th><th>İşlem</th></tr>
                     </thead>
                     <tbody id="events-body"></tbody>
                   </table>
                 </div>
               </section>
 
-              <section class="card admin-form-card admin-panel" id="panel-blog">
+              <section class="card admin-form-card admin-panel" id="panel-blog" data-admin-view="blog" hidden>
                 <div class="admin-panel-head">
                   <h2>Blog Yazıları</h2>
                   <span class="admin-badge">Blog</span>
                 </div>
-                <form id="blog-form" class="admin-form">
+                <p class="admin-callout">
+                  <strong>Kaydetmeden önce okuyun</strong>
+                  Kaydet, yazıyı Blog sayfasına ekler. Türkçe başlık ve yazı zorunludur. Sil, yazıyı siteden kaldırır. Kapak görseli boşsa logo kullanılır. Kaydetmeden sayfayı kapatırsanız yazı kaybolur.
+                </p>
+                <form id="blog-form" class="admin-form" novalidate>
                   <input type="hidden" id="blog-id" />
-                  <label for="blog-image">Kapak görseli</label>
-                  <input id="blog-image" type="text" maxlength="500" />
+                  <label for="blog-image">Kapak fotoğrafı</label>
+                  <input id="blog-image" type="text" placeholder="Fotoğraf seçin veya adres yapıştırın" />
+                  <span class="admin-field-hint">Telefondan veya bilgisayardan kapak fotoğrafı seçin.</span>
+                  <label for="blog-slug">Adres kodu (slug)</label>
+                  <input id="blog-slug" type="text" maxlength="80" placeholder="ornek-yazi" />
+                  <span class="admin-field-hint">Boşsa başlıktan üretilir. Sadece küçük harf, sayı ve tire.</span>
+                  <div class="admin-form-grid">
+                    <div>
+                      <label for="blog-date">Yayın tarihi</label>
+                      <input id="blog-date" type="date" />
+                    </div>
+                    <div>
+                      <label class="admin-check" style="margin-top: 1.6rem">
+                        <input id="blog-published" type="checkbox" checked />
+                        Sitede yayınla
+                      </label>
+                    </div>
+                  </div>
+                  <p class="admin-sidebar-note">Boş bırakılan dillerde sitede Türkçe metin gösterilir. Yazıda satır atlayın: her boş satır yeni paragraf olur. **kalın** ve *italik* kullanabilirsiniz.</p>
                   <div class="admin-lang-tabs" role="tablist" aria-label="Blog dilleri">
                     <button type="button" class="admin-lang-tab active" data-tab-group="blog" data-lang="tr" aria-selected="true">TR</button>
                     <button type="button" class="admin-lang-tab" data-tab-group="blog" data-lang="en" aria-selected="false">EN</button>
                     <button type="button" class="admin-lang-tab" data-tab-group="blog" data-lang="ru" aria-selected="false">RU</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="blog" data-lang="ar" aria-selected="false">AR</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="blog" data-lang="de" aria-selected="false">DE</button>
                   </div>
                   <div class="admin-lang-pane active" data-tab-group="blog" data-lang="tr">
                     <label for="blog-tag-tr">Etiket (TR)</label>
                     <input id="blog-tag-tr" type="text" maxlength="40" />
                     <label for="blog-title-tr">Başlık (TR)</label>
-                    <input id="blog-title-tr" type="text" maxlength="120" required />
+                    <input id="blog-title-tr" type="text" maxlength="120" />
+                    <span class="admin-field-hint">Yazının adı. Müşteri bunu listede görür.</span>
                     <label for="blog-excerpt-tr">Özet (TR)</label>
                     <textarea id="blog-excerpt-tr" rows="2" maxlength="280"></textarea>
+                    <span class="admin-field-hint">1-2 cümlelik kısa özet. İsteğe bağlı.</span>
                     <label for="blog-body-tr">Yazı (TR)</label>
-                    <textarea id="blog-body-tr" rows="7" maxlength="8000" required></textarea>
+                    <textarea id="blog-body-tr" rows="7" maxlength="8000"></textarea>
+                    <span class="admin-field-hint">Asıl metin buraya yazılır. Boş bırakırsanız kayıt olmaz.</span>
                   </div>
                   <div class="admin-lang-pane" data-tab-group="blog" data-lang="en">
                     <label for="blog-tag-en">Etiket (EN)</label>
-                    <input id="blog-tag-en" type="text" maxlength="40" />
+                    <input id="blog-tag-en" type="text" maxlength="40" placeholder="Boşsa TR kullanılır" />
                     <label for="blog-title-en">Başlık (EN)</label>
-                    <input id="blog-title-en" type="text" maxlength="120" />
+                    <input id="blog-title-en" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" />
                     <label for="blog-excerpt-en">Özet (EN)</label>
-                    <textarea id="blog-excerpt-en" rows="2" maxlength="280"></textarea>
+                    <textarea id="blog-excerpt-en" rows="2" maxlength="280" placeholder="Boşsa TR kullanılır"></textarea>
                     <label for="blog-body-en">Yazı (EN)</label>
-                    <textarea id="blog-body-en" rows="7" maxlength="8000"></textarea>
+                    <textarea id="blog-body-en" rows="7" maxlength="8000" placeholder="Boşsa TR kullanılır"></textarea>
                   </div>
                   <div class="admin-lang-pane" data-tab-group="blog" data-lang="ru">
                     <label for="blog-tag-ru">Etiket (RU)</label>
-                    <input id="blog-tag-ru" type="text" maxlength="40" />
+                    <input id="blog-tag-ru" type="text" maxlength="40" placeholder="Boşsa TR kullanılır" />
                     <label for="blog-title-ru">Başlık (RU)</label>
-                    <input id="blog-title-ru" type="text" maxlength="120" />
+                    <input id="blog-title-ru" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" />
                     <label for="blog-excerpt-ru">Özet (RU)</label>
-                    <textarea id="blog-excerpt-ru" rows="2" maxlength="280"></textarea>
+                    <textarea id="blog-excerpt-ru" rows="2" maxlength="280" placeholder="Boşsa TR kullanılır"></textarea>
                     <label for="blog-body-ru">Yazı (RU)</label>
-                    <textarea id="blog-body-ru" rows="7" maxlength="8000"></textarea>
+                    <textarea id="blog-body-ru" rows="7" maxlength="8000" placeholder="Boşsa TR kullanılır"></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="blog" data-lang="ar">
+                    <label for="blog-tag-ar">Etiket (AR)</label>
+                    <input id="blog-tag-ar" type="text" maxlength="40" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                    <label for="blog-title-ar">Başlık (AR)</label>
+                    <input id="blog-title-ar" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                    <label for="blog-excerpt-ar">Özet (AR)</label>
+                    <textarea id="blog-excerpt-ar" rows="2" maxlength="280" placeholder="Boşsa TR kullanılır" dir="rtl"></textarea>
+                    <label for="blog-body-ar">Yazı (AR)</label>
+                    <textarea id="blog-body-ar" rows="7" maxlength="8000" placeholder="Boşsa TR kullanılır" dir="rtl"></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="blog" data-lang="de">
+                    <label for="blog-tag-de">Etiket (DE)</label>
+                    <input id="blog-tag-de" type="text" maxlength="40" placeholder="Boşsa TR kullanılır" />
+                    <label for="blog-title-de">Başlık (DE)</label>
+                    <input id="blog-title-de" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" />
+                    <label for="blog-excerpt-de">Özet (DE)</label>
+                    <textarea id="blog-excerpt-de" rows="2" maxlength="280" placeholder="Boşsa TR kullanılır"></textarea>
+                    <label for="blog-body-de">Yazı (DE)</label>
+                    <textarea id="blog-body-de" rows="7" maxlength="8000" placeholder="Boşsa TR kullanılır"></textarea>
                   </div>
                   <div class="admin-actions">
                     <button class="btn" type="submit">Yazıyı Kaydet</button>
                     <button class="btn" type="button" id="blog-clear">Temizle</button>
                   </div>
                 </form>
-                <p id="blog-feedback"></p>
+                <p id="blog-feedback" class="admin-status" data-no-i18n></p>
                 <div class="table-wrap">
                   <table class="menu-table">
                     <thead>
-                      <tr><th>Başlık</th><th>Link</th><th>İşlem</th></tr>
+                      <tr><th>Başlık</th><th>Durum</th><th>Link</th><th>İşlem</th></tr>
                     </thead>
                     <tbody id="blog-body-table"></tbody>
                   </table>
                 </div>
               </section>
 
-              <section class="card admin-form-card admin-panel" id="panel-menucats">
+              <section class="card admin-form-card admin-panel" id="panel-menucats" data-admin-view="menucats" hidden>
                 <div class="admin-panel-head">
                   <h2>Menü Kategorileri</h2>
                   <span class="admin-badge">Menu</span>
                 </div>
-                <p>Menü sayfasındaki Tatlı / Tuzlu / İmza başlıklarını buradan değiştir.</p>
-                <form id="menucat-form" class="admin-form">
-                  <div class="admin-lang-tabs" role="tablist" aria-label="Menü kategori dilleri">
-                    <button type="button" class="admin-lang-tab active" data-tab-group="menucat" data-lang="tr" aria-selected="true">TR</button>
-                    <button type="button" class="admin-lang-tab" data-tab-group="menucat" data-lang="en" aria-selected="false">EN</button>
-                    <button type="button" class="admin-lang-tab" data-tab-group="menucat" data-lang="ru" aria-selected="false">RU</button>
-                  </div>
-                  <div class="admin-lang-pane active" data-tab-group="menucat" data-lang="tr">
-                    <label for="menucat-sweet-title-tr">Tatlı başlık (TR)</label>
-                    <input id="menucat-sweet-title-tr" type="text" maxlength="80" />
-                    <label for="menucat-sweet-note-tr">Tatlı not (TR)</label>
-                    <input id="menucat-sweet-note-tr" type="text" maxlength="180" />
-                    <label for="menucat-savory-title-tr">Tuzlu başlık (TR)</label>
-                    <input id="menucat-savory-title-tr" type="text" maxlength="80" />
-                    <label for="menucat-savory-note-tr">Tuzlu not (TR)</label>
-                    <input id="menucat-savory-note-tr" type="text" maxlength="180" />
-                    <label for="menucat-signature-title-tr">İmza başlık (TR)</label>
-                    <input id="menucat-signature-title-tr" type="text" maxlength="80" />
-                    <label for="menucat-signature-note-tr">İmza not (TR)</label>
-                    <input id="menucat-signature-note-tr" type="text" maxlength="180" />
-                  </div>
-                  <div class="admin-lang-pane" data-tab-group="menucat" data-lang="en">
-                    <label for="menucat-sweet-title-en">Tatlı başlık (EN)</label>
-                    <input id="menucat-sweet-title-en" type="text" maxlength="80" />
-                    <label for="menucat-sweet-note-en">Tatlı not (EN)</label>
-                    <input id="menucat-sweet-note-en" type="text" maxlength="180" />
-                    <label for="menucat-savory-title-en">Tuzlu başlık (EN)</label>
-                    <input id="menucat-savory-title-en" type="text" maxlength="80" />
-                    <label for="menucat-savory-note-en">Tuzlu not (EN)</label>
-                    <input id="menucat-savory-note-en" type="text" maxlength="180" />
-                    <label for="menucat-signature-title-en">İmza başlık (EN)</label>
-                    <input id="menucat-signature-title-en" type="text" maxlength="80" />
-                    <label for="menucat-signature-note-en">İmza not (EN)</label>
-                    <input id="menucat-signature-note-en" type="text" maxlength="180" />
-                  </div>
-                  <div class="admin-lang-pane" data-tab-group="menucat" data-lang="ru">
-                    <label for="menucat-sweet-title-ru">Tatlı başlık (RU)</label>
-                    <input id="menucat-sweet-title-ru" type="text" maxlength="80" />
-                    <label for="menucat-sweet-note-ru">Tatlı not (RU)</label>
-                    <input id="menucat-sweet-note-ru" type="text" maxlength="180" />
-                    <label for="menucat-savory-title-ru">Tuzlu başlık (RU)</label>
-                    <input id="menucat-savory-title-ru" type="text" maxlength="80" />
-                    <label for="menucat-savory-note-ru">Tuzlu not (RU)</label>
-                    <input id="menucat-savory-note-ru" type="text" maxlength="180" />
-                    <label for="menucat-signature-title-ru">İmza başlık (RU)</label>
-                    <input id="menucat-signature-title-ru" type="text" maxlength="80" />
-                    <label for="menucat-signature-note-ru">İmza not (RU)</label>
-                    <input id="menucat-signature-note-ru" type="text" maxlength="180" />
-                  </div>
+                <p>Menü sayfasındaki bölümleri buradan ekleyin, silin veya yeniden adlandırın. İmza türü, “İmza / özel seçkiye ekle” işaretli ürünleri toplar.</p>
+                <p class="admin-callout">
+                  <strong>Kaydetmeden önce okuyun</strong>
+                  Kaydet deyince müşteri yeni başlığı görür. Silinen kategorideki ürünler ilk standart kategoriye taşınır.
+                </p>
+                <form id="menucat-form" class="admin-form" novalidate>
+                  <div id="menucat-rows"></div>
                   <div class="admin-actions">
+                    <button class="btn" type="button" id="menucat-add">Kategori Ekle</button>
                     <button class="btn" type="submit">Kategorileri Kaydet</button>
                   </div>
                 </form>
-                <p id="menucat-feedback"></p>
+                <p id="menucat-feedback" class="admin-status" data-no-i18n></p>
               </section>
 
-              <section class="card admin-form-card admin-panel" id="panel-seo">
+              <section class="card admin-form-card admin-panel" id="panel-seo" data-admin-view="seo" hidden>
                 <div class="admin-panel-head">
                   <h2>SEO, Başlık ve Google Bilgisi</h2>
                   <span class="admin-badge">SEO</span>
                 </div>
-                <form id="seo-form" class="admin-form">
+                <p class="admin-callout">
+                  <strong>Kaydetmeden önce okuyun</strong>
+                  Önce hangi sayfayı düzenlediğinizi üstteki listeden seçin. Sayfa başlığı Google’da mavi yazı olarak çıkar. Açıklama, arama sonucundaki kısa metindir. Yanlış sayfayı seçip kaydederseniz başka sayfanın Google yazısı değişir.
+                </p>
+                <form id="seo-form" class="admin-form" novalidate>
                   <label for="seo-page">Sayfa</label>
                   <select id="seo-page"></select>
+                  <span class="admin-field-hint">Hangisini değiştirecekseniz onu seçin, sonra başlığı yazıp Kaydet’e basın.</span>
                   <div class="admin-lang-tabs" role="tablist" aria-label="SEO dilleri">
                     <button type="button" class="admin-lang-tab active" data-tab-group="seo" data-lang="tr" aria-selected="true">TR</button>
                     <button type="button" class="admin-lang-tab" data-tab-group="seo" data-lang="en" aria-selected="false">EN</button>
                     <button type="button" class="admin-lang-tab" data-tab-group="seo" data-lang="ru" aria-selected="false">RU</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="seo" data-lang="ar" aria-selected="false">AR</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="seo" data-lang="de" aria-selected="false">DE</button>
                   </div>
                   <div class="admin-lang-pane active" data-tab-group="seo" data-lang="tr">
                     <label for="seo-title-tr">Sayfa başlığı (TR)</label>
@@ -652,15 +922,27 @@
                   </div>
                   <div class="admin-lang-pane" data-tab-group="seo" data-lang="en">
                     <label for="seo-title-en">Sayfa başlığı (EN)</label>
-                    <input id="seo-title-en" type="text" maxlength="120" />
+                    <input id="seo-title-en" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" />
                     <label for="seo-desc-en">Açıklama (EN)</label>
-                    <textarea id="seo-desc-en" rows="3" maxlength="280"></textarea>
+                    <textarea id="seo-desc-en" rows="3" maxlength="280" placeholder="Boşsa TR kullanılır"></textarea>
                   </div>
                   <div class="admin-lang-pane" data-tab-group="seo" data-lang="ru">
                     <label for="seo-title-ru">Sayfa başlığı (RU)</label>
-                    <input id="seo-title-ru" type="text" maxlength="120" />
+                    <input id="seo-title-ru" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" />
                     <label for="seo-desc-ru">Açıklama (RU)</label>
-                    <textarea id="seo-desc-ru" rows="3" maxlength="280"></textarea>
+                    <textarea id="seo-desc-ru" rows="3" maxlength="280" placeholder="Boşsa TR kullanılır"></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="seo" data-lang="ar">
+                    <label for="seo-title-ar">Sayfa başlığı (AR)</label>
+                    <input id="seo-title-ar" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                    <label for="seo-desc-ar">Açıklama (AR)</label>
+                    <textarea id="seo-desc-ar" rows="3" maxlength="280" placeholder="Boşsa TR kullanılır" dir="rtl"></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="seo" data-lang="de">
+                    <label for="seo-title-de">Sayfa başlığı (DE)</label>
+                    <input id="seo-title-de" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" />
+                    <label for="seo-desc-de">Açıklama (DE)</label>
+                    <textarea id="seo-desc-de" rows="3" maxlength="280" placeholder="Boşsa TR kullanılır"></textarea>
                   </div>
                   <h3 class="admin-subtitle">Google işletme adresi</h3>
                   <label for="schema-street">Sokak / cadde</label>
@@ -681,17 +963,218 @@
                     <button class="btn" type="submit">SEO Ayarlarını Kaydet</button>
                   </div>
                 </form>
-                <p id="seo-feedback"></p>
+                <p id="seo-feedback" class="admin-status" data-no-i18n></p>
               </section>
 
-              <section class="card admin-form-card admin-panel" id="panel-cms">
+              <section class="card admin-form-card admin-panel" id="panel-faq" data-admin-view="faq" hidden>
+                <div class="admin-panel-head">
+                  <h2>Sıkça Sorulan Sorular</h2>
+                  <span class="admin-badge">FAQ</span>
+                </div>
+                <p class="admin-callout">
+                  <strong>Kaydetmeden önce okuyun</strong>
+                  Kaydet, soruyu SSS sayfasına yazar. Türkçe soru ve cevap zorunludur. Sil kalıcıdır.
+                </p>
+                <form id="faq-form" class="admin-form" novalidate>
+                  <input type="hidden" id="faq-id" />
+                  <div class="admin-lang-tabs" role="tablist" aria-label="SSS dilleri">
+                    <button type="button" class="admin-lang-tab active" data-tab-group="faq" data-lang="tr" aria-selected="true">TR</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="faq" data-lang="en" aria-selected="false">EN</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="faq" data-lang="ru" aria-selected="false">RU</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="faq" data-lang="ar" aria-selected="false">AR</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="faq" data-lang="de" aria-selected="false">DE</button>
+                  </div>
+                  <div class="admin-lang-pane active" data-tab-group="faq" data-lang="tr">
+                    <label for="faq-q-tr">Soru (TR)</label>
+                    <input id="faq-q-tr" type="text" maxlength="180" />
+                    <label for="faq-a-tr">Cevap (TR)</label>
+                    <textarea id="faq-a-tr" rows="3" maxlength="800"></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="faq" data-lang="en">
+                    <label for="faq-q-en">Soru (EN)</label>
+                    <input id="faq-q-en" type="text" maxlength="180" placeholder="Boşsa TR kullanılır" />
+                    <label for="faq-a-en">Cevap (EN)</label>
+                    <textarea id="faq-a-en" rows="3" maxlength="800" placeholder="Boşsa TR kullanılır"></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="faq" data-lang="ru">
+                    <label for="faq-q-ru">Soru (RU)</label>
+                    <input id="faq-q-ru" type="text" maxlength="180" placeholder="Boşsa TR kullanılır" />
+                    <label for="faq-a-ru">Cevap (RU)</label>
+                    <textarea id="faq-a-ru" rows="3" maxlength="800" placeholder="Boşsa TR kullanılır"></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="faq" data-lang="ar">
+                    <label for="faq-q-ar">Soru (AR)</label>
+                    <input id="faq-q-ar" type="text" maxlength="180" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                    <label for="faq-a-ar">Cevap (AR)</label>
+                    <textarea id="faq-a-ar" rows="3" maxlength="800" placeholder="Boşsa TR kullanılır" dir="rtl"></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="faq" data-lang="de">
+                    <label for="faq-q-de">Soru (DE)</label>
+                    <input id="faq-q-de" type="text" maxlength="180" placeholder="Boşsa TR kullanılır" />
+                    <label for="faq-a-de">Cevap (DE)</label>
+                    <textarea id="faq-a-de" rows="3" maxlength="800" placeholder="Boşsa TR kullanılır"></textarea>
+                  </div>
+                  <div class="admin-actions">
+                    <button class="btn" type="submit">Soruyu Kaydet</button>
+                    <button class="btn" type="button" id="faq-clear">Temizle</button>
+                  </div>
+                </form>
+                <p id="faq-feedback" class="admin-status" data-no-i18n></p>
+                <div class="table-wrap">
+                  <table class="menu-table">
+                    <thead>
+                      <tr><th>Soru</th><th>İşlem</th></tr>
+                    </thead>
+                    <tbody id="faq-body"></tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section class="card admin-form-card admin-panel" id="panel-pages" data-admin-view="pages" hidden>
+                <div class="admin-panel-head">
+                  <h2>Sayfa Metinleri</h2>
+                  <span class="admin-badge">Pages</span>
+                </div>
+                <p class="admin-callout">
+                  <strong>Kaydetmeden önce okuyun</strong>
+                  Hikaye, kurumsal, rezervasyon, teslimat, toptan ve yasal sayfaların başlığı ile gövde metni buradan değişir. Gövdeyi boş bırakırsanız sayfadaki mevcut HTML kalır.
+                </p>
+                <form id="pages-form" class="admin-form" novalidate>
+                  <label for="page-select">Sayfa</label>
+                  <select id="page-select"></select>
+                  <div class="admin-lang-tabs" role="tablist" aria-label="Sayfa dilleri">
+                    <button type="button" class="admin-lang-tab active" data-tab-group="page" data-lang="tr" aria-selected="true">TR</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="page" data-lang="en" aria-selected="false">EN</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="page" data-lang="ru" aria-selected="false">RU</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="page" data-lang="ar" aria-selected="false">AR</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="page" data-lang="de" aria-selected="false">DE</button>
+                  </div>
+                  <div class="admin-lang-pane active" data-tab-group="page" data-lang="tr">
+                    <label for="page-eyebrow-tr">Üst başlık (TR)</label>
+                    <input id="page-eyebrow-tr" type="text" maxlength="40" />
+                    <label for="page-title-tr">Sayfa başlığı (TR)</label>
+                    <input id="page-title-tr" type="text" maxlength="120" />
+                    <label for="page-lead-tr">Özet (TR)</label>
+                    <input id="page-lead-tr" type="text" maxlength="220" />
+                    <label for="page-body-tr">Gövde metni (TR)</label>
+                    <textarea id="page-body-tr" rows="8" maxlength="12000"></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="page" data-lang="en">
+                    <label for="page-eyebrow-en">Üst başlık (EN)</label>
+                    <input id="page-eyebrow-en" type="text" maxlength="40" placeholder="Boşsa TR kullanılır" />
+                    <label for="page-title-en">Sayfa başlığı (EN)</label>
+                    <input id="page-title-en" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" />
+                    <label for="page-lead-en">Özet (EN)</label>
+                    <input id="page-lead-en" type="text" maxlength="220" placeholder="Boşsa TR kullanılır" />
+                    <label for="page-body-en">Gövde metni (EN)</label>
+                    <textarea id="page-body-en" rows="8" maxlength="12000" placeholder="Boşsa TR kullanılır"></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="page" data-lang="ru">
+                    <label for="page-eyebrow-ru">Üst başlık (RU)</label>
+                    <input id="page-eyebrow-ru" type="text" maxlength="40" placeholder="Boşsa TR kullanılır" />
+                    <label for="page-title-ru">Sayfa başlığı (RU)</label>
+                    <input id="page-title-ru" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" />
+                    <label for="page-lead-ru">Özet (RU)</label>
+                    <input id="page-lead-ru" type="text" maxlength="220" placeholder="Boşsa TR kullanılır" />
+                    <label for="page-body-ru">Gövde metni (RU)</label>
+                    <textarea id="page-body-ru" rows="8" maxlength="12000" placeholder="Boşsa TR kullanılır"></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="page" data-lang="ar">
+                    <label for="page-eyebrow-ar">Üst başlık (AR)</label>
+                    <input id="page-eyebrow-ar" type="text" maxlength="40" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                    <label for="page-title-ar">Sayfa başlığı (AR)</label>
+                    <input id="page-title-ar" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                    <label for="page-lead-ar">Özet (AR)</label>
+                    <input id="page-lead-ar" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                    <label for="page-body-ar">Gövde metni (AR)</label>
+                    <textarea id="page-body-ar" rows="8" maxlength="12000" placeholder="Boşsa TR kullanılır" dir="rtl"></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="page" data-lang="de">
+                    <label for="page-eyebrow-de">Üst başlık (DE)</label>
+                    <input id="page-eyebrow-de" type="text" maxlength="40" placeholder="Boşsa TR kullanılır" />
+                    <label for="page-title-de">Sayfa başlığı (DE)</label>
+                    <input id="page-title-de" type="text" maxlength="120" placeholder="Boşsa TR kullanılır" />
+                    <label for="page-lead-de">Özet (DE)</label>
+                    <input id="page-lead-de" type="text" maxlength="220" placeholder="Boşsa TR kullanılır" />
+                    <label for="page-body-de">Gövde metni (DE)</label>
+                    <textarea id="page-body-de" rows="8" maxlength="12000" placeholder="Boşsa TR kullanılır"></textarea>
+                  </div>
+                  <div class="admin-actions">
+                    <button class="btn" type="submit">Sayfayı Kaydet</button>
+                  </div>
+                </form>
+                <p id="pages-feedback" class="admin-status" data-no-i18n></p>
+              </section>
+
+              <section class="card admin-form-card admin-panel" id="panel-inbox" data-admin-view="inbox" hidden>
+                <div class="admin-panel-head">
+                  <h2>Gelen Kutusu</h2>
+                  <span class="admin-badge">Inbox</span>
+                </div>
+                <p class="admin-callout">
+                  <strong>Dikkat</strong>
+                  İstek formu WhatsApp açar ve bir kopyayı bu tarayıcıya kaydeder. Canlı siteden gelenler ancak yayın dosyası veya webhook ile size ulaşır. Canlı ziyaretçilerin mesajı sizin bilgisayarınızda görünmez.
+                </p>
+                <div class="admin-actions">
+                  <button class="btn btn-small" type="button" id="inbox-clear">Tüm Mesajları Sil</button>
+                </div>
+                <p id="inbox-feedback" class="admin-status" data-no-i18n></p>
+                <div class="table-wrap">
+                  <table class="menu-table">
+                    <thead>
+                      <tr><th>Tarih</th><th>Ad</th><th>İletişim</th><th>Mesaj</th><th></th></tr>
+                    </thead>
+                    <tbody id="inbox-body"></tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section class="card admin-form-card admin-panel" id="panel-backup" data-admin-view="backup" hidden>
+                <div class="admin-panel-head">
+                  <h2>Yedek, Yayın ve Şifre</h2>
+                  <span class="admin-badge">Backup</span>
+                </div>
+                <p class="admin-callout">
+                  <strong>Kaydetmeden önce okuyun</strong>
+                  Bu tarayıcıdaki değişiklikler müşterinin gördüğü canlı siteye kendiliğinden gitmez. “Yayın dosyasını indir” ile pc-data.js indirin ve site klasörüne koyun (FTP veya Git). JSON yedek, her şeyi geri yüklemek içindir.
+                </p>
+                <div class="admin-actions">
+                  <button class="btn" type="button" id="backup-export-json">JSON Yedek İndir</button>
+                  <button class="btn" type="button" id="backup-import-json-btn">JSON Yedek Yükle</button>
+                  <button class="btn" type="button" id="backup-publish">Yayın dosyasını indir (pc-data.js)</button>
+                  <button class="btn" type="button" id="backup-clear-local">Yerel önizlemeyi sil</button>
+                  <input id="backup-import-json" type="file" accept=".json,application/json" hidden />
+                </div>
+                <p id="backup-feedback" class="admin-status" data-no-i18n></p>
+                <h3 class="admin-subtitle">Şifre değiştir</h3>
+                <form id="password-form" class="admin-form" novalidate>
+                  <label for="password-current">Mevcut şifre</label>
+                  <input id="password-current" type="password" autocomplete="current-password" />
+                  <label for="password-new">Yeni şifre</label>
+                  <input id="password-new" type="password" autocomplete="new-password" />
+                  <label for="password-new2">Yeni şifre (tekrar)</label>
+                  <input id="password-new2" type="password" autocomplete="new-password" />
+                  <span class="admin-field-hint">En az 6 karakter. Yeni şifre bu tarayıcıda saklanır. Başka bilgisayarda eski şifre geçerlidir; yayın dosyası şifreyi taşımaz.</span>
+                  <div class="admin-actions">
+                    <button class="btn" type="submit">Şifreyi Değiştir</button>
+                  </div>
+                </form>
+                <p id="password-feedback" class="admin-status" data-no-i18n></p>
+              </section>
+
+              <section class="card admin-form-card admin-panel" id="panel-cms" data-admin-view="cms" hidden>
                 <div class="admin-panel-head">
                   <h2>Canlı İçerik Düzenleyici (Tüm Sayfalar)</h2>
                   <span class="admin-badge">CMS</span>
                 </div>
               <p>
                 İstediğin sayfayı seçip düzenleme modunu aç. Açılan sayfada
-                <strong>Shift + Tıkla</strong> ile metin, link ve görselleri anında düzenle.
+                <strong>Shift + Tıkla</strong> ile yazı, link ve fotoğrafları değiştir.
+                Fotoğrafa basınca galeriden yeni resim seçebilirsin.
+              </p>
+              <p class="admin-callout">
+                <strong>Kaydetmeden / sıfırlamadan önce okuyun</strong>
+                Düzenleme Modunu Aç: seçilen sayfa yeni pencerede açılır. Klavyede Shift tuşunu basılı tutup yazıya tıklayın. Tüm Düzenlemeleri Sıfırla: bu yöntemle yaptığınız bütün yazı değişiklikleri silinir, geri gelmez. Ürün fiyatı ve iletişim için bu bölümü değil, soldaki ilgili formu kullanın.
               </p>
               <label for="cms-page-select">Düzenlenecek Sayfa</label>
               <select id="cms-page-select">
@@ -720,54 +1203,7 @@
               </div>
               <h3 class="admin-subtitle">Kayıtlı içerik özeti</h3>
               <div id="cms-summary" class="admin-summary"></div>
-              <p id="cms-feedback"></p>
-              </section>
-
-              <section class="card admin-panel" id="panel-list">
-                <div class="admin-panel-head">
-                  <h2>Mevcut Ürünler</h2>
-                  <span class="admin-badge">Table</span>
-                </div>
-              <div class="admin-toolbar">
-                <input id="product-search" type="search" placeholder="Ürün ara (ad/açıklama/etiket)" />
-                <select id="product-lang-filter">
-                  <option value="tr">TR alanı</option>
-                  <option value="en">EN alanı</option>
-                  <option value="ru">RU alanı</option>
-                  <option value="ar">AR alanı</option>
-                  <option value="de">DE alanı</option>
-                </select>
-                <select id="product-sort">
-                  <option value="created-desc">Yeni eklenen (son)</option>
-                  <option value="price-desc">Fiyat (yüksekten düşüğe)</option>
-                  <option value="price-asc">Fiyat (düşükten yükseğe)</option>
-                  <option value="name-asc">Ürün adı (A-Z)</option>
-                </select>
-                <button class="btn btn-small" type="button" id="product-reset-filters">Filtreleri Sıfırla</button>
-              </div>
-              <div class="admin-toolbar">
-                <button class="btn btn-small" type="button" id="export-products-json">Ürünleri JSON Dışa Aktar</button>
-                <button class="btn btn-small" type="button" id="import-products-json-btn">JSON İçeri Aktar</button>
-                <input id="import-products-json" type="file" accept=".json,application/json" hidden />
-              </div>
-              <p id="admin-products-count" class="admin-count"></p>
-              <div class="table-wrap">
-                <table class="menu-table">
-                  <thead>
-                    <tr>
-                      <th>Görsel</th>
-                      <th>Ürün</th>
-                      <th>Fiyat</th>
-                      <th>Etiket</th>
-                      <th>Kategori</th>
-                      <th>İşlem</th>
-                    </tr>
-                  </thead>
-                  <tbody id="admin-products-body"></tbody>
-                </table>
-              </div>
-              <h3 class="admin-subtitle">Ürün önizleme</h3>
-              <div id="admin-products-preview" class="admin-products-preview"></div>
+              <p id="cms-feedback" class="admin-status" data-no-i18n></p>
               </section>
             </div>
           </div>
@@ -777,7 +1213,9 @@
 
     <footer class="footer-detailed" id="site-footer"></footer>
 
+    <script src="pc-data.js" defer></script>
     <script src="pc-store.js" defer></script>
+    <script src="image-upload.js" defer></script>
     <script src="layout.js" defer></script>
     <script src="admin-auth.js" defer></script>
   </body>

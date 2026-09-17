@@ -67,7 +67,6 @@ const renderMenuProducts = (products) => {
   const lang = getActiveLang();
   const fallback = UI_FALLBACK[lang] || UI_FALLBACK.tr;
   const cats = Store.loadMenuCats();
-  const catById = (id) => cats.find((item) => item.id === id);
 
   if (highlightGrid) {
     const highlighted = [...products].sort((a, b) => Number(b.price) - Number(a.price)).slice(0, 2);
@@ -90,17 +89,16 @@ const renderMenuProducts = (products) => {
   }
 
   if (categorySections) {
-    const sections = [
-      { id: "sweet", items: products.filter((item) => item.category !== "savory") },
-      { id: "savory", items: products.filter((item) => item.category === "savory") },
-      { id: "signature", items: products.filter((item) => item.signature) }
-    ]
-      .map((section) => {
-        const meta = catById(section.id);
+    const sections = cats
+      .map((meta) => {
+        const itemsForCat =
+          meta.kind === "signature" || meta.id === "signature"
+            ? products.filter((item) => item.signature)
+            : products.filter((item) => item.category === meta.id);
         return {
-          title: meta ? getLocalized(meta.title, lang) : section.id,
-          note: meta ? getLocalized(meta.note, lang) : "",
-          items: section.items
+          title: getLocalized(meta.title, lang),
+          note: getLocalized(meta.note, lang),
+          items: itemsForCat
         };
       })
       .filter((section) => section.items.length);
@@ -151,9 +149,15 @@ const renderMenuProducts = (products) => {
     .join("");
 };
 
-const catalog = Store.loadProducts();
-renderFeaturedProducts(catalog);
-renderMenuProducts(catalog);
+const renderCatalog = () => {
+  const items = Store.loadProducts()
+    .filter((item) => item.visible !== false)
+    .sort((a, b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0));
+  renderFeaturedProducts(items);
+  renderMenuProducts(items);
+  refreshLazyMediaIfNeeded();
+};
+renderCatalog();
 refreshI18nIfNeeded();
-refreshLazyMediaIfNeeded();
+document.addEventListener("pc:langchange", renderCatalog);
 }

@@ -2,6 +2,7 @@
 const Store = window.PCStore;
 if (!Store) return;
 
+const applySiteSettings = () => {
 const settings = Store.loadSettings();
 const activeLang = Store.getLang();
 const loc = (value) => Store.getLocalized(value, activeLang);
@@ -70,6 +71,36 @@ if (settings.facebook) {
   toggleRow("contact-facebook-row", false);
 }
 
+const extraSocial = [
+  ["tiktok", "TikTok"],
+  ["youtube", "YouTube"],
+  ["twitter", "X"]
+];
+extraSocial.forEach(([key, label]) => {
+  const url = settings[key];
+  if (url) {
+    setHref(`contact-${key}-link`, url);
+    setText(`contact-${key}-text`, label);
+    toggleRow(`contact-${key}-row`, true);
+  } else {
+    toggleRow(`contact-${key}-row`, false);
+  }
+});
+
+const mapFrame = document.getElementById("contact-map-embed");
+const mapWrap = document.getElementById("contact-map-wrap");
+if (mapFrame) {
+  const raw = String(settings.mapEmbed || "").trim();
+  const srcMatch = raw.match(/src=["']([^"']+)["']/);
+  const src = srcMatch ? srcMatch[1] : raw;
+  if (src) {
+    mapFrame.setAttribute("src", src);
+    if (mapWrap) mapWrap.hidden = false;
+  } else if (mapWrap) {
+    mapWrap.hidden = true;
+  }
+}
+
 toggleRow("contact-hours-row", Boolean(hours));
 
 const heroImage = document.querySelector(".hero-image");
@@ -91,10 +122,17 @@ statNodes.forEach((node, index) => {
   const span = node.querySelector("span");
   if (strong && config[1] != null) {
     strong.dataset.target = String(config[1]);
-    strong.textContent = "0";
+    if (!strong.dataset.pcStatReady) {
+      strong.textContent = "0";
+      strong.dataset.pcStatReady = "1";
+    }
   }
   if (span && config[2]) span.textContent = loc(config[2]);
 });
 
 setSrc("hero-logo", settings.logo);
+};
+
+applySiteSettings();
+document.addEventListener("pc:langchange", applySiteSettings);
 })();

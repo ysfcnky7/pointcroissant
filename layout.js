@@ -14,8 +14,11 @@ const getStoreLocalized = (value, lang = activeLang) => {
   if (window.PCStore && typeof window.PCStore.getLocalized === "function") {
     return window.PCStore.getLocalized(value, lang);
   }
-  if (value && typeof value === "object") return value[lang] || value.tr || "";
-  return String(value || "");
+  if (value && typeof value === "object") {
+    const requested = String((value[lang] || "")).trim();
+    return requested || String(value.tr || "").trim();
+  }
+  return String(value || "").trim();
 };
 
 const escapeChrome = (value) =>
@@ -424,6 +427,8 @@ const I18N_TEXT = {
     "Görsel": "Image",
     "Çoğalt": "Duplicate",
     "Ürün ve Fiyat Yönetimi": "Product and Price Management",
+    "Yönetim Paneli": "Admin Panel",
+    "Soldaki menüden bir bölüm seçin. Sadece o bölümün ayarları açılır.": "Choose a section from the left menu. Only that section opens.",
     "Buradan girdiğin ürünler ana sayfa ve menü sayfasına otomatik yansır.": "Products entered here are automatically reflected on the homepage and menu page.",
     "Ürün Ekle / Güncelle": "Add / Update Product",
     "Ürün Adı": "Product Name",
@@ -517,6 +522,28 @@ const I18N_TEXT = {
     "Düzenleme modu kapatıldı.": "Edit mode closed.",
     "Tüm sayfa içerik düzenlemeleri sıfırlandı.": "All page content edits have been reset.",
     "Görsel URL": "Image URL",
+    "Galeri görseli": "Gallery image",
+    "Logo": "Logo",
+    "Ürün görseli (TR)": "Product image (TR)",
+    "Ürün görseli (EN)": "Product image (EN)",
+    "Ürün görseli (RU)": "Product image (RU)",
+    "Ürün görseli (AR)": "Product image (AR)",
+    "Ürün görseli (DE)": "Product image (DE)",
+    "Görsel yükle": "Upload image",
+    "Fotoğraf yükle": "Upload photo",
+    "Fotoğraf seç": "Choose photo",
+    "Görseli değiştir": "Change image",
+    "Fotoğrafı değiştir": "Change photo",
+    "veya görsel URL / dosya yolu yapıştırın": "or paste an image URL / file path",
+    "Uygula": "Apply",
+    "İptal": "Cancel",
+    "Önerilen boyut: 512×512 px (kare). PNG veya WebP, şeffaf arka plan tercih edilir. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Recommended size: 512×512 px (square). PNG or WebP, transparent background preferred. Maximum 8 MB. Larger files are rejected.",
+    "Önerilen boyut: 1920×1080 px (yatay 16:9). JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Recommended size: 1920×1080 px (landscape 16:9). JPEG or WebP. Maximum 8 MB. Larger files are rejected.",
+    "Önerilen boyut: 1400×875 px (yatay 16:10). JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Recommended size: 1400×875 px (landscape 16:10). JPEG or WebP. Maximum 8 MB. Larger files are rejected.",
+    "Önerilen boyut: 1600×1200 px (yatay 4:3). JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Recommended size: 1600×1200 px (landscape 4:3). JPEG or WebP. Maximum 8 MB. Larger files are rejected.",
+    "Önerilen boyut: 1400×900 px (kapak, yatay). JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Recommended size: 1400×900 px (cover, landscape). JPEG or WebP. Maximum 8 MB. Larger files are rejected.",
+    "Önerilen boyut: 1600×1200 px. JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Recommended size: 1600×1200 px. JPEG or WebP. Maximum 8 MB. Larger files are rejected.",
+    "Görsel yüklendi. Kaydet’e basmayı unutmayın. Başka bir internet adresi kullanmak isterseniz alandaki yazıyı silip URL yapıştırın.": "Image uploaded. Don’t forget to click Save. To use another web address, clear the field and paste a URL.",
     "Alt metni": "Alt text",
     "Link metni": "Link text",
     "Link adresi": "Link URL",
@@ -554,6 +581,15 @@ const I18N_TEXT = {
     "Etiket (DE)": "Tag (DE)",
     "Ürün Görsel URL (AR)": "Product Image URL (AR)",
     "Ürün Görsel URL (DE)": "Product Image URL (DE)",
+    "Ürün fotoğrafı": "Product photo",
+    "Ürün fotoğrafı (TR)": "Product photo (TR)",
+    "Fotoğraf seç": "Choose photo",
+    "Etkinlik fotoğrafı": "Event photo",
+    "Kapak fotoğrafı": "Cover photo",
+    "Galeri fotoğrafı": "Gallery photo",
+    "Logo fotoğrafı": "Logo photo",
+    "Anasayfa arka plan fotoğrafı": "Homepage background photo",
+    "Fotoğraf seçin veya adres yapıştırın": "Choose a photo or paste a URL",
     "Adres (AR)": "Address (AR)",
     "Adres (DE)": "Address (DE)",
     "Harita Konum Metni (AR)": "Map Location Text (AR)",
@@ -575,7 +611,76 @@ const I18N_TEXT = {
     "WhatsApp hazır mesaj (DE)": "WhatsApp greeting (DE)",
     "Çalışma Saatleri": "Opening Hours",
     "Çalışma Saatleri:": "Opening Hours:",
-    "İmza / özel seçkiye ekle": "Add to signature / special selection"
+    "İmza / özel seçkiye ekle": "Add to signature / special selection",
+    "Dikkat": "Attention",
+    "Önemli": "Important",
+    "Kaydetmeden önce okuyun": "Read this before you save",
+    "Kaydetmeden / sıfırlamadan önce okuyun": "Read this before you save or reset",
+    "Bu sayfa müşterilerin gördüğü internet sitesini değiştirir. Şifreyi yalnızca yetkili kişi yazmalıdır. Şifreyi kimseyle paylaşmayın. Yanlış yazarsanız giriş olmaz; kutuyu boşaltıp tekrar deneyin.":
+      "This page changes the website customers see. Only an authorized person should type the password. Do not share it. If you type it wrong, you will not enter; empty the box and try again.",
+    "Klavyeden şifreyi yazın, sonra Giriş Yap’a basın. Enter tuşu da aynı işi yapar.":
+      "Type the password on the keyboard, then click Log in. The Enter key does the same.",
+    "Kaydet’e basmadan tarayıcıyı kapatırsanız yazdıklarınız silinir. Her bölümün kendi Kaydet düğmesi vardır. Yanlış kaydı geri almak zordur; kaydetmeden önce yazıyı bir kez daha okuyun.":
+      "If you close the browser before clicking Save, your typing is lost. Each section has its own Save button. A wrong save is hard to undo; read the text once more before saving.",
+    "Önce soldaki bölümü açın, formu doldurun, Kaydet’e basın. Kaydetmeden sayfayı kapatırsanız yazdıklarınız kaybolur. Ürün ve ayarlar kaydolduktan sonra içerik düzenleyiciden ilgili sayfayı açın.":
+      "First open a section on the left, fill the form, then click Save. If you close the page before saving, your typing is lost. After products and settings are saved, open the page from the content editor.",
+    "Kaydet = bu ürün müşterinin gördüğü anasayfa ve menüde görünür. Sil = ürün siteden kalkar, geri gelmez. Varsayılana Dön = sizin eklediğiniz bütün ürünler silinir, eski örnek ürünler gelir. Türkçe ad, açıklama ve fiyat zorunludur. Diğer diller boş kalırsa Türkçe gösterilir.":
+      "Save = this product appears on the customer homepage and menu. Delete = the product leaves the site and does not come back. Restore defaults = all products you added are deleted and sample products return. Turkish name, description and price are required. Empty other languages show Turkish.",
+    "Müşterinin menüde göreceği isim. Örnek: Antep Fıstıklı Kruvasan.": "The name customers see on the menu. Example: Pistachio Croissant.",
+    "Kısa anlatım. Örnek: Antep fıstık kreması ve tereyağlı hamur.": "A short description. Example: Pistachio cream and buttery dough.",
+    "İsteğe bağlı küçük yazı. Örnek: Yeni, En Çok Satan. Boş bırakabilirsiniz.": "Optional small label. Example: New, Best Seller. You may leave it empty.",
+    "Resmin adresi. Bilgisayar dosyası sürüklemeyin; ya sitedeki yol (assets/...) ya da https:// ile başlayan internet adresi yazın. Boşsa logo kullanılır.":
+      "The image address. Do not drag a computer file; type a site path (assets/...) or an address starting with https://. If empty, the logo is used.",
+    "Sadece sayı yazın, TL yazmayın. Örnek: 120. Virgül değil, nokta da kullanmayın.": "Type numbers only, do not write TL. Example: 120. Do not use a comma or a dot.",
+    "Telefondan veya bilgisayardan fotoğraf seçin. Kaydet’e basınca menü ve ürün listesinde görünür.":
+      "Choose a photo from your phone or computer. After Save it appears on the menu and product list.",
+    "Sil kalıcıdır, ürün siteden kalkar. Çoğalt aynı üründen bir tane daha oluşturur (sitede iki ürün görünür). JSON İçeri Aktar listedeki bütün ürünlerin yerine dosyadaki ürünleri koyar; sizin listeniz silinir. JSON Dışa Aktar yedek dosya indirir, sitedeki ürünleri silmez.":
+      "Delete is permanent; the product leaves the site. Duplicate creates one more of the same product (two items on the site). Import JSON replaces the whole list with the file; your list is deleted. Export JSON downloads a backup and does not delete site products.",
+    "Buradaki telefon, WhatsApp, e-posta ve adres müşterinin sizi araması içindir. Yanlış numara yazarsanız kimse ulaşamaz. Kaydet deyince sitedeki iletişim bilgileri değişir. Varsayılan Ayarlar, sizin yazdığınız iletişim bilgilerini siler ve eski örneği geri koyar.":
+      "Phone, WhatsApp, email and address here are how customers reach you. A wrong number means nobody can call. Save changes the contact details on the site. Default Settings deletes what you typed and puts the sample back.",
+    "Ekranda görünen yazı. Boşluk bırakabilirsiniz. Örnek: 0532 315 07 77": "The text shown on screen. Spaces are allowed. Example: 0532 315 07 77",
+    "Arama için. Başında +90 olsun, boşluk ve çizgi olmasın. Örnek: +905323150777": "For calling. Start with +90, no spaces or dashes. Example: +905323150777",
+    "Ekranda görünen WhatsApp yazısı. Örnek: 0532 315 07 77": "The WhatsApp text shown on screen. Example: 0532 315 07 77",
+    "Sadece rakam. + işareti yok. Ülke kodu 90 ile başlasın. Örnek: 905323150777": "Digits only. No + sign. Start with country code 90. Example: 905323150777",
+    "@ işareti olan adres. Örnek: hello@pointcroissant.com": "An address with @. Example: hello@pointcroissant.com",
+    "Müşterinin okuyacağı açık adres. Mahalle, cadde, no, ilçe, şehir yazın.": "The full address customers read. Write neighborhood, street, number, district, city.",
+    "Marka adı, logo ve slogan sitede hemen her sayfada görünür. Logo adresini yanlış yazarsanız resim kırık çıkar. Kaydet deyince değişiklik tüm sitede uygulanır.":
+      "Brand name, logo and slogan appear on almost every page. A wrong logo address shows a broken image. Save applies the change on the whole site.",
+    "Marka adı, logo ve slogan sitede hemen her sayfada görünür. Logoyu ve arka planı buradan yükleyebilirsiniz. Kaydet deyince değişiklik tüm sitede uygulanır.":
+      "Brand name, logo and slogan appear on almost every page. You can upload the logo and background here. Save applies the change on the whole site.",
+    "Sitenin en üstünde görünen isim. Örnek: Point Croissant": "The name at the top of the site. Example: Point Croissant",
+    "Logo resmi adresi. Örnek: assets/logo-point-croissant.webp": "The logo image address. Example: assets/logo-point-croissant.webp",
+    "Anasayfanın büyük arka plan resmi. Boş bırakılabilir.": "The large homepage background image. You may leave it empty.",
+    "Sağ üstteki düğmenin gideceği sayfa. Örnek: reservation.html": "The page the top-right button opens. Example: reservation.html",
+    "Üst menü, sitenin en üstündeki tıklanabilir yazılardır (Anasayfa, Menü gibi). Yanlış link yazarsanız düğme boş veya hatalı sayfaya gider. Sil o satırı kaldırır. Menüyü Kaydet demeden tarayıcıyı kapatırsanız değişiklik uygulanmaz. Varsayılan Menü, sizin eklediğiniz linkleri siler.":
+      "The top menu is the clickable words at the top of the site (Home, Menu). A wrong link opens an empty or wrong page. Delete removes that row. If you close the browser before Save Menu, the change is not applied. Default Menu deletes the links you added.",
+    "Buraya eklediğiniz resim Galeri bölümünde görünür. Görsel URL, resmin adresi demektir (örnek: assets/foto.webp). Bilgisayardan dosya sürüklemeyin, adresi yazın. Sil, resmi siteden kaldırır ve geri getirmez.":
+      "The image you add here appears in the Gallery. Image URL means the picture address (example: assets/photo.webp). Do not drag a file; type the address. Delete removes the image from the site and it does not come back.",
+    "Buraya eklediğiniz resim Galeri bölümünde, TR / EN / RU / AR / DE dillerinin hepsinde aynı görünür. Bilgisayardan görsel yükleyebilir veya URL yapıştırabilirsiniz. 8 MB üstü dosyalar kabul edilmez. Sil, resmi siteden kaldırır ve geri getirmez.":
+      "The image you add here appears in the Gallery the same in TR / EN / RU / AR / DE. You can upload from your computer or paste a URL. Files over 8 MB are not accepted. Delete removes the image from the site and it does not come back.",
+    "Resmin yolu veya https:// adresi. Boş bırakırsanız kayıt olmaz.": "The image path or https:// address. If empty, it will not save.",
+    "Kaydet, bu etkinliği Etkinlikler sayfasına yazar. Türkçe başlık ve açıklama zorunludur. Sil, etkinliği siteden kaldırır ve geri getirmez.":
+      "Save writes this event to the Events page. Turkish title and description are required. Delete removes the event from the site and it does not come back.",
+    "Etkinliğin kısa adı. Örnek: Pazar Brunch": "The short name of the event. Example: Sunday Brunch",
+    "Ne zaman, ne olacak kısaca yazın.": "Write briefly when it is and what will happen.",
+    "Kaydet, yazıyı Blog sayfasına ekler. Türkçe başlık ve yazı zorunludur. Sil, yazıyı siteden kaldırır. Kapak görseli boşsa logo kullanılır. Kaydetmeden sayfayı kapatırsanız yazı kaybolur.":
+      "Save adds the article to the Blog page. Turkish title and text are required. Delete removes the article from the site. If the cover image is empty, the logo is used. If you close the page before saving, the article is lost.",
+    "Yazının üst resmi. Adres yazın (assets/... veya https://). Boş bırakılabilir.": "The cover image. Type an address (assets/... or https://). You may leave it empty.",
+    "Yazının adı. Müşteri bunu listede görür.": "The article name. Customers see this in the list.",
+    "1-2 cümlelik kısa özet. İsteğe bağlı.": "A short 1–2 sentence summary. Optional.",
+    "Asıl metin buraya yazılır. Boş bırakırsanız kayıt olmaz.": "The main text goes here. If empty, it will not save.",
+    "Bu başlıklar Menü sayfasındaki bölüm adlarıdır. Kaydet deyince müşteri yeni başlığı görür. Boş bırakırsanız eski başlık veya boş yazı çıkabilir.":
+      "These headings are the section names on the Menu page. After Save, customers see the new heading. If you leave them empty, the old heading or empty text may show.",
+    "Önce hangi sayfayı düzenlediğinizi üstteki listeden seçin. Sayfa başlığı Google’da mavi yazı olarak çıkar. Açıklama, arama sonucundaki kısa metindir. Yanlış sayfayı seçip kaydederseniz başka sayfanın Google yazısı değişir.":
+      "First choose which page you are editing from the list above. The page title appears as blue text in Google. The description is the short text in search results. If you pick the wrong page and save, another page’s Google text changes.",
+    "Hangisini değiştirecekseniz onu seçin, sonra başlığı yazıp Kaydet’e basın.": "Select the page you want to change, then type the title and click Save.",
+    "Düzenleme Modunu Aç: seçilen sayfa yeni pencerede açılır. Klavyede Shift tuşunu basılı tutup yazıya tıklayın. Tüm Düzenlemeleri Sıfırla: bu yöntemle yaptığınız bütün yazı değişiklikleri silinir, geri gelmez. Ürün fiyatı ve iletişim için bu bölümü değil, soldaki ilgili formu kullanın.":
+      "Open Edit Mode: the chosen page opens in a new window. Hold Shift on the keyboard and click the text. Reset All Edits: every text change you made this way is deleted and does not come back. For product prices and contact details use the matching form on the left, not this section.",
+    "Boş bırakılan dillerde sitede Türkçe metin gösterilir.": "Empty languages show the Turkish text on the site.",
+    "Görme engelli ziyaretçiler ve arama motorları için kısa açıklama. Tüm dillerde aynı metin kullanılır.":
+      "A short description for visually impaired visitors and search engines. The same text is used in all languages.",
+    "Tatlı, meyveli ve premium etiketleri tüm dillerde aynı görsele uygulanır. Sitede dil değişince yalnızca buton yazısı çevrilir.":
+      "Sweet, fruit and premium labels apply to the same image in all languages. When the site language changes, only the button text is translated."
   },
   ru: {
     "Anasayfa": "Главная",
@@ -879,6 +984,8 @@ const I18N_TEXT = {
     "Görsel": "Изображение",
     "Çoğalt": "Дублировать",
     "Ürün ve Fiyat Yönetimi": "Управление товарами и ценами",
+    "Yönetim Paneli": "Панель управления",
+    "Soldaki menüden bir bölüm seçin. Sadece o bölümün ayarları açılır.": "Выберите раздел в меню слева. Откроется только этот раздел.",
     "Buradan girdiğin ürünler ana sayfa ve menü sayfasına otomatik yansır.": "Товары, введённые здесь, автоматически отображаются на главной странице и в меню.",
     "Ürün Ekle / Güncelle": "Добавить / Обновить товар",
     "Ürün Adı": "Название товара",
@@ -972,6 +1079,25 @@ const I18N_TEXT = {
     "Düzenleme modu kapatıldı.": "Режим редактирования закрыт.",
     "Tüm sayfa içerik düzenlemeleri sıfırlandı.": "Все правки контента на страницах сброшены.",
     "Görsel URL": "URL изображения",
+    "Galeri görseli": "Изображение галереи",
+    "Logo": "Логотип",
+    "Ürün görseli (TR)": "Изображение товара (TR)",
+    "Ürün görseli (EN)": "Изображение товара (EN)",
+    "Ürün görseli (RU)": "Изображение товара (RU)",
+    "Ürün görseli (AR)": "Изображение товара (AR)",
+    "Ürün görseli (DE)": "Изображение товара (DE)",
+    "Görsel yükle": "Загрузить изображение",
+    "Görseli değiştir": "Изменить изображение",
+    "veya görsel URL / dosya yolu yapıştırın": "или вставьте URL / путь к файлу",
+    "Uygula": "Применить",
+    "İptal": "Отмена",
+    "Önerilen boyut: 512×512 px (kare). PNG veya WebP, şeffaf arka plan tercih edilir. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Рекомендуемый размер: 512×512 px (квадрат). PNG или WebP, лучше с прозрачным фоном. Максимум 8 МБ.",
+    "Önerilen boyut: 1920×1080 px (yatay 16:9). JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Рекомендуемый размер: 1920×1080 px (16:9). JPEG или WebP. Максимум 8 МБ.",
+    "Önerilen boyut: 1400×875 px (yatay 16:10). JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Рекомендуемый размер: 1400×875 px (16:10). JPEG или WebP. Максимум 8 МБ.",
+    "Önerilen boyut: 1600×1200 px (yatay 4:3). JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Рекомендуемый размер: 1600×1200 px (4:3). JPEG или WebP. Максимум 8 МБ.",
+    "Önerilen boyut: 1400×900 px (kapak, yatay). JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Рекомендуемый размер: 1400×900 px (обложка). JPEG или WebP. Максимум 8 МБ.",
+    "Önerilen boyut: 1600×1200 px. JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Рекомендуемый размер: 1600×1200 px. JPEG или WebP. Максимум 8 МБ.",
+    "Görsel yüklendi. Kaydet’e basmayı unutmayın. Başka bir internet adresi kullanmak isterseniz alandaki yazıyı silip URL yapıştırın.": "Изображение загружено. Не забудьте нажать Сохранить.",
     "Alt metni": "Alt-текст",
     "Link metni": "Текст ссылки",
     "Link adresi": "Адрес ссылки",
@@ -1009,6 +1135,15 @@ const I18N_TEXT = {
     "Etiket (DE)": "Тег (DE)",
     "Ürün Görsel URL (AR)": "URL изображения товара (AR)",
     "Ürün Görsel URL (DE)": "URL изображения товара (DE)",
+    "Ürün fotoğrafı": "Фото товара",
+    "Ürün fotoğrafı (TR)": "Фото товара (TR)",
+    "Fotoğraf seç": "Выбрать фото",
+    "Etkinlik fotoğrafı": "Фото мероприятия",
+    "Kapak fotoğrafı": "Обложка",
+    "Galeri fotoğrafı": "Фото галереи",
+    "Logo fotoğrafı": "Фото логотипа",
+    "Anasayfa arka plan fotoğrafı": "Фон главной страницы",
+    "Fotoğraf seçin veya adres yapıştırın": "Выберите фото или вставьте адрес",
     "Adres (AR)": "Адрес (AR)",
     "Adres (DE)": "Адрес (DE)",
     "Harita Konum Metni (AR)": "Текст локации на карте (AR)",
@@ -1030,7 +1165,64 @@ const I18N_TEXT = {
     "WhatsApp hazır mesaj (DE)": "Готовое сообщение WhatsApp (DE)",
     "Çalışma Saatleri": "Часы работы",
     "Çalışma Saatleri:": "Часы работы:",
-    "İmza / özel seçkiye ekle": "Добавить в фирменную / особую подборку"
+    "İmza / özel seçkiye ekle": "Добавить в фирменную / особую подборку",
+    "Dikkat": "Внимание",
+    "Önemli": "Важно",
+    "Kaydetmeden önce okuyun": "Прочитайте перед сохранением",
+    "Kaydetmeden / sıfırlamadan önce okuyun": "Прочитайте перед сохранением или сбросом",
+    "Bu sayfa müşterilerin gördüğü internet sitesini değiştirir. Şifreyi yalnızca yetkili kişi yazmalıdır. Şifreyi kimseyle paylaşmayın. Yanlış yazarsanız giriş olmaz; kutuyu boşaltıp tekrar deneyin.":
+      "Эта страница меняет сайт, который видят клиенты. Пароль должен вводить только уполномоченный человек. Никому не сообщайте пароль. Если ошиблись — вход не откроется; очистите поле и попробуйте снова.",
+    "Klavyeden şifreyi yazın, sonra Giriş Yap’a basın. Enter tuşu da aynı işi yapar.":
+      "Введите пароль на клавиатуре и нажмите Войти. Клавиша Enter делает то же самое.",
+    "Kaydet’e basmadan tarayıcıyı kapatırsanız yazdıklarınız silinir. Her bölümün kendi Kaydet düğmesi vardır. Yanlış kaydı geri almak zordur; kaydetmeden önce yazıyı bir kez daha okuyun.":
+      "Если закрыть браузер до «Сохранить», введённый текст пропадёт. У каждого раздела своя кнопка сохранения. Ошибку сложно отменить; перечитайте текст перед сохранением.",
+    "Önce soldaki bölümü açın, formu doldurun, Kaydet’e basın. Kaydetmeden sayfayı kapatırsanız yazdıklarınız kaybolur. Ürün ve ayarlar kaydolduktan sonra içerik düzenleyiciden ilgili sayfayı açın.":
+      "Сначала откройте раздел слева, заполните форму и нажмите Сохранить. Если закрыть страницу до сохранения, текст пропадёт. После сохранения товаров и настроек откройте нужную страницу в редакторе.",
+    "Kaydet = bu ürün müşterinin gördüğü anasayfa ve menüde görünür. Sil = ürün siteden kalkar, geri gelmez. Varsayılana Dön = sizin eklediğiniz bütün ürünler silinir, eski örnek ürünler gelir. Türkçe ad, açıklama ve fiyat zorunludur. Diğer diller boş kalırsa Türkçe gösterilir.":
+      "Сохранить = товар появится на главной и в меню. Удалить = товар исчезнет с сайта и не вернётся. По умолчанию = все ваши товары удалятся, вернутся примеры. Турецкие название, описание и цена обязательны. Пустые языки показывают турецкий текст.",
+    "Müşterinin menüde göreceği isim. Örnek: Antep Fıstıklı Kruvasan.": "Имя, которое клиент видит в меню. Пример: круассан с фисташкой.",
+    "Kısa anlatım. Örnek: Antep fıstık kreması ve tereyağlı hamur.": "Короткое описание. Пример: фисташковый крем и сдобное тесто.",
+    "İsteğe bağlı küçük yazı. Örnek: Yeni, En Çok Satan. Boş bırakabilirsiniz.": "Необязательная маленькая метка. Пример: Новинка. Можно оставить пустым.",
+    "Sadece sayı yazın, TL yazmayın. Örnek: 120. Virgül değil, nokta da kullanmayın.": "Пишите только число, без TL. Пример: 120. Без запятой и точки.",
+    "Telefondan veya bilgisayardan fotoğraf seçin. Kaydet’e basınca menü ve ürün listesinde görünür.":
+      "Выберите фото с телефона или компьютера. После Сохранить оно появится в меню и списке товаров.",
+    "Sil kalıcıdır, ürün siteden kalkar. Çoğalt aynı üründen bir tane daha oluşturur (sitede iki ürün görünür). JSON İçeri Aktar listedeki bütün ürünlerin yerine dosyadaki ürünleri koyar; sizin listeniz silinir. JSON Dışa Aktar yedek dosya indirir, sitedeki ürünleri silmez.":
+      "Удаление постоянно. Копия создаёт ещё один такой товар. Импорт JSON заменяет весь список файлом. Экспорт JSON скачивает копию и не удаляет товары с сайта.",
+    "Buradaki telefon, WhatsApp, e-posta ve adres müşterinin sizi araması içindir. Yanlış numara yazarsanız kimse ulaşamaz. Kaydet deyince sitedeki iletişim bilgileri değişir. Varsayılan Ayarlar, sizin yazdığınız iletişim bilgilerini siler ve eski örneği geri koyar.":
+      "Телефон, WhatsApp, почта и адрес нужны, чтобы клиент мог вам позвонить. Неверный номер — никто не дозвониться. Сохранить меняет контакты на сайте. Настройки по умолчанию удаляют ваши данные.",
+    "Ekranda görünen yazı. Boşluk bırakabilirsiniz. Örnek: 0532 315 07 77": "Текст на экране. Пробелы можно. Пример: 0532 315 07 77",
+    "Arama için. Başında +90 olsun, boşluk ve çizgi olmasın. Örnek: +905323150777": "Для звонка. Начните с +90, без пробелов и тире. Пример: +905323150777",
+    "Ekranda görünen WhatsApp yazısı. Örnek: 0532 315 07 77": "Текст WhatsApp на экране. Пример: 0532 315 07 77",
+    "Sadece rakam. + işareti yok. Ülke kodu 90 ile başlasın. Örnek: 905323150777": "Только цифры. Без +. Начните с 90. Пример: 905323150777",
+    "@ işareti olan adres. Örnek: hello@pointcroissant.com": "Адрес со знаком @. Пример: hello@pointcroissant.com",
+    "Müşterinin okuyacağı açık adres. Mahalle, cadde, no, ilçe, şehir yazın.": "Полный адрес для клиента. Район, улица, номер, город.",
+    "Marka adı, logo ve slogan sitede hemen her sayfada görünür. Logo adresini yanlış yazarsanız resim kırık çıkar. Kaydet deyince değişiklik tüm sitede uygulanır.":
+      "Название, логотип и слоган видны почти на каждой странице. Неверный адрес логотипа даёт битую картинку.",
+    "Marka adı, logo ve slogan sitede hemen her sayfada görünür. Logoyu ve arka planı buradan yükleyebilirsiniz. Kaydet deyince değişiklik tüm sitede uygulanır.":
+      "Название, логотип и слоган видны почти на каждой странице. Логотип и фон можно загрузить здесь.",
+    "Sitenin en üstünde görünen isim. Örnek: Point Croissant": "Имя вверху сайта. Пример: Point Croissant",
+    "Sağ üstteki düğmenin gideceği sayfa. Örnek: reservation.html": "Страница кнопки справа вверху. Пример: reservation.html",
+    "Üst menü, sitenin en üstündeki tıklanabilir yazılardır (Anasayfa, Menü gibi). Yanlış link yazarsanız düğme boş veya hatalı sayfaya gider. Sil o satırı kaldırır. Menüyü Kaydet demeden tarayıcıyı kapatırsanız değişiklik uygulanmaz. Varsayılan Menü, sizin eklediğiniz linkleri siler.":
+      "Верхнее меню — кликабельные слова вверху сайта. Неверная ссылка открывает пустую страницу. Удалить убирает строку. Без «Сохранить меню» изменения не применятся.",
+    "Buraya eklediğiniz resim Galeri bölümünde, TR / EN / RU / AR / DE dillerinin hepsinde aynı görünür. Bilgisayardan görsel yükleyebilir veya URL yapıştırabilirsiniz. 8 MB üstü dosyalar kabul edilmez. Sil, resmi siteden kaldırır ve geri getirmez.":
+      "Это фото одинаково во всех языках в Галерее. Можно загрузить с компьютера или вставить URL. Файлы больше 8 МБ не принимаются. Удалить убирает фото с сайта.",
+    "Kaydet, bu etkinliği Etkinlikler sayfasına yazar. Türkçe başlık ve açıklama zorunludur. Sil, etkinliği siteden kaldırır ve geri getirmez.":
+      "Сохранить пишет событие на страницу События. Нужны турецкие заголовок и описание. Удалить убирает событие с сайта.",
+    "Etkinliğin kısa adı. Örnek: Pazar Brunch": "Короткое имя события. Пример: Воскресный бранч",
+    "Ne zaman, ne olacak kısaca yazın.": "Кратко напишите, когда и что будет.",
+    "Kaydet, yazıyı Blog sayfasına ekler. Türkçe başlık ve yazı zorunludur. Sil, yazıyı siteden kaldırır. Kapak görseli boşsa logo kullanılır. Kaydetmeden sayfayı kapatırsanız yazı kaybolur.":
+      "Сохранить добавляет статью на страницу Блог. Нужны турецкие заголовок и текст. Удалить убирает статью. Пустая обложка = логотип.",
+    "Yazının adı. Müşteri bunu listede görür.": "Название статьи. Клиент видит его в списке.",
+    "1-2 cümlelik kısa özet. İsteğe bağlı.": "Короткое резюме в 1–2 предложения. Необязательно.",
+    "Asıl metin buraya yazılır. Boş bırakırsanız kayıt olmaz.": "Основной текст пишется сюда. Пустое поле не сохранится.",
+    "Bu başlıklar Menü sayfasındaki bölüm adlarıdır. Kaydet deyince müşteri yeni başlığı görür. Boş bırakırsanız eski başlık veya boş yazı çıkabilir.":
+      "Это названия разделов на странице Меню. После сохранения клиент видит новый заголовок.",
+    "Önce hangi sayfayı düzenlediğinizi üstteki listeden seçin. Sayfa başlığı Google’da mavi yazı olarak çıkar. Açıklama, arama sonucundaki kısa metindir. Yanlış sayfayı seçip kaydederseniz başka sayfanın Google yazısı değişir.":
+      "Сначала выберите страницу в списке сверху. Заголовок — синий текст в Google. Описание — короткий текст в поиске. Неверная страница меняет чужой текст в Google.",
+    "Hangisini değiştirecekseniz onu seçin, sonra başlığı yazıp Kaydet’e basın.": "Выберите нужную страницу, введите заголовок и нажмите Сохранить.",
+    "Düzenleme Modunu Aç: seçilen sayfa yeni pencerede açılır. Klavyede Shift tuşunu basılı tutup yazıya tıklayın. Tüm Düzenlemeleri Sıfırla: bu yöntemle yaptığınız bütün yazı değişiklikleri silinir, geri gelmez. Ürün fiyatı ve iletişim için bu bölümü değil, soldaki ilgili formu kullanın.":
+      "Открыть режим правки: страница откроется в новом окне. Удерживайте Shift и нажмите на текст. Сбросить все правки удаляет все такие изменения без возврата. Цены и контакты меняйте формой слева.",
+    "Boş bırakılan dillerde sitede Türkçe metin gösterilir.": "Для пустых языков на сайте показывается турецкий текст."
   },
   de: {
     "Anasayfa": "Startseite",
@@ -1321,6 +1513,8 @@ const I18N_TEXT = {
     "Görsel": "Bild",
     "Çoğalt": "Duplizieren",
     "Ürün ve Fiyat Yönetimi": "Produkt- und Preisverwaltung",
+    "Yönetim Paneli": "Verwaltungsbereich",
+    "Soldaki menüden bir bölüm seçin. Sadece o bölümün ayarları açılır.": "Wählen Sie links einen Bereich. Es öffnet sich nur dieser Bereich.",
     "Buradan girdiğin ürünler ana sayfa ve menü sayfasına otomatik yansır.": "Hier eingegebene Produkte erscheinen automatisch auf der Startseite und der Menüseite.",
     "Ürün Ekle / Güncelle": "Produkt hinzufügen / aktualisieren",
     "Ürün Adı": "Produktname",
@@ -1413,6 +1607,25 @@ const I18N_TEXT = {
     "Düzenleme modu kapatıldı.": "Bearbeitungsmodus geschlossen.",
     "Tüm sayfa içerik düzenlemeleri sıfırlandı.": "Alle Inhaltsbearbeitungen der Seiten wurden zurückgesetzt.",
     "Görsel URL": "Bild-URL",
+    "Galeri görseli": "Galeriebild",
+    "Logo": "Logo",
+    "Ürün görseli (TR)": "Produktbild (TR)",
+    "Ürün görseli (EN)": "Produktbild (EN)",
+    "Ürün görseli (RU)": "Produktbild (RU)",
+    "Ürün görseli (AR)": "Produktbild (AR)",
+    "Ürün görseli (DE)": "Produktbild (DE)",
+    "Görsel yükle": "Bild hochladen",
+    "Görseli değiştir": "Bild ändern",
+    "veya görsel URL / dosya yolu yapıştırın": "oder Bild-URL / Dateipfad einfügen",
+    "Uygula": "Übernehmen",
+    "İptal": "Abbrechen",
+    "Önerilen boyut: 512×512 px (kare). PNG veya WebP, şeffaf arka plan tercih edilir. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Empfohlene Größe: 512×512 px (quadratisch). PNG oder WebP, transparenter Hintergrund bevorzugt. Maximal 8 MB.",
+    "Önerilen boyut: 1920×1080 px (yatay 16:9). JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Empfohlene Größe: 1920×1080 px (16:9). JPEG oder WebP. Maximal 8 MB.",
+    "Önerilen boyut: 1400×875 px (yatay 16:10). JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Empfohlene Größe: 1400×875 px (16:10). JPEG oder WebP. Maximal 8 MB.",
+    "Önerilen boyut: 1600×1200 px (yatay 4:3). JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Empfohlene Größe: 1600×1200 px (4:3). JPEG oder WebP. Maximal 8 MB.",
+    "Önerilen boyut: 1400×900 px (kapak, yatay). JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Empfohlene Größe: 1400×900 px (Titelbild). JPEG oder WebP. Maximal 8 MB.",
+    "Önerilen boyut: 1600×1200 px. JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "Empfohlene Größe: 1600×1200 px. JPEG oder WebP. Maximal 8 MB.",
+    "Görsel yüklendi. Kaydet’e basmayı unutmayın. Başka bir internet adresi kullanmak isterseniz alandaki yazıyı silip URL yapıştırın.": "Bild hochgeladen. Bitte Speichern nicht vergessen.",
     "Alt metni": "Alt-Text",
     "Link metni": "Linktext",
     "Link adresi": "Link-URL",
@@ -1450,6 +1663,15 @@ const I18N_TEXT = {
     "Etiket (DE)": "Tag (DE)",
     "Ürün Görsel URL (AR)": "Produktbild-URL (AR)",
     "Ürün Görsel URL (DE)": "Produktbild-URL (DE)",
+    "Ürün fotoğrafı": "Produktfoto",
+    "Ürün fotoğrafı (TR)": "Produktfoto (TR)",
+    "Fotoğraf seç": "Foto wählen",
+    "Etkinlik fotoğrafı": "Veranstaltungsfoto",
+    "Kapak fotoğrafı": "Titelbild",
+    "Galeri fotoğrafı": "Galerie-Foto",
+    "Logo fotoğrafı": "Logo-Foto",
+    "Anasayfa arka plan fotoğrafı": "Startseiten-Hintergrundfoto",
+    "Fotoğraf seçin veya adres yapıştırın": "Foto wählen oder Adresse einfügen",
     "Adres (AR)": "Adresse (AR)",
     "Adres (DE)": "Adresse (DE)",
     "Harita Konum Metni (AR)": "Kartenstandorttext (AR)",
@@ -1471,7 +1693,64 @@ const I18N_TEXT = {
     "WhatsApp hazır mesaj (DE)": "WhatsApp-Begrüßung (DE)",
     "Çalışma Saatleri": "Öffnungszeiten",
     "Çalışma Saatleri:": "Öffnungszeiten:",
-    "İmza / özel seçkiye ekle": "Zur Signatur- / Spezialauswahl hinzufügen"
+    "İmza / özel seçkiye ekle": "Zur Signatur- / Spezialauswahl hinzufügen",
+    "Dikkat": "Achtung",
+    "Önemli": "Wichtig",
+    "Kaydetmeden önce okuyun": "Lesen Sie das vor dem Speichern",
+    "Kaydetmeden / sıfırlamadan önce okuyun": "Lesen Sie das vor dem Speichern oder Zurücksetzen",
+    "Bu sayfa müşterilerin gördüğü internet sitesini değiştirir. Şifreyi yalnızca yetkili kişi yazmalıdır. Şifreyi kimseyle paylaşmayın. Yanlış yazarsanız giriş olmaz; kutuyu boşaltıp tekrar deneyin.":
+      "Diese Seite ändert die Website, die Kunden sehen. Nur eine berechtigte Person soll das Passwort eingeben. Teilen Sie es nicht. Bei falscher Eingabe gibt es keinen Zugang; Feld leeren und erneut versuchen.",
+    "Klavyeden şifreyi yazın, sonra Giriş Yap’a basın. Enter tuşu da aynı işi yapar.":
+      "Tippen Sie das Passwort und klicken Sie auf Anmelden. Die Enter-Taste macht dasselbe.",
+    "Kaydet’e basmadan tarayıcıyı kapatırsanız yazdıklarınız silinir. Her bölümün kendi Kaydet düğmesi vardır. Yanlış kaydı geri almak zordur; kaydetmeden önce yazıyı bir kez daha okuyun.":
+      "Wenn Sie den Browser vor Speichern schließen, ist der Text weg. Jeder Bereich hat eine eigene Speichern-Taste. Falsches Speichern ist schwer rückgängig; lesen Sie den Text vorher noch einmal.",
+    "Önce soldaki bölümü açın, formu doldurun, Kaydet’e basın. Kaydetmeden sayfayı kapatırsanız yazdıklarınız kaybolur. Ürün ve ayarlar kaydolduktan sonra içerik düzenleyiciden ilgili sayfayı açın.":
+      "Öffnen Sie zuerst einen Abschnitt links, füllen Sie das Formular und klicken Sie Speichern. Ohne Speichern geht der Text verloren. Danach öffnen Sie die Seite im Inhaltseditor.",
+    "Kaydet = bu ürün müşterinin gördüğü anasayfa ve menüde görünür. Sil = ürün siteden kalkar, geri gelmez. Varsayılana Dön = sizin eklediğiniz bütün ürünler silinir, eski örnek ürünler gelir. Türkçe ad, açıklama ve fiyat zorunludur. Diğer diller boş kalırsa Türkçe gösterilir.":
+      "Speichern = das Produkt erscheint auf Startseite und Speisekarte. Löschen = das Produkt verschwindet dauerhaft. Standard = Ihre Produkte werden gelöscht, Beispiele kommen zurück. Türkischer Name, Beschreibung und Preis sind Pflicht. Leere Sprachen zeigen Türkisch.",
+    "Müşterinin menüde göreceği isim. Örnek: Antep Fıstıklı Kruvasan.": "Der Name auf der Speisekarte. Beispiel: Pistazien-Croissant.",
+    "Kısa anlatım. Örnek: Antep fıstık kreması ve tereyağlı hamur.": "Kurze Beschreibung. Beispiel: Pistaziencreme und Butterteig.",
+    "İsteğe bağlı küçük yazı. Örnek: Yeni, En Çok Satan. Boş bırakabilirsiniz.": "Optionales kleines Label. Beispiel: Neu. Darf leer bleiben.",
+    "Sadece sayı yazın, TL yazmayın. Örnek: 120. Virgül değil, nokta da kullanmayın.": "Nur Zahlen, kein TL. Beispiel: 120. Kein Komma und kein Punkt.",
+    "Telefondan veya bilgisayardan fotoğraf seçin. Kaydet’e basınca menü ve ürün listesinde görünür.":
+      "Wählen Sie ein Foto vom Telefon oder Computer. Nach Speichern erscheint es in Speisekarte und Produktliste.",
+    "Sil kalıcıdır, ürün siteden kalkar. Çoğalt aynı üründen bir tane daha oluşturur (sitede iki ürün görünür). JSON İçeri Aktar listedeki bütün ürünlerin yerine dosyadaki ürünleri koyar; sizin listeniz silinir. JSON Dışa Aktar yedek dosya indirir, sitedeki ürünleri silmez.":
+      "Löschen ist dauerhaft. Duplizieren erzeugt ein zweites Produkt. JSON-Import ersetzt die ganze Liste. JSON-Export lädt eine Sicherung und löscht nichts auf der Website.",
+    "Buradaki telefon, WhatsApp, e-posta ve adres müşterinin sizi araması içindir. Yanlış numara yazarsanız kimse ulaşamaz. Kaydet deyince sitedeki iletişim bilgileri değişir. Varsayılan Ayarlar, sizin yazdığınız iletişim bilgilerini siler ve eski örneği geri koyar.":
+      "Telefon, WhatsApp, E-Mail und Adresse sind dafür da, dass Kunden Sie erreichen. Eine falsche Nummer bedeutet, niemand kommt durch. Speichern ändert die Kontakte auf der Website. Standard löscht Ihre Angaben.",
+    "Ekranda görünen yazı. Boşluk bırakabilirsiniz. Örnek: 0532 315 07 77": "Der Text auf dem Bildschirm. Leerzeichen sind erlaubt. Beispiel: 0532 315 07 77",
+    "Arama için. Başında +90 olsun, boşluk ve çizgi olmasın. Örnek: +905323150777": "Zum Anrufen. Beginnen Sie mit +90, ohne Leerzeichen oder Bindestriche. Beispiel: +905323150777",
+    "Ekranda görünen WhatsApp yazısı. Örnek: 0532 315 07 77": "Der WhatsApp-Text auf dem Bildschirm. Beispiel: 0532 315 07 77",
+    "Sadece rakam. + işareti yok. Ülke kodu 90 ile başlasın. Örnek: 905323150777": "Nur Ziffern. Kein +. Beginnen Sie mit 90. Beispiel: 905323150777",
+    "@ işareti olan adres. Örnek: hello@pointcroissant.com": "Eine Adresse mit @. Beispiel: hello@pointcroissant.com",
+    "Müşterinin okuyacağı açık adres. Mahalle, cadde, no, ilçe, şehir yazın.": "Die volle Adresse für Kunden. Stadtteil, Straße, Nummer, Stadt.",
+    "Marka adı, logo ve slogan sitede hemen her sayfada görünür. Logo adresini yanlış yazarsanız resim kırık çıkar. Kaydet deyince değişiklik tüm sitede uygulanır.":
+      "Markenname, Logo und Slogan erscheinen auf fast jeder Seite. Eine falsche Logo-Adresse zeigt ein kaputtes Bild.",
+    "Marka adı, logo ve slogan sitede hemen her sayfada görünür. Logoyu ve arka planı buradan yükleyebilirsiniz. Kaydet deyince değişiklik tüm sitede uygulanır.":
+      "Markenname, Logo und Slogan erscheinen auf fast jeder Seite. Logo und Hintergrund können Sie hier hochladen.",
+    "Sitenin en üstünde görünen isim. Örnek: Point Croissant": "Der Name oben auf der Website. Beispiel: Point Croissant",
+    "Sağ üstteki düğmenin gideceği sayfa. Örnek: reservation.html": "Die Seite der Schaltfläche oben rechts. Beispiel: reservation.html",
+    "Üst menü, sitenin en üstündeki tıklanabilir yazılardır (Anasayfa, Menü gibi). Yanlış link yazarsanız düğme boş veya hatalı sayfaya gider. Sil o satırı kaldırır. Menüyü Kaydet demeden tarayıcıyı kapatırsanız değişiklik uygulanmaz. Varsayılan Menü, sizin eklediğiniz linkleri siler.":
+      "Das obere Menü sind die klickbaren Wörter oben. Ein falscher Link öffnet eine leere Seite. Löschen entfernt die Zeile. Ohne Menü speichern gilt die Änderung nicht.",
+    "Buraya eklediğiniz resim Galeri bölümünde, TR / EN / RU / AR / DE dillerinin hepsinde aynı görünür. Bilgisayardan görsel yükleyebilir veya URL yapıştırabilirsiniz. 8 MB üstü dosyalar kabul edilmez. Sil, resmi siteden kaldırır ve geri getirmez.":
+      "Das Bild erscheint in der Galerie in allen Sprachen gleich. Upload vom Computer oder URL einfügen. Dateien über 8 MB werden abgelehnt. Löschen entfernt das Bild dauerhaft.",
+    "Kaydet, bu etkinliği Etkinlikler sayfasına yazar. Türkçe başlık ve açıklama zorunludur. Sil, etkinliği siteden kaldırır ve geri getirmez.":
+      "Speichern schreibt das Event auf die Events-Seite. Türkischer Titel und Beschreibung sind Pflicht. Löschen entfernt das Event dauerhaft.",
+    "Etkinliğin kısa adı. Örnek: Pazar Brunch": "Der kurze Eventname. Beispiel: Sonntagsbrunch",
+    "Ne zaman, ne olacak kısaca yazın.": "Schreiben Sie kurz, wann es ist und was passiert.",
+    "Kaydet, yazıyı Blog sayfasına ekler. Türkçe başlık ve yazı zorunludur. Sil, yazıyı siteden kaldırır. Kapak görseli boşsa logo kullanılır. Kaydetmeden sayfayı kapatırsanız yazı kaybolur.":
+      "Speichern fügt den Artikel zur Blog-Seite hinzu. Türkischer Titel und Text sind Pflicht. Löschen entfernt den Artikel. Leeres Titelbild = Logo.",
+    "Yazının adı. Müşteri bunu listede görür.": "Der Artikelname. Kunden sehen ihn in der Liste.",
+    "1-2 cümlelik kısa özet. İsteğe bağlı.": "Kurze Zusammenfassung in 1–2 Sätzen. Optional.",
+    "Asıl metin buraya yazılır. Boş bırakırsanız kayıt olmaz.": "Der Haupttext kommt hierhin. Leer speichert nicht.",
+    "Bu başlıklar Menü sayfasındaki bölüm adlarıdır. Kaydet deyince müşteri yeni başlığı görür. Boş bırakırsanız eski başlık veya boş yazı çıkabilir.":
+      "Das sind die Abschnittsnamen auf der Speisekarte. Nach Speichern sehen Kunden die neue Überschrift.",
+    "Önce hangi sayfayı düzenlediğinizi üstteki listeden seçin. Sayfa başlığı Google’da mavi yazı olarak çıkar. Açıklama, arama sonucundaki kısa metindir. Yanlış sayfayı seçip kaydederseniz başka sayfanın Google yazısı değişir.":
+      "Wählen Sie zuerst die Seite in der Liste oben. Der Titel erscheint in Google blau. Die Beschreibung ist der kurze Suchtext. Die falsche Seite ändert einen anderen Google-Text.",
+    "Hangisini değiştirecekseniz onu seçin, sonra başlığı yazıp Kaydet’e basın.": "Wählen Sie die Seite, tippen Sie den Titel und klicken Sie Speichern.",
+    "Düzenleme Modunu Aç: seçilen sayfa yeni pencerede açılır. Klavyede Shift tuşunu basılı tutup yazıya tıklayın. Tüm Düzenlemeleri Sıfırla: bu yöntemle yaptığınız bütün yazı değişiklikleri silinir, geri gelmez. Ürün fiyatı ve iletişim için bu bölümü değil, soldaki ilgili formu kullanın.":
+      "Bearbeitungsmodus öffnen: die Seite öffnet sich in einem neuen Fenster. Shift halten und auf den Text klicken. Alle Bearbeitungen zurücksetzen löscht diese Änderungen dauerhaft. Preise und Kontakte über das passende Formular links ändern.",
+    "Boş bırakılan dillerde sitede Türkçe metin gösterilir.": "Leere Sprachen zeigen den türkischen Text auf der Website."
   },
   ar: {
     "Anasayfa": "الرئيسية",
@@ -1762,6 +2041,8 @@ const I18N_TEXT = {
     "Görsel": "صورة",
     "Çoğalt": "تكرار",
     "Ürün ve Fiyat Yönetimi": "إدارة المنتجات والأسعار",
+    "Yönetim Paneli": "لوحة الإدارة",
+    "Soldaki menüden bir bölüm seçin. Sadece o bölümün ayarları açılır.": "اختر قسماً من القائمة اليسرى. يُفتح هذا القسم فقط.",
     "Buradan girdiğin ürünler ana sayfa ve menü sayfasına otomatik yansır.": "المنتجات المُدخلة هنا تظهر تلقائياً في الصفحة الرئيسية وصفحة القائمة.",
     "Ürün Ekle / Güncelle": "إضافة / تحديث منتج",
     "Ürün Adı": "اسم المنتج",
@@ -1854,6 +2135,25 @@ const I18N_TEXT = {
     "Düzenleme modu kapatıldı.": "تم إغلاق وضع التحرير.",
     "Tüm sayfa içerik düzenlemeleri sıfırlandı.": "تمت إعادة تعيين كل تعديلات محتوى الصفحات.",
     "Görsel URL": "URL الصورة",
+    "Galeri görseli": "صورة المعرض",
+    "Logo": "الشعار",
+    "Ürün görseli (TR)": "صورة المنتج (TR)",
+    "Ürün görseli (EN)": "صورة المنتج (EN)",
+    "Ürün görseli (RU)": "صورة المنتج (RU)",
+    "Ürün görseli (AR)": "صورة المنتج (AR)",
+    "Ürün görseli (DE)": "صورة المنتج (DE)",
+    "Görsel yükle": "رفع صورة",
+    "Görseli değiştir": "تغيير الصورة",
+    "veya görsel URL / dosya yolu yapıştırın": "أو الصق رابط الصورة / مسار الملف",
+    "Uygula": "تطبيق",
+    "İptal": "إلغاء",
+    "Önerilen boyut: 512×512 px (kare). PNG veya WebP, şeffaf arka plan tercih edilir. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "الحجم الموصى به: 512×512 بكسل (مربع). PNG أو WebP مع خلفية شفافة. الحد الأقصى 8 ميغابايت.",
+    "Önerilen boyut: 1920×1080 px (yatay 16:9). JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "الحجم الموصى به: 1920×1080 بكسل (16:9). JPEG أو WebP. الحد الأقصى 8 ميغابايت.",
+    "Önerilen boyut: 1400×875 px (yatay 16:10). JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "الحجم الموصى به: 1400×875 بكسل (16:10). JPEG أو WebP. الحد الأقصى 8 ميغابايت.",
+    "Önerilen boyut: 1600×1200 px (yatay 4:3). JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "الحجم الموصى به: 1600×1200 بكسل (4:3). JPEG أو WebP. الحد الأقصى 8 ميغابايت.",
+    "Önerilen boyut: 1400×900 px (kapak, yatay). JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "الحجم الموصى به: 1400×900 بكسل (غلاف). JPEG أو WebP. الحد الأقصى 8 ميغابايت.",
+    "Önerilen boyut: 1600×1200 px. JPEG veya WebP. En fazla 8 MB. Daha büyük dosyalar yüklenmez.": "الحجم الموصى به: 1600×1200 بكسل. JPEG أو WebP. الحد الأقصى 8 ميغابايت.",
+    "Görsel yüklendi. Kaydet’e basmayı unutmayın. Başka bir internet adresi kullanmak isterseniz alandaki yazıyı silip URL yapıştırın.": "تم رفع الصورة. لا تنسَ الضغط على حفظ.",
     "Alt metni": "النص البديل",
     "Link metni": "نص الرابط",
     "Link adresi": "URL الرابط",
@@ -1891,6 +2191,15 @@ const I18N_TEXT = {
     "Etiket (DE)": "الوسم (DE)",
     "Ürün Görsel URL (AR)": "URL صورة المنتج (AR)",
     "Ürün Görsel URL (DE)": "URL صورة المنتج (DE)",
+    "Ürün fotoğrafı": "صورة المنتج",
+    "Ürün fotoğrafı (TR)": "صورة المنتج (TR)",
+    "Fotoğraf seç": "اختر صورة",
+    "Etkinlik fotoğrafı": "صورة الفعالية",
+    "Kapak fotoğrafı": "صورة الغلاف",
+    "Galeri fotoğrafı": "صورة المعرض",
+    "Logo fotoğrafı": "صورة الشعار",
+    "Anasayfa arka plan fotoğrafı": "خلفية الصفحة الرئيسية",
+    "Fotoğraf seçin veya adres yapıştırın": "اختر صورة أو الصق الرابط",
     "Adres (AR)": "العنوان (AR)",
     "Adres (DE)": "العنوان (DE)",
     "Harita Konum Metni (AR)": "نص موقع الخريطة (AR)",
@@ -1912,7 +2221,64 @@ const I18N_TEXT = {
     "WhatsApp hazır mesaj (DE)": "رسالة WhatsApp الجاهزة (DE)",
     "Çalışma Saatleri": "ساعات العمل",
     "Çalışma Saatleri:": "ساعات العمل:",
-    "İmza / özel seçkiye ekle": "أضف إلى التشكيلة المميزة / الخاصة"
+    "İmza / özel seçkiye ekle": "أضف إلى التشكيلة المميزة / الخاصة",
+    "Dikkat": "انتباه",
+    "Önemli": "مهم",
+    "Kaydetmeden önce okuyun": "اقرأ هذا قبل الحفظ",
+    "Kaydetmeden / sıfırlamadan önce okuyun": "اقرأ هذا قبل الحفظ أو إعادة التعيين",
+    "Bu sayfa müşterilerin gördüğü internet sitesini değiştirir. Şifreyi yalnızca yetkili kişi yazmalıdır. Şifreyi kimseyle paylaşmayın. Yanlış yazarsanız giriş olmaz; kutuyu boşaltıp tekrar deneyin.":
+      "هذه الصفحة تغيّر الموقع الذي يراه الزبائن. يجب أن يكتب كلمة المرور الشخص المخوّل فقط. لا تشاركوها. إن كُتبت خطأ فلن يتم الدخول؛ أفرغوا الخانة وأعيدوا المحاولة.",
+    "Klavyeden şifreyi yazın, sonra Giriş Yap’a basın. Enter tuşu da aynı işi yapar.":
+      "اكتبوا كلمة المرور ثم اضغطوا دخول. مفتاح Enter يفعل الشيء نفسه.",
+    "Kaydet’e basmadan tarayıcıyı kapatırsanız yazdıklarınız silinir. Her bölümün kendi Kaydet düğmesi vardır. Yanlış kaydı geri almak zordur; kaydetmeden önce yazıyı bir kez daha okuyun.":
+      "إن أغلقتم المتصفح قبل حفظ فسيضيع النص. لكل قسم زر حفظ خاص. يصعب التراجع عن حفظ خاطئ؛ اقرأوا النص مرة أخرى قبل الحفظ.",
+    "Önce soldaki bölümü açın, formu doldurun, Kaydet’e basın. Kaydetmeden sayfayı kapatırsanız yazdıklarınız kaybolur. Ürün ve ayarlar kaydolduktan sonra içerik düzenleyiciden ilgili sayfayı açın.":
+      "افتحوا القسم من اليسار، املأوا النموذج ثم اضغطوا حفظ. إن أغلقتم الصفحة قبل الحفظ يضيع النص. بعد حفظ المنتجات والإعدادات افتحوا الصفحة من محرر المحتوى.",
+    "Kaydet = bu ürün müşterinin gördüğü anasayfa ve menüde görünür. Sil = ürün siteden kalkar, geri gelmez. Varsayılana Dön = sizin eklediğiniz bütün ürünler silinir, eski örnek ürünler gelir. Türkçe ad, açıklama ve fiyat zorunludur. Diğer diller boş kalırsa Türkçe gösterilir.":
+      "حفظ = يظهر المنتج في الصفحة الرئيسية والقائمة. حذف = يختفي المنتج ولا يعود. الافتراضي = تُحذف منتجاتكم وتعود الأمثلة. الاسم والوصف والسعر بالتركية إلزامية. اللغات الفارغة تظهر التركية.",
+    "Müşterinin menüde göreceği isim. Örnek: Antep Fıstıklı Kruvasan.": "الاسم الذي يراه الزبون في القائمة. مثال: كرواسان بالفستق.",
+    "Kısa anlatım. Örnek: Antep fıstık kreması ve tereyağlı hamur.": "وصف قصير. مثال: كريمة فستق وعجين بالزبدة.",
+    "İsteğe bağlı küçük yazı. Örnek: Yeni, En Çok Satan. Boş bırakabilirsiniz.": "وسم صغير اختياري. مثال: جديد. يمكن تركه فارغاً.",
+    "Sadece sayı yazın, TL yazmayın. Örnek: 120. Virgül değil, nokta da kullanmayın.": "اكتبوا رقماً فقط دون TL. مثال: 120. بلا فاصلة أو نقطة.",
+    "Telefondan veya bilgisayardan fotoğraf seçin. Kaydet’e basınca menü ve ürün listesinde görünür.":
+      "اختاروا صورة من الهاتف أو الحاسوب. بعد الحفظ تظهر في القائمة وقائمة المنتجات.",
+    "Sil kalıcıdır, ürün siteden kalkar. Çoğalt aynı üründen bir tane daha oluşturur (sitede iki ürün görünür). JSON İçeri Aktar listedeki bütün ürünlerin yerine dosyadaki ürünleri koyar; sizin listeniz silinir. JSON Dışa Aktar yedek dosya indirir, sitedeki ürünleri silmez.":
+      "الحذف نهائي. النسخ ينشئ منتجاً ثانياً. استيراد JSON يستبدل القائمة كلها. تصدير JSON ينزّل نسخة احتياطية ولا يحذف منتجات الموقع.",
+    "Buradaki telefon, WhatsApp, e-posta ve adres müşterinin sizi araması içindir. Yanlış numara yazarsanız kimse ulaşamaz. Kaydet deyince sitedeki iletişim bilgileri değişir. Varsayılan Ayarlar, sizin yazdığınız iletişim bilgilerini siler ve eski örneği geri koyar.":
+      "الهاتف وواتساب والبريد والعنوان ليصل الزبون إليكم. رقم خاطئ يعني أن لا أحد يتصل. الحفظ يغيّر معلومات الموقع. الإعدادات الافتراضية تحذف ما كتبتموه.",
+    "Ekranda görünen yazı. Boşluk bırakabilirsiniz. Örnek: 0532 315 07 77": "النص الظاهر على الشاشة. المسافات مسموحة. مثال: 0532 315 07 77",
+    "Arama için. Başında +90 olsun, boşluk ve çizgi olmasın. Örnek: +905323150777": "للاتصال. ابدأوا بـ +90 بلا مسافات أو شرطات. مثال: +905323150777",
+    "Ekranda görünen WhatsApp yazısı. Örnek: 0532 315 07 77": "نص واتساب الظاهر على الشاشة. مثال: 0532 315 07 77",
+    "Sadece rakam. + işareti yok. Ülke kodu 90 ile başlasın. Örnek: 905323150777": "أرقام فقط بلا +. ابدأوا بـ 90. مثال: 905323150777",
+    "@ işareti olan adres. Örnek: hello@pointcroissant.com": "عنوان فيه علامة @. مثال: hello@pointcroissant.com",
+    "Müşterinin okuyacağı açık adres. Mahalle, cadde, no, ilçe, şehir yazın.": "العنوان الكامل للزبون. الحي والشارع والرقم والمدينة.",
+    "Marka adı, logo ve slogan sitede hemen her sayfada görünür. Logo adresini yanlış yazarsanız resim kırık çıkar. Kaydet deyince değişiklik tüm sitede uygulanır.":
+      "اسم العلامة والشعار يظهران في معظم الصفحات. عنوان شعار خاطئ يظهر صورة مكسورة.",
+    "Marka adı, logo ve slogan sitede hemen her sayfada görünür. Logoyu ve arka planı buradan yükleyebilirsiniz. Kaydet deyince değişiklik tüm sitede uygulanır.":
+      "اسم العلامة والشعار يظهران في معظم الصفحات. يمكن رفع الشعار والخلفية من هنا.",
+    "Sitenin en üstünde görünen isim. Örnek: Point Croissant": "الاسم أعلى الموقع. مثال: Point Croissant",
+    "Sağ üstteki düğmenin gideceği sayfa. Örnek: reservation.html": "صفحة الزر أعلى اليمين. مثال: reservation.html",
+    "Üst menü, sitenin en üstündeki tıklanabilir yazılardır (Anasayfa, Menü gibi). Yanlış link yazarsanız düğme boş veya hatalı sayfaya gider. Sil o satırı kaldırır. Menüyü Kaydet demeden tarayıcıyı kapatırsanız değişiklik uygulanmaz. Varsayılan Menü, sizin eklediğiniz linkleri siler.":
+      "القائمة العلوية كلمات قابلة للنقر أعلى الموقع. رابط خاطئ يفتح صفحة فارغة. حذف يزيل الصف. بلا حفظ القائمة لا يُطبَّق التغيير.",
+    "Buraya eklediğiniz resim Galeri bölümünde, TR / EN / RU / AR / DE dillerinin hepsinde aynı görünür. Bilgisayardan görsel yükleyebilir veya URL yapıştırabilirsiniz. 8 MB üstü dosyalar kabul edilmez. Sil, resmi siteden kaldırır ve geri getirmez.":
+      "الصورة تظهر في المعرض بكل اللغات نفسها. يمكن الرفع من الحاسوب أو لصق رابط. الملفات فوق 8 ميغابايت مرفوضة. الحذف يزيل الصورة نهائياً.",
+    "Kaydet, bu etkinliği Etkinlikler sayfasına yazar. Türkçe başlık ve açıklama zorunludur. Sil, etkinliği siteden kaldırır ve geri getirmez.":
+      "الحفظ يكتب الفعالية في صفحة الفعاليات. العنوان والوصف بالتركية إلزاميان. الحذف يزيل الفعالية نهائياً.",
+    "Etkinliğin kısa adı. Örnek: Pazar Brunch": "الاسم القصير للفعالية. مثال: برانش الأحد",
+    "Ne zaman, ne olacak kısaca yazın.": "اكتبوا باختصار متى وماذا سيحدث.",
+    "Kaydet, yazıyı Blog sayfasına ekler. Türkçe başlık ve yazı zorunludur. Sil, yazıyı siteden kaldırır. Kapak görseli boşsa logo kullanılır. Kaydetmeden sayfayı kapatırsanız yazı kaybolur.":
+      "الحفظ يضيف المقالة لصفحة المدونة. العنوان والنص بالتركية إلزاميان. الحذف يزيل المقالة. غلاف فارغ = الشعار.",
+    "Yazının adı. Müşteri bunu listede görür.": "اسم المقالة. يراه الزبون في القائمة.",
+    "1-2 cümlelik kısa özet. İsteğe bağlı.": "ملخص من جملتين. اختياري.",
+    "Asıl metin buraya yazılır. Boş bırakırsanız kayıt olmaz.": "النص الأساسي يُكتب هنا. الفراغ لا يُحفظ.",
+    "Bu başlıklar Menü sayfasındaki bölüm adlarıdır. Kaydet deyince müşteri yeni başlığı görür. Boş bırakırsanız eski başlık veya boş yazı çıkabilir.":
+      "هذه عناوين الأقسام في صفحة القائمة. بعد الحفظ يرى الزبون العنوان الجديد.",
+    "Önce hangi sayfayı düzenlediğinizi üstteki listeden seçin. Sayfa başlığı Google’da mavi yazı olarak çıkar. Açıklama, arama sonucundaki kısa metindir. Yanlış sayfayı seçip kaydederseniz başka sayfanın Google yazısı değişir.":
+      "اختاروا أولاً الصفحة من القائمة أعلى. عنوان الصفحة يظهر أزرق في Google. الوصف هو النص القصير في البحث. صفحة خاطئة تغيّر نص صفحة أخرى.",
+    "Hangisini değiştirecekseniz onu seçin, sonra başlığı yazıp Kaydet’e basın.": "اختاروا الصفحة ثم اكتبوا العنوان واضغطوا حفظ.",
+    "Düzenleme Modunu Aç: seçilen sayfa yeni pencerede açılır. Klavyede Shift tuşunu basılı tutup yazıya tıklayın. Tüm Düzenlemeleri Sıfırla: bu yöntemle yaptığınız bütün yazı değişiklikleri silinir, geri gelmez. Ürün fiyatı ve iletişim için bu bölümü değil, soldaki ilgili formu kullanın.":
+      "فتح وضع التحرير: تُفتح الصفحة في نافذة جديدة. اضغطوا Shift وانقروا على النص. إعادة تعيين كل التعديلات تحذفها بلا رجوع. غيّروا الأسعار والتواصل من النموذج المناسب في القائمة اليسرى.",
+    "Boş bırakılan dillerde sitede Türkçe metin gösterilir.": "اللغات الفارغة تُظهر النص التركي في الموقع."
   }
 };
 
@@ -1959,14 +2325,18 @@ const ensureSeoMeta = () => {
   const seoTitle =
     (seoEntry && getStoreLocalized(seoEntry.title)) || document.title || "Point Croissant";
   const ogType = OG_ARTICLE_PAGES.has(pageFile) ? "article" : "website";
+  const ogImageRaw = settings?.ogImage || "assets/og-share.jpg";
+  const ogImage = /^https?:/i.test(ogImageRaw)
+    ? ogImageRaw
+    : `${SITE_ORIGIN}/${String(ogImageRaw).replace(/^\//, "")}`;
 
   ensureMetaTag('meta[name="description"]', { name: "description" }, description);
   ensureMetaTag('meta[property="og:type"]', { property: "og:type" }, ogType);
   ensureMetaTag('meta[property="og:title"]', { property: "og:title" }, seoTitle);
   ensureMetaTag('meta[property="og:description"]', { property: "og:description" }, description);
   ensureMetaTag('meta[property="og:url"]', { property: "og:url" }, canonicalUrl);
-  ensureMetaTag('meta[property="og:image"]', { property: "og:image" }, OG_IMAGE);
-  ensureMetaTag('meta[property="og:image:secure_url"]', { property: "og:image:secure_url" }, OG_IMAGE);
+  ensureMetaTag('meta[property="og:image"]', { property: "og:image" }, ogImage);
+  ensureMetaTag('meta[property="og:image:secure_url"]', { property: "og:image:secure_url" }, ogImage);
   ensureMetaTag('meta[property="og:image:type"]', { property: "og:image:type" }, "image/jpeg");
   ensureMetaTag('meta[property="og:image:width"]', { property: "og:image:width" }, "1200");
   ensureMetaTag('meta[property="og:image:height"]', { property: "og:image:height" }, "630");
@@ -1974,7 +2344,7 @@ const ensureSeoMeta = () => {
   ensureMetaTag('meta[name="twitter:card"]', { name: "twitter:card" }, "summary_large_image");
   ensureMetaTag('meta[name="twitter:title"]', { name: "twitter:title" }, seoTitle);
   ensureMetaTag('meta[name="twitter:description"]', { name: "twitter:description" }, description);
-  ensureMetaTag('meta[name="twitter:image"]', { name: "twitter:image" }, OG_IMAGE);
+  ensureMetaTag('meta[name="twitter:image"]', { name: "twitter:image" }, ogImage);
   ensureMetaTag('meta[name="twitter:image:alt"]', { name: "twitter:image:alt" }, OG_IMAGE_ALT);
   ensureMetaTag('meta[property="og:image:alt"]', { property: "og:image:alt" }, OG_IMAGE_ALT);
   ensureMetaTag('meta[property="og:locale"]', { property: "og:locale" }, OG_LOCALES[activeLang] || "tr_TR");
@@ -2264,6 +2634,13 @@ const applySeoFromStore = (lang = activeLang) => {
   const title = entry ? getStoreLocalized(entry.title, lang) : "";
   const description = entry ? getStoreLocalized(entry.description, lang) : "";
   if (title) document.title = title;
+  const ogImageRaw = settings.ogImage || "assets/og-share.jpg";
+  const ogImage = /^https?:/i.test(ogImageRaw)
+    ? ogImageRaw
+    : `${SITE_ORIGIN}/${String(ogImageRaw).replace(/^\//, "")}`;
+  ensureMetaTag('meta[property="og:image"]', { property: "og:image" }, ogImage);
+  ensureMetaTag('meta[property="og:image:secure_url"]', { property: "og:image:secure_url" }, ogImage);
+  ensureMetaTag('meta[name="twitter:image"]', { name: "twitter:image" }, ogImage);
   if (description) {
     ensureMetaTag('meta[name="description"]', { name: "description" }, description);
     ensureMetaTag('meta[property="og:title"]', { property: "og:title" }, title || document.title);
@@ -2297,6 +2674,7 @@ const applyLanguage = (lang, persist = true) => {
       alt.setAttribute("data-pc-seo", "1");
       document.head.appendChild(alt);
     });
+  document.dispatchEvent(new CustomEvent("pc:langchange", { detail: { lang: activeLang } }));
 };
 
 const mountI18nObserver = () => {
@@ -2361,14 +2739,30 @@ const injectAtmosphere = () => {
 const renderHeader = () => {
   const host = document.getElementById("site-header");
   if (!host) return;
+  const settings = getStoreSettings();
+  const logo = settings?.logo || "assets/logo-point-croissant.webp";
+  const brandName = settings?.brandName || "Point Croissant";
+  const tagline = (settings && getStoreLocalized(settings.brandTagline)) || "Cafe & Bakery";
+  const ctaLabel = (settings && getStoreLocalized(settings.ctaLabel)) || "Sipariş Ver";
+  const ctaHref = settings?.ctaHref || "reservation.html";
+  const storedNav = Array.isArray(settings?.navLinks)
+    ? settings.navLinks.filter((item) => item && item.visible !== false)
+    : [];
+  const fromStore = storedNav.length > 0;
+  const links = fromStore
+    ? storedNav.map((item) => ({
+        href: item.href || "index.html",
+        label: getStoreLocalized(item.label) || item.label?.tr || ""
+      }))
+    : NAV_LINKS;
   host.innerHTML = `
     <a class="skip-link" href="#main-content">İçeriğe geç</a>
     <div class="container nav-wrap">
       <a href="index.html" class="brand">
-        <img src="assets/logo-point-croissant.webp" alt="Point Croissant Logo" width="60" height="60" />
+        <img src="${escapeChrome(logo)}" alt="${escapeChrome(brandName)} Logo" width="60" height="60" />
         <div>
-          <strong>Point Croissant</strong>
-          <span>Cafe & Bakery</span>
+          <strong data-no-i18n>${escapeChrome(brandName)}</strong>
+          <span data-no-i18n>${escapeChrome(tagline)}</span>
         </div>
       </a>
       <input type="checkbox" id="menu-toggle" class="menu-toggle" />
@@ -2376,7 +2770,13 @@ const renderHeader = () => {
         <span></span><span></span><span></span>
       </label>
       <nav class="nav-links">
-        ${NAV_LINKS.map((link) => `<a href="${link.href}">${link.label}</a>`).join("")}
+        ${links
+          .map((link) =>
+            fromStore
+              ? `<a href="${escapeChrome(link.href)}" data-no-i18n>${escapeChrome(link.label)}</a>`
+              : `<a href="${link.href}">${link.label}</a>`
+          )
+          .join("")}
         <div class="lang-switch" role="group" aria-label="Dil seçimi">
           <button type="button" class="lang-btn" data-lang="tr">TR</button>
           <button type="button" class="lang-btn" data-lang="en">EN</button>
@@ -2384,10 +2784,27 @@ const renderHeader = () => {
           <button type="button" class="lang-btn" data-lang="ar">AR</button>
           <button type="button" class="lang-btn" data-lang="de">DE</button>
         </div>
-        <a class="btn btn-small" href="reservation.html">Sipariş Ver</a>
+        <a class="btn btn-small" href="${escapeChrome(ctaHref)}" ${fromStore ? 'data-no-i18n' : ""}>${fromStore ? escapeChrome(ctaLabel) : "Sipariş Ver"}</a>
       </nav>
     </div>
   `;
+};
+
+const renderFooterColumn = (settings, group, fallback) => {
+  const stored = Array.isArray(settings?.footerLinks?.[group])
+    ? settings.footerLinks[group].filter((item) => item && item.visible !== false)
+    : [];
+  if (stored.length) {
+    return stored
+      .map(
+        (item) =>
+          `<a href="${escapeChrome(item.href)}" data-no-i18n>${escapeChrome(
+            getStoreLocalized(item.label) || item.label?.tr || ""
+          )}</a>`
+      )
+      .join("");
+  }
+  return fallback.map(([href, label]) => `<a href="${href}">${label}</a>`).join("");
 };
 
 const renderFooter = () => {
@@ -2406,6 +2823,15 @@ const renderFooter = () => {
   if (settings?.facebook) {
     socials.push(`<a href="${escapeChrome(settings.facebook)}" target="_blank" rel="noopener noreferrer" data-no-i18n>Facebook</a>`);
   }
+  if (settings?.tiktok) {
+    socials.push(`<a href="${escapeChrome(settings.tiktok)}" target="_blank" rel="noopener noreferrer" data-no-i18n>TikTok</a>`);
+  }
+  if (settings?.youtube) {
+    socials.push(`<a href="${escapeChrome(settings.youtube)}" target="_blank" rel="noopener noreferrer" data-no-i18n>YouTube</a>`);
+  }
+  if (settings?.twitter) {
+    socials.push(`<a href="${escapeChrome(settings.twitter)}" target="_blank" rel="noopener noreferrer" data-no-i18n>X</a>`);
+  }
   host.innerHTML = `
     <div class="footer-ornament" aria-hidden="true"></div>
     <div class="container footer-grid">
@@ -2418,25 +2844,31 @@ const renderFooter = () => {
       </div>
       <div>
         <h4>Keşfet</h4>
-        <a href="index.html">Anasayfa</a>
-        <a href="hikayemiz.html">Hikayemiz</a>
-        <a href="lezzetler.html">Lezzetler</a>
-        <a href="menu.html">Menü</a>
-        <a href="blog.html">Blog</a>
-        <a href="events.html">Etkinlikler</a>
+        ${renderFooterColumn(settings, "explore", [
+          ["index.html", "Anasayfa"],
+          ["hikayemiz.html", "Hikayemiz"],
+          ["lezzetler.html", "Lezzetler"],
+          ["menu.html", "Menü"],
+          ["blog.html", "Blog"],
+          ["events.html", "Etkinlikler"]
+        ])}
       </div>
       <div>
         <h4>Hizmetler</h4>
-        <a href="reservation.html">Rezervasyon</a>
-        <a href="delivery.html">Teslimat</a>
-        <a href="wholesale.html">Toptan</a>
-        <a href="faq.html">SSS</a>
+        ${renderFooterColumn(settings, "services", [
+          ["reservation.html", "Rezervasyon"],
+          ["delivery.html", "Teslimat"],
+          ["wholesale.html", "Toptan"],
+          ["faq.html", "SSS"]
+        ])}
       </div>
       <div>
         <h4>Yasal</h4>
-        <a href="privacy.html">Gizlilik Politikası</a>
-        <a href="terms.html">Kullanım Şartları</a>
-        <a href="cookies.html">Çerez Politikası</a>
+        ${renderFooterColumn(settings, "legal", [
+          ["privacy.html", "Gizlilik Politikası"],
+          ["terms.html", "Kullanım Şartları"],
+          ["cookies.html", "Çerez Politikası"]
+        ])}
       </div>
     </div>
     <div class="container footer-bottom">
@@ -2480,7 +2912,21 @@ const applyA11yEnhancements = () => {
   const main = document.querySelector("main");
   if (main && !main.id) main.id = "main-content";
 
-  const politeIds = ["request-feedback", "share-feedback", "admin-feedback", "settings-feedback", "cms-feedback", "admin-auth-feedback"];
+  const politeIds = [
+    "request-feedback",
+    "share-feedback",
+    "admin-feedback",
+    "settings-feedback",
+    "cms-feedback",
+    "admin-auth-feedback",
+    "brand-feedback",
+    "nav-feedback",
+    "gallery-feedback",
+    "event-feedback",
+    "blog-feedback",
+    "menucat-feedback",
+    "seo-feedback"
+  ];
   politeIds.forEach((id) => {
     const el = document.getElementById(id);
     if (!el) return;

@@ -18,33 +18,40 @@ const refreshI18n = () => {
   }
 };
 
+const inlineFormat = (text) =>
+  escapeHtml(text)
+    .replaceAll("**", "\0b")
+    .replace(/\0b(.+?)\0b/g, "<strong>$1</strong>")
+    .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>");
+
 const bodyToHtml = (text) =>
   String(text || "")
     .split(/\n{2,}/)
-    .map((part) => `<p>${escapeHtml(part).replaceAll("\n", "<br />")}</p>`)
+    .map((part) => `<p>${inlineFormat(part).replaceAll("\n", "<br />")}</p>`)
     .join("");
+
+const currentPage = () => window.location.pathname.split("/").pop() || "index.html";
 
 const renderGallery = () => {
   const grid = document.getElementById("gallery-grid");
   const filters = document.getElementById("gallery-filters");
   if (!grid || !filters) return;
   const items = Store.loadGallery();
-  const labels = {
-    tr: { all: "Tümü", tatli: "Tatlı", meyveli: "Meyveli", premium: "Premium" },
-    en: { all: "All", tatli: "Sweet", meyveli: "Fruity", premium: "Premium" },
-    ru: { all: "Все", tatli: "Сладкое", meyveli: "Фруктовое", premium: "Премиум" },
-    ar: { all: "الكل", tatli: "حلو", meyveli: "فاكهي", premium: "مميز" },
-    de: { all: "Alle", tatli: "Süß", meyveli: "Fruchtig", premium: "Premium" }
-  };
+  const filterMeta = Store.loadGalleryFilters();
   const lang = getLang();
-  const dict = labels[lang] || labels.tr;
   const used = new Set();
   items.forEach((item) => item.categories.forEach((cat) => used.add(cat)));
-  const filterOrder = ["all", "tatli", "meyveli", "premium"].filter((key) => key === "all" || used.has(key));
-  filters.innerHTML = filterOrder
+  const allLabel = { tr: "Tümü", en: "All", ru: "Все", ar: "الكل", de: "Alle" };
+  const buttons = [
+    { id: "all", label: allLabel[lang] || allLabel.tr },
+    ...filterMeta.filter((item) => used.has(item.id)).map((item) => ({ id: item.id, label: loc(item.label) }))
+  ];
+  filters.innerHTML = buttons
     .map(
-      (key, index) =>
-        `<button class="gallery-filter${index === 0 ? " active" : ""}" type="button" data-filter="${key}" data-no-i18n>${dict[key] || key}</button>`
+      (item, index) =>
+        `<button class="gallery-filter${index === 0 ? " active" : ""}" type="button" data-filter="${escapeHtml(
+          item.id
+        )}" data-no-i18n>${escapeHtml(item.label)}</button>`
     )
     .join("");
   grid.innerHTML = items
@@ -96,13 +103,18 @@ const renderEvents = () => {
   const grid = document.getElementById("events-grid");
   if (!grid) return;
   grid.innerHTML = Store.loadEvents()
-    .map(
-      (item) => `
-      <article class="card" data-no-i18n>
+    .map((item) => {
+      const when = [item.date, item.time].filter(Boolean).join(" ");
+      const place = loc(item.location);
+      return `
+      <article class="card event-card" data-no-i18n>
+        ${item.image ? `<img class="event-card-media" src="${escapeHtml(item.image)}" alt="${escapeHtml(loc(item.title))}" loading="lazy" decoding="async" />` : ""}
         <h2>${escapeHtml(loc(item.title))}</h2>
+        ${when ? `<p class="event-meta">${escapeHtml(when)}</p>` : ""}
+        ${place ? `<p class="event-meta">${escapeHtml(place)}</p>` : ""}
         <p>${escapeHtml(loc(item.description))}</p>
-      </article>`
-    )
+      </article>`;
+    })
     .join("");
 };
 
@@ -118,6 +130,7 @@ const renderBlogList = () => {
   };
   const lang = getLang();
   grid.innerHTML = Store.loadBlog()
+    .filter((item) => item.published !== false)
     .map(
       (item) => `
       <article class="card article-card">
@@ -138,7 +151,7 @@ const renderBlogDetail = () => {
   if (!article) return;
   const page = window.location.pathname.split("/").pop() || "index.html";
   const params = new URLSearchParams(window.location.search);
-  const posts = Store.loadBlog();
+  const posts = Store.loadBlog().filter((item) => item.published !== false);
   const post =
     posts.find((item) => item.id === params.get("id")) ||
     posts.find((item) => item.href === page);
@@ -153,6 +166,7 @@ const renderBlogDetail = () => {
     de: "Zurück zur Blogübersicht"
   };
   article.innerHTML = `
+    ${post.image ? `<img class="blog-cover" src="${escapeHtml(post.image)}" alt="${escapeHtml(loc(post.title))}" loading="lazy" decoding="async" />` : ""}
     ${bodyToHtml(loc(post.body))}
     <p>
       <a class="btn btn-small" href="blog.html" data-no-i18n>${back[getLang()] || back.tr}</a>
@@ -160,11 +174,78 @@ const renderBlogDetail = () => {
   document.title = `${loc(post.title)} | Point Croissant`;
 };
 
-renderGallery();
 bindGalleryFilters();
-renderEvents();
-renderBlogList();
-renderBlogDetail();
-refreshI18n();
-if (typeof window.__pcApplyLazyMedia === "function") window.__pcApplyLazyMedia();
+const renderFaq = () => {
+  const host = document.getElementById("faq-list");
+  if (!host) return;
+  host.innerHTML = Store.loadFaq()
+    .map(
+      (item) => `
+      <h3 data-no-i18n>${escapeHtml(loc(item.question))}</h3>
+      <p data-no-i18n>${escapeHtml(loc(item.answer)).replaceAll("\n", "<br />")}</p>`
+    )
+    .join("");
+};
+
+const renderPageCopy = () => {
+  const page = currentPage();
+  const data = typeof Store.getPageOverride === "function" ? Store.getPageOverride(page) : null;
+  if (!data) return;
+  const hero = document.querySelector(".page-hero .container");
+  if (hero) {
+    const eyebrow = hero.querySelector(".eyebrow");
+    const title = hero.querySelector("h1");
+    const lead = hero.querySelector("p:not(.eyebrow)");
+    if (eyebrow && loc(data.eyebrow)) eyebrow.textContent = loc(data.eyebrow);
+    if (title && loc(data.title)) title.textContent = loc(data.title);
+    if (lead && loc(data.lead)) lead.textContent = loc(data.lead);
+  }
+  if (page === "faq.html") return;
+  const bodyText = loc(data.body);
+  if (!bodyText) return;
+  const prose = document.querySelector(".prose, [data-pc-page-body]");
+  if (!prose) return;
+  const keep = [...prose.querySelectorAll(".contact-actions, .legal-toc, #delivery-hours-text")];
+  prose.innerHTML = bodyToHtml(bodyText);
+  keep.forEach((node) => prose.appendChild(node));
+};
+
+const renderMarquee = () => {
+  const track = document.querySelector(".flavor-marquee-track");
+  if (!track) return;
+  const settings = Store.loadSettings();
+  const phrases = (settings.flavorMarquee || []).map((item) => loc(item)).filter(Boolean);
+  if (!phrases.length) return;
+  const doubled = [...phrases, ...phrases];
+  track.innerHTML = doubled.map((text) => `<span data-no-i18n>${escapeHtml(text)}</span>`).join("");
+};
+
+const reapplyCms = () => {
+  if (typeof window.__pcApplyCms === "function") window.__pcApplyCms();
+};
+
+const renderManagedContent = () => {
+  renderGallery();
+  renderEvents();
+  renderBlogList();
+  renderBlogDetail();
+  renderFaq();
+  renderPageCopy();
+  renderMarquee();
+  reapplyCms();
+  refreshI18n();
+  if (typeof window.__pcApplyLazyMedia === "function") window.__pcApplyLazyMedia();
+};
+renderManagedContent();
+document.addEventListener("pc:langchange", () => {
+  renderGallery();
+  renderEvents();
+  renderBlogList();
+  renderBlogDetail();
+  renderFaq();
+  renderPageCopy();
+  renderMarquee();
+  reapplyCms();
+  if (typeof window.__pcApplyLazyMedia === "function") window.__pcApplyLazyMedia();
+});
 })();
