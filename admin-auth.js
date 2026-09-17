@@ -1,18 +1,12 @@
 const AUTH_STORAGE_KEY = "pc_admin_auth_v1";
 const ADMIN_PASSWORD_SHA256 =
   "059b94dcfbe5e488d8ff25a1e0c43d0dc023931b7e3e771175ef58f1e04eeef8";
-const ADMIN_ENTRY_KEY = "pc-ozel-giris-2026";
 
 const lockScreen = document.getElementById("admin-lock-screen");
 const authForm = document.getElementById("admin-auth-form");
 const passwordInput = document.getElementById("admin-password");
 const authFeedback = document.getElementById("admin-auth-feedback");
 const adminApp = document.getElementById("admin-app");
-const entryKey = new URLSearchParams(window.location.search).get("k");
-
-if (entryKey !== ADMIN_ENTRY_KEY) {
-  window.location.replace("index.html");
-}
 
 const loadAdminScripts = () => {
   ["cms-runtime.js", "cms-admin.js", "admin.js"].forEach((src) => {
@@ -37,9 +31,9 @@ const hashText = async (value) => {
 
 const hasValidSession = () => sessionStorage.getItem(AUTH_STORAGE_KEY) === "ok";
 
-if (entryKey === ADMIN_ENTRY_KEY && hasValidSession()) {
+if (hasValidSession()) {
   openAdminPanel();
-} else if (entryKey === ADMIN_ENTRY_KEY && authForm) {
+} else if (authForm) {
   authForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const password = passwordInput?.value || "";

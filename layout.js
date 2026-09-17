@@ -7,8 +7,33 @@ const NAV_LINKS = [
   { href: "index.html#siparis", label: "İletişim" }
 ];
 
+const getStoreSettings = () =>
+  window.PCStore && typeof window.PCStore.loadSettings === "function" ? window.PCStore.loadSettings() : null;
+
+const getStoreLocalized = (value, lang = activeLang) => {
+  if (window.PCStore && typeof window.PCStore.getLocalized === "function") {
+    return window.PCStore.getLocalized(value, lang);
+  }
+  if (value && typeof value === "object") return value[lang] || value.tr || "";
+  return String(value || "");
+};
+
+const escapeChrome = (value) =>
+  String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+
 const I18N_STORAGE_KEY = "pc_lang_v1";
-const SUPPORTED_LANGS = ["tr", "en", "ru"];
+const SUPPORTED_LANGS = ["tr", "en", "ru", "ar", "de"];
+const OG_LOCALES = {
+  tr: "tr_TR",
+  en: "en_US",
+  ru: "ru_RU",
+  ar: "ar_SA",
+  de: "de_DE"
+};
 const ATTRS_TO_TRANSLATE = ["placeholder", "title", "aria-label", "alt"];
 const originalTextNodes = new WeakMap();
 const originalAttrValues = new WeakMap();
@@ -17,6 +42,9 @@ let activeLang = "tr";
 let i18nObserver = null;
 const SITE_ORIGIN = "https://pointcroissant.com";
 const SOFTENWISE_ORIGIN = "https://softenwise.com";
+const OG_IMAGE = `${SITE_ORIGIN}/assets/og-share.jpg`;
+const OG_IMAGE_ALT = "Point Croissant Antalya cafe ve bakery";
+const OG_ARTICLE_PAGES = new Set(["blog-imza-kruvasan.html", "blog-kahve-eslesmesi.html", "blog-post.html"]);
 const SCHEMA_IDS = {
   website: `${SITE_ORIGIN}/#website`,
   localBusiness: `${SITE_ORIGIN}/#localbusiness`,
@@ -25,7 +53,7 @@ const SCHEMA_IDS = {
 const SCHEMA_CONTACT = {
   telephone: "+905323150777",
   email: "hello@pointcroissant.com",
-  streetAddress: "Şirinyalı Mah. Lara Cd. No:128/A",
+  streetAddress: "Güzeloba Mah. Çağlayangil Cad. No:38 / B",
   addressLocality: "Muratpaşa",
   addressRegion: "Antalya",
   postalCode: "07230",
@@ -42,7 +70,7 @@ const BRAND_ALTERNATE_NAMES = [
 ];
 
 const SEO_HOME_KEYWORDS =
-  "Point Croissant, Point Croissant Antalya, point kruvasan, Point kruvasan, point croissant, Antalya kruvasan cafe, Lara Muratpaşa";
+  "Point Croissant, Point Croissant Antalya, point kruvasan, Point kruvasan, point croissant, Antalya kruvasan cafe, Güzeloba Muratpaşa";
 
 const BREADCRUMB_NAMES = {
   "hikayemiz.html": "Hikayemiz",
@@ -51,6 +79,7 @@ const BREADCRUMB_NAMES = {
   "blog.html": "Blog",
   "blog-imza-kruvasan.html": "İmza Kruvasan Rehberi",
   "blog-kahve-eslesmesi.html": "Kahve Eşleşmesi",
+  "blog-post.html": "Blog",
   "events.html": "Etkinlikler",
   "corporate.html": "Kurumsal",
   "faq.html": "Sıkça Sorulan Sorular",
@@ -64,13 +93,14 @@ const BREADCRUMB_NAMES = {
 
 const SEO_DESCRIPTIONS = {
   "index.html":
-    "Point Croissant Antalya resmi web sitesi. Lara, Muratpaşa’da cafe ve bakery: imza kruvasanlar, menü, rezervasyon ve iletişim.",
+    "Point Croissant Antalya resmi web sitesi. Güzeloba, Muratpaşa’da cafe ve bakery: imza kruvasanlar, menü, rezervasyon ve iletişim.",
   "hikayemiz.html": "Point Croissant hikayesi, üretim anlayışı ve marka yolculuğu.",
   "lezzetler.html": "Point Croissant Antalya lezzetleri: imza kruvasanlar, öne çıkan ürünler ve sipariş için iletişim bilgileri.",
   "menu.html": "Point Croissant Antalya menü: güncel fiyatlar, kategorili kruvasan ve cafe ürünleri.",
   "blog.html": "Kruvasan, kahve ve servis önerileri için Point Croissant blog içerikleri.",
   "blog-imza-kruvasan.html": "İmza kruvasan hazırlama rehberi, püf noktaları ve üretim önerileri.",
   "blog-kahve-eslesmesi.html": "Kahve ve kruvasan eşleşmesi için pratik öneriler ve lezzet uyumları.",
+  "blog-post.html": "Point Croissant blog yazısı.",
   "events.html": "Point Croissant etkinlikleri ve özel gün organizasyon bilgileri.",
   "corporate.html": "Kurumsal iş birliği, marka bilgisi ve Point Croissant hakkında detaylar.",
   "faq.html": "Sıkça sorulan sorular: rezervasyon, teslimat, toplu sipariş ve daha fazlası.",
@@ -109,6 +139,18 @@ const I18N_TEXT = {
     "Dil seçimi": "Language selection",
     "Güne Lezzetli Bir Başlangıç": "A Delicious Start to Your Day",
     "Çıtır katmanlar, özel reçeteler ve özenle hazırlanan sunumlar. Her lokmada kaliteyi hissedin.": "Crispy layers, signature recipes, and carefully crafted presentation. Feel quality in every bite.",
+    "Antalya · Cafe & Bakery": "Antalya · Cafe & Bakery",
+    "Keşfetmeye devam et": "Keep exploring",
+    "Katman katman, her sabah taze": "Layer by layer, fresh every morning",
+    "Tereyağlı": "Buttery",
+    "Çikolatalı": "Chocolate",
+    "Fıstıklı": "Pistachio",
+    "Brunch": "Brunch",
+    "Espresso": "Espresso",
+    "Taze üretim her sabah": "Freshly made every morning",
+    "Kat kat çıtır hamur": "Crispy laminated dough",
+    "Özenle çekilmiş kahve": "Carefully brewed coffee",
+    "Lara’da imza kruvasan deneyimi": "Signature croissant experience in Lara",
     "Lezzetleri Keşfet": "Explore Flavors",
     "Bize Ulaş": "Contact Us",
     "Yıllık Ustalık": "Years of Craft",
@@ -119,6 +161,8 @@ const I18N_TEXT = {
     "Tüm ürünleri tek sayfada inceleyebilirsiniz.": "Browse all products on one page.",
     "Lezzet Sayfasına Git": "Go to Flavor Page",
     "Lezzet Galerisi": "Flavor Gallery",
+    "Katman detayı": "Layer detail",
+    "Kahve eşleşmesi": "Coffee pairing",
     "Tümü": "All",
     "Tatlı": "Sweet",
     "Meyveli": "Fruity",
@@ -334,6 +378,25 @@ const I18N_TEXT = {
     "Ürün Yönetimi": "Product Management",
     "İletişim Ayarları": "Contact Settings",
     "İçerik Düzenleme": "Content Editing",
+    "Marka ve Sayaçlar": "Brand and Counters",
+    "Menü Yapısı": "Menu Structure",
+    "Galeri": "Gallery",
+    "Etkinlikler": "Events",
+    "Blog Yazıları": "Blog Posts",
+    "Menü Kategorileri": "Menu Categories",
+    "SEO ve Google": "SEO and Google",
+    "Çalışma Saatleri": "Opening Hours",
+    "Çalışma Saatleri:": "Opening Hours:",
+    "Instagram URL": "Instagram URL",
+    "Facebook URL": "Facebook URL",
+    "Google çalışma saati (şema)": "Google opening hours (schema)",
+    "WhatsApp hazır mesaj (TR)": "WhatsApp greeting (TR)",
+    "WhatsApp hazır mesaj (EN)": "WhatsApp greeting (EN)",
+    "WhatsApp hazır mesaj (RU)": "WhatsApp greeting (RU)",
+    "İmza / özel seçkiye ekle": "Add to signature / special selection",
+    "Kategori": "Category",
+    "Tatlı": "Sweet",
+    "Tuzlu": "Savory",
     "Ürün Listesi": "Product List",
     "Yönetim Özeti": "Management Overview",
     "Toplam Ürün": "Total Products",
@@ -459,10 +522,10 @@ const I18N_TEXT = {
     "Link adresi": "Link URL",
     "Metin": "Text",
     "Yeni, Premium...": "New, Premium...",
-    "Şirinyalı Mah. Lara Cd. No:128/A, Muratpaşa / Antalya": "Sirinyali Neighborhood, Lara Street No:128/A, Muratpasa / Antalya",
+    "Güzeloba Mah. Çağlayangil Cad. No:38 / B, Muratpaşa / Antalya": "Guzeloba Neighborhood, Caglayangil Street No:38 / B, Muratpasa / Antalya",
     "Merhaba Point Croissant, bilgi almak istiyorum.": "Hello Point Croissant, I would like to get information.",
     "Merhaba Point Croissant,\n\nİstek / Dilek / Öneri Formu:\nAd Soyad: ${data.name}\nE-Posta: ${data.email}\nTelefon: ${data.phone}\nMesaj: ${data.message}": "Hello Point Croissant,\n\nRequest / Suggestion Form:\nFull Name: ${data.name}\nE-mail: ${data.email}\nPhone: ${data.phone}\nMessage: ${data.message}",
-    "Point Croissant Antalya resmi web sitesi. Lara, Muratpaşa’da cafe ve bakery: imza kruvasanlar, menü, rezervasyon ve iletişim.": "Official Point Croissant Antalya website. Cafe and bakery in Lara, Muratpasa: signature croissants, menu, reservations, and contact.",
+    "Point Croissant Antalya resmi web sitesi. Güzeloba, Muratpaşa’da cafe ve bakery: imza kruvasanlar, menü, rezervasyon ve iletişim.": "Official Point Croissant Antalya website. Cafe and bakery in Guzeloba, Muratpasa: signature croissants, menu, reservations, and contact.",
     "Point Croissant Antalya lezzetleri: imza kruvasanlar, öne çıkan ürünler ve sipariş için iletişim bilgileri.": "Point Croissant Antalya flavors: signature croissants, featured products, and contact details for ordering.",
     "Point Croissant Antalya menü: güncel fiyatlar, kategorili kruvasan ve cafe ürünleri.": "Point Croissant Antalya menu: current prices, categorized croissants and cafe items.",
     "Point Croissant hikayesi, üretim anlayışı ve marka yolculuğu.": "Point Croissant story, production philosophy, and brand journey.",
@@ -479,7 +542,40 @@ const I18N_TEXT = {
     "Point Croissant Kullanım Şartları ve site kullanımına ilişkin kurallar.": "Point Croissant Terms of Use and rules regarding site usage.",
     "Point Croissant Çerez Politikası ve çerez tercihleri hakkında bilgiler.": "Point Croissant Cookie Policy and information about cookie preferences.",
     "Web sitesi ve yazılım: SoftenWise": "Website & software: SoftenWise",
-    "SoftenWise — yazılım ve web geliştirme": "SoftenWise — software and web development"
+    "SoftenWise — yazılım ve web geliştirme": "SoftenWise — software and web development",
+    "Çeviri Eksiği (EN/RU/AR/DE)": "Missing Translation (EN/RU/AR/DE)",
+    "AR alanı": "AR field",
+    "DE alanı": "DE field",
+    "Ürün Adı (AR)": "Product Name (AR)",
+    "Ürün Adı (DE)": "Product Name (DE)",
+    "Açıklama (AR)": "Description (AR)",
+    "Açıklama (DE)": "Description (DE)",
+    "Etiket (AR)": "Tag (AR)",
+    "Etiket (DE)": "Tag (DE)",
+    "Ürün Görsel URL (AR)": "Product Image URL (AR)",
+    "Ürün Görsel URL (DE)": "Product Image URL (DE)",
+    "Adres (AR)": "Address (AR)",
+    "Adres (DE)": "Address (DE)",
+    "Harita Konum Metni (AR)": "Map Location Text (AR)",
+    "Harita Konum Metni (DE)": "Map Location Text (DE)",
+    "Blog Yazıları": "Blog Posts",
+    "Facebook URL": "Facebook URL",
+    "Google çalışma saati (şema)": "Google opening hours (schema)",
+    "Instagram URL": "Instagram URL",
+    "Kategori": "Category",
+    "Marka ve Sayaçlar": "Brand and Counters",
+    "Menü Kategorileri": "Menu Categories",
+    "Menü Yapısı": "Menu Structure",
+    "SEO ve Google": "SEO and Google",
+    "Tuzlu": "Savory",
+    "WhatsApp hazır mesaj (EN)": "WhatsApp greeting (EN)",
+    "WhatsApp hazır mesaj (RU)": "WhatsApp greeting (RU)",
+    "WhatsApp hazır mesaj (TR)": "WhatsApp greeting (TR)",
+    "WhatsApp hazır mesaj (AR)": "WhatsApp greeting (AR)",
+    "WhatsApp hazır mesaj (DE)": "WhatsApp greeting (DE)",
+    "Çalışma Saatleri": "Opening Hours",
+    "Çalışma Saatleri:": "Opening Hours:",
+    "İmza / özel seçkiye ekle": "Add to signature / special selection"
   },
   ru: {
     "Anasayfa": "Главная",
@@ -507,6 +603,18 @@ const I18N_TEXT = {
     "Dil seçimi": "Выбор языка",
     "Güne Lezzetli Bir Başlangıç": "Вкусное начало дня",
     "Çıtır katmanlar, özel reçeteler ve özenle hazırlanan sunumlar. Her lokmada kaliteyi hissedin.": "Хрустящие слои, фирменные рецепты и аккуратная подача. Почувствуйте качество в каждом кусочке.",
+    "Antalya · Cafe & Bakery": "Анталья · Cafe & Bakery",
+    "Keşfetmeye devam et": "Продолжайте открывать",
+    "Katman katman, her sabah taze": "Слой за слоем, свежее каждое утро",
+    "Tereyağlı": "Сливочное",
+    "Çikolatalı": "Шоколадное",
+    "Fıstıklı": "Фисташковое",
+    "Brunch": "Бранч",
+    "Espresso": "Эспрессо",
+    "Taze üretim her sabah": "Свежая выпечка каждое утро",
+    "Kat kat çıtır hamur": "Хрустящее слоёное тесто",
+    "Özenle çekilmiş kahve": "Тщательно приготовленный кофе",
+    "Lara’da imza kruvasan deneyimi": "Фирменный круассан в Ларе",
     "Lezzetleri Keşfet": "Посмотреть вкусы",
     "Bize Ulaş": "Связаться с нами",
     "Yıllık Ustalık": "Лет мастерства",
@@ -517,6 +625,8 @@ const I18N_TEXT = {
     "Tüm ürünleri tek sayfada inceleyebilirsiniz.": "Все продукты на одной странице.",
     "Lezzet Sayfasına Git": "Перейти к вкусам",
     "Lezzet Galerisi": "Галерея вкусов",
+    "Katman detayı": "Деталь слоёв",
+    "Kahve eşleşmesi": "Сочетание с кофе",
     "Tümü": "Все",
     "Tatlı": "Сладкое",
     "Meyveli": "Фруктовое",
@@ -730,6 +840,18 @@ const I18N_TEXT = {
     "Ürün Yönetimi": "Управление товарами",
     "İletişim Ayarları": "Настройки контактов",
     "İçerik Düzenleme": "Редактирование контента",
+    "Marka ve Sayaçlar": "Бренд и счетчики",
+    "Menü Yapısı": "Структура меню",
+    "Blog Yazıları": "Записи блога",
+    "Menü Kategorileri": "Категории меню",
+    "SEO ve Google": "SEO и Google",
+    "Çalışma Saatleri": "Часы работы",
+    "Çalışma Saatleri:": "Часы работы:",
+    "Instagram URL": "URL Instagram",
+    "Facebook URL": "URL Facebook",
+    "Google çalışma saati (şema)": "Часы работы Google (схема)",
+    "İmza / özel seçkiye ekle": "Добавить в фирменную подборку",
+    "Kategori": "Категория",
     "Ürün Listesi": "Список товаров",
     "Yönetim Özeti": "Сводка управления",
     "Toplam Ürün": "Всего товаров",
@@ -855,10 +977,10 @@ const I18N_TEXT = {
     "Link adresi": "Адрес ссылки",
     "Metin": "Текст",
     "Yeni, Premium...": "Новинка, Премиум...",
-    "Şirinyalı Mah. Lara Cd. No:128/A, Muratpaşa / Antalya": "Шириньялы, ул. Лара, No:128/A, Муратпаша / Анталья",
+    "Güzeloba Mah. Çağlayangil Cad. No:38 / B, Muratpaşa / Antalya": "Гюзелоба, ул. Чаглаянгиль, No:38 / B, Муратпаша / Анталья",
     "Merhaba Point Croissant, bilgi almak istiyorum.": "Здравствуйте, Point Croissant, я хотел(а) бы получить информацию.",
     "Merhaba Point Croissant,\n\nİstek / Dilek / Öneri Formu:\nAd Soyad: ${data.name}\nE-Posta: ${data.email}\nTelefon: ${data.phone}\nMesaj: ${data.message}": "Здравствуйте, Point Croissant,\n\nФорма запроса / предложения:\nИмя и фамилия: ${data.name}\nE-mail: ${data.email}\nТелефон: ${data.phone}\nСообщение: ${data.message}",
-    "Point Croissant Antalya resmi web sitesi. Lara, Muratpaşa’da cafe ve bakery: imza kruvasanlar, menü, rezervasyon ve iletişim.": "Официальный сайт Point Croissant в Анталье. Кафе и пекарня в Ларе, Муратпаша: фирменные круассаны, меню, бронирование и контакты.",
+    "Point Croissant Antalya resmi web sitesi. Güzeloba, Muratpaşa’da cafe ve bakery: imza kruvasanlar, menü, rezervasyon ve iletişim.": "Официальный сайт Point Croissant в Анталье. Кафе и пекарня в Гюзелоба, Муратпаша: фирменные круассаны, меню, бронирование и контакты.",
     "Point Croissant Antalya lezzetleri: imza kruvasanlar, öne çıkan ürünler ve sipariş için iletişim bilgileri.": "Вкусы Point Croissant в Анталье: фирменные круассаны, популярные позиции и контакты для заказа.",
     "Point Croissant Antalya menü: güncel fiyatlar, kategorili kruvasan ve cafe ürünleri.": "Меню Point Croissant в Анталье: актуальные цены, круассаны по категориям и позиции кафе.",
     "Point Croissant hikayesi, üretim anlayışı ve marka yolculuğu.": "История Point Croissant, подход к производству и путь бренда.",
@@ -875,7 +997,922 @@ const I18N_TEXT = {
     "Point Croissant Kullanım Şartları ve site kullanımına ilişkin kurallar.": "Условия использования Point Croissant и правила работы с сайтом.",
     "Point Croissant Çerez Politikası ve çerez tercihleri hakkında bilgiler.": "Политика cookie Point Croissant и информация о настройках cookie.",
     "Web sitesi ve yazılım: SoftenWise": "Сайт и разработка ПО: SoftenWise",
-    "SoftenWise — yazılım ve web geliştirme": "SoftenWise — разработка ПО и веб-сайтов"
+    "SoftenWise — yazılım ve web geliştirme": "SoftenWise — разработка ПО и веб-сайтов",
+    "Çeviri Eksiği (EN/RU/AR/DE)": "Нехватка перевода (EN/RU/AR/DE)",
+    "AR alanı": "Поле AR",
+    "DE alanı": "Поле DE",
+    "Ürün Adı (AR)": "Название товара (AR)",
+    "Ürün Adı (DE)": "Название товара (DE)",
+    "Açıklama (AR)": "Описание (AR)",
+    "Açıklama (DE)": "Описание (DE)",
+    "Etiket (AR)": "Тег (AR)",
+    "Etiket (DE)": "Тег (DE)",
+    "Ürün Görsel URL (AR)": "URL изображения товара (AR)",
+    "Ürün Görsel URL (DE)": "URL изображения товара (DE)",
+    "Adres (AR)": "Адрес (AR)",
+    "Adres (DE)": "Адрес (DE)",
+    "Harita Konum Metni (AR)": "Текст локации на карте (AR)",
+    "Harita Konum Metni (DE)": "Текст локации на карте (DE)",
+    "Blog Yazıları": "Записи блога",
+    "Facebook URL": "URL Facebook",
+    "Google çalışma saati (şema)": "Часы работы Google (схема)",
+    "Instagram URL": "URL Instagram",
+    "Kategori": "Категория",
+    "Marka ve Sayaçlar": "Бренд и счётчики",
+    "Menü Kategorileri": "Категории меню",
+    "Menü Yapısı": "Структура меню",
+    "SEO ve Google": "SEO и Google",
+    "Tuzlu": "Солёное",
+    "WhatsApp hazır mesaj (EN)": "Готовое сообщение WhatsApp (EN)",
+    "WhatsApp hazır mesaj (RU)": "Готовое сообщение WhatsApp (RU)",
+    "WhatsApp hazır mesaj (TR)": "Готовое сообщение WhatsApp (TR)",
+    "WhatsApp hazır mesaj (AR)": "Готовое сообщение WhatsApp (AR)",
+    "WhatsApp hazır mesaj (DE)": "Готовое сообщение WhatsApp (DE)",
+    "Çalışma Saatleri": "Часы работы",
+    "Çalışma Saatleri:": "Часы работы:",
+    "İmza / özel seçkiye ekle": "Добавить в фирменную / особую подборку"
+  },
+  de: {
+    "Anasayfa": "Startseite",
+    "Hikayemiz": "Unsere Geschichte",
+    "Lezzetler": "Sorten",
+    "Galeri": "Galerie",
+    "Tarifler": "Rezepte",
+    "İletişim": "Kontakt",
+    "Sipariş Ver": "Jetzt bestellen",
+    "Keşfet": "Entdecken",
+    "Menü": "Menü",
+    "Etkinlikler": "Veranstaltungen",
+    "Hizmetler": "Leistungen",
+    "Rezervasyon": "Reservierung",
+    "Teslimat": "Lieferung",
+    "Toptan": "Großhandel",
+    "SSS": "FAQ",
+    "Yasal": "Rechtliches",
+    "Gizlilik Politikası": "Datenschutzerklärung",
+    "Kullanım Şartları": "Nutzungsbedingungen",
+    "Çerez Politikası": "Cookie-Richtlinie",
+    "Günün en keyifli molası için taptaze kruvasanlar ve özenli kahve.": "Frische Croissants und sorgfältig zubereiteter Kaffee für die schönste Pause Ihres Tages.",
+    "Antalya, Türkiye": "Antalya, Türkei",
+    "Menüyü aç/kapat": "Menü öffnen/schließen",
+    "Dil seçimi": "Sprachauswahl",
+    "Güne Lezzetli Bir Başlangıç": "Ein köstlicher Start in Ihren Tag",
+    "Çıtır katmanlar, özel reçeteler ve özenle hazırlanan sunumlar. Her lokmada kaliteyi hissedin.": "Knusprige Schichten, Signaturrezepte und sorgfältig gestaltete Präsentation. Spüren Sie Qualität in jedem Bissen.",
+    "Antalya · Cafe & Bakery": "Antalya · Café & Bäckerei",
+    "Keşfetmeye devam et": "Weiter entdecken",
+    "Katman katman, her sabah taze": "Schicht für Schicht, jeden Morgen frisch",
+    "Tereyağlı": "Butterig",
+    "Çikolatalı": "Schokolade",
+    "Fıstıklı": "Pistazie",
+    "Brunch": "Brunch",
+    "Espresso": "Espresso",
+    "Taze üretim her sabah": "Jeden Morgen frisch zubereitet",
+    "Kat kat çıtır hamur": "Knuspriger, blättriger Teig",
+    "Özenle çekilmiş kahve": "Sorgfältig zubereiteter Kaffee",
+    "Lara’da imza kruvasan deneyimi": "Signatur-Croissant-Erlebnis in Lara",
+    "Lezzetleri Keşfet": "Sorten entdecken",
+    "Bize Ulaş": "Kontaktieren Sie uns",
+    "Yıllık Ustalık": "Jahre Handwerkskunst",
+    "Özel Tarif": "Signaturrezept",
+    "Günlük Servis": "Täglicher Service",
+    "Lezzet Sayfası": "Sortenseite",
+    "İmza kruvasanlarımız": "Unsere Signatur-Croissants",
+    "Tüm ürünleri tek sayfada inceleyebilirsiniz.": "Alle Produkte auf einer Seite entdecken.",
+    "Lezzet Sayfasına Git": "Zur Sortenseite",
+    "Lezzet Galerisi": "Sortengalerie",
+    "Katman detayı": "Schichtdetail",
+    "Kahve eşleşmesi": "Kaffeekombination",
+    "Tümü": "Alle",
+    "Tatlı": "Süß",
+    "Meyveli": "Fruchtig",
+    "Konum": "Standort",
+    "Telefon": "Telefon",
+    "E-posta": "E-mail",
+    "WhatsApp": "WhatsApp",
+    "Konuma Git": "Route berechnen",
+    "WhatsApp ile İletişim": "Kontakt per WhatsApp",
+    "Hemen Ara": "Jetzt anrufen",
+    "Bize Yazın": "Schreiben Sie uns",
+    "İstek / Dilek / Öneri Formu": "Anfrage- / Vorschlagsformular",
+    "Görüşlerinizi bizimle paylaşın": "Teilen Sie uns Ihr Feedback mit",
+    "Ad Soyad": "Vor- und Nachname",
+    "Mesaj": "Nachricht",
+    "Gönder": "Senden",
+    "WhatsApp ile iletişime geç": "Kontakt per WhatsApp",
+    "Öne Çıkanlar": "Empfohlen",
+    "İmza Kruvasanlarımız": "Unsere Signatur-Croissants",
+    "Günün en sevilen ürünleri tek sayfada.": "Die beliebtesten Produkte des Tages auf einer Seite.",
+    "Detay ve sipariş için hemen ulaş": "Details erfahren und jetzt bestellen",
+    "WhatsApp'tan Yaz": "Per WhatsApp schreiben",
+    "Bizi Arayın": "Rufen Sie uns an",
+    "Masa Rezervasyonu": "Tischreservierung",
+    "Rezervasyon için bizi arayabilir veya WhatsApp ile yazabilirsiniz.": "Für eine Reservierung können Sie uns anrufen oder per WhatsApp schreiben.",
+    "WhatsApp ile Rezerve Et": "Per WhatsApp reservieren",
+    "Antalya İçine Hızlı Teslimat": "Schnelle Lieferung in Antalya",
+    "Bölgesel teslimat saatleri 09:00 - 22:00 arasındadır.": "Die regionalen Lieferzeiten liegen zwischen 09:00 und 22:00 Uhr.",
+    "Toplu siparişlerde bir gün önce ön sipariş önerilir.": "Bei Sammelbestellungen empfehlen wir eine Vorbestellung einen Tag im Voraus.",
+    "Kurumsal Tedarik Çözümleri": "Lösungen für die Unternehmensversorgung",
+    "Oteller, butik cafeler ve restoranlar için özel gramaj ve paketleme seçenekleri.": "Individuelle Grammaturen und Verpackungsoptionen für Hotels, Boutique-Cafés und Restaurants.",
+    "Detaylı teklif almak için talep formunu doldurabilirsiniz.": "Füllen Sie das Anfrageformular aus, um ein detailliertes Angebot zu erhalten.",
+    "Point Croissant’in Yolculuğu": "Die Reise von Point Croissant",
+    "Bir tariften fazlası: özenle inşa edilen bir lezzet kültürü.": "Mehr als ein Rezept: eine mit Sorgfalt aufgebaute Genusskultur.",
+    "Bir soruyla başlayan yolculuk": "Eine Reise, die mit einer Frage begann",
+    "Katman, sıcaklık ve sabrın dengesi": "Die Balance aus Schichten, Temperatur und Geduld",
+    "Sadece ürün değil, bütün bir deneyim": "Nicht nur ein Produkt, sondern ein ganzes Erlebnis",
+    "Her gün aynı kalite, her sabah taze üretim": "Jeden Tag dieselbe Qualität, jeden Morgen frische Produktion",
+    "Blog & Rehber": "Blog & Ratgeber",
+    "Kruvasan, kahve ve servis önerileri": "Tipps zu Croissant, Kaffee und Service",
+    "İmza kruvasan": "Signatur-Croissant",
+    "İmza Kruvasan Nasıl Yapılır?": "Wie macht man ein Signatur-Croissant?",
+    "Kat kat dokusunu koruyan, hacimli ve dengeli hamur tekniğinin püf noktaları.": "Wichtige Techniken für blättrige Textur und ausgewogenen Teig.",
+    "Devamını Oku": "Weiterlesen",
+    "Kahve eşleşmesi": "Kaffee-Pairing",
+    "Kahve ile Kruvasan Eşleşmesi": "Kaffee- und Croissant-Pairing",
+    "Damak zevkine uygun en doğru kahve ve kruvasan uyumunu keşfedin.": "Entdecken Sie die passende Kombination aus Kaffee und Croissant für Ihren Geschmack.",
+    "Sıkça Sorulan Sorular": "Häufig gestellte Fragen",
+    "Kahve ve Kruvasan Eşleşmesi": "Kaffee- und Croissant-Pairing",
+    "İmza Kruvasan Rehberi": "Signatur-Croissant-Ratgeber",
+    "Blog listesine dön": "Zurück zur Blog-Übersicht",
+    "Düzenleme modu açık - Shift + Tıkla düzenle": "Bearbeitungsmodus aktiv - Shift + Click zum Bearbeiten",
+    "Kapat": "Schließen",
+    "Bu sayfayı sıfırla": "Diese Seite zurücksetzen",
+    "İçeriğe geç": "Zum Inhalt springen",
+    "Blog": "Blog",
+    "Blog: İmza Kruvasan": "Blog: Signatur-Croissant",
+    "Blog: Kahve Eşleşmesi": "Blog: Kaffee-Pairing",
+    "İletişim & Konum Bilgileri": "Kontakt- & Standortinfos",
+    "Telefon ile ara": "Telefonisch anrufen",
+    "WhatsApp'tan yazabilir veya direkt arayabilirsin.": "Sie können uns per WhatsApp schreiben oder direkt anrufen.",
+    "Tarif": "Rezept",
+    "Rehber": "Ratgeber",
+    "Etkinlik": "Veranstaltung",
+    "Atölye ve Özel Davetler": "Workshops und private Veranstaltungen",
+    "Kruvasan Atölyesi": "Croissant-Workshop",
+    "Atolye ve Ozel Davetler": "Workshops und private Veranstaltungen",
+    "Kruvasan Atolyesi": "Croissant-Workshop",
+    "Kurumsal": "Unternehmen",
+    "Point Croissant Hakkında": "Über Point Croissant",
+    "Taze Üretim Kruvasanlar": "Frisch zubereitete Croissants",
+    "İmza lezzetlerimizi kategorili, modern ve şık bir menü düzeninde keşfedin.": "Entdecken Sie unsere Signatursorten in einem kategorisierten, modernen und eleganten Menü-Layout.",
+    "Lezzet Haritası": "Sortenkarte",
+    "Point Croissant Menü Seçkisi": "Point Croissant Menüauswahl",
+    "Ürünler içerik yapısına göre kategorilendirilir ve admin panelindeki güncel fiyatlarla otomatik listelenir.": "Produkte werden nach Inhalt kategorisiert und automatisch mit aktuellen Preisen aus dem Admin-Panel aufgelistet.",
+    "Taze üretim": "Frisch zubereitet",
+    "Güncel fiyat": "Aktueller Preis",
+    "Kategorili görünüm": "Kategorisierte Ansicht",
+    "Detay Al": "Details anfordern",
+    "Özel Lezzet": "Besondere Sorte",
+    "Seçki": "Auswahl",
+    "Tatlı Kruvasanlar": "Süße Croissants",
+    "Meyveli, çikolatalı ve özel dolgulu tatlı seçenekler.": "Fruchtige, schokoladige und speziell gefüllte süße Varianten.",
+    "Tuzlu Kruvasanlar": "Herzhafte Croissants",
+    "Dengeli tuzlu tarifler ve brunch için ideal seçenekler.": "Ausgewogene herzhafte Rezepte und ideale Optionen für den Brunch.",
+    "İmza ve Özel Seçkiler": "Signatur- und Spezialauswahl",
+    "Şef önerileri, premium tarifler ve vitrinin yıldızları.": "Empfehlungen des Küchenchefs, Premium-Rezepte und Stars der Vitrine.",
+    "Rezervasyon gerekli mi?": "Ist eine Reservierung erforderlich?",
+    "Rezervasyon nasıl yapabilirim?": "Wie kann ich reservieren?",
+    "Toplu sipariş alıyor musunuz?": "Nehmen Sie Sammelbestellungen an?",
+    "Toplu sipariş için ne kadar önce iletişime geçmeliyim?": "Wie früh sollte ich Sie bei Sammelbestellungen kontaktieren?",
+    "Teslimat hizmetiniz var mı?": "Bieten Sie Lieferung an?",
+    "Ödeme seçenekleri nelerdir?": "Welche Zahlungsmöglichkeiten gibt es?",
+    "Glutensiz seçenek var mı?": "Gibt es glutenfreie Optionen?",
+    "Alerjen bilgisi alabilir miyim?": "Kann ich Allergeninformationen erhalten?",
+    "Menü ve fiyatlar güncel mi?": "Sind Menü und Preise aktuell?",
+    "1. Toplanan Bilgiler": "1. Erhobene Informationen",
+    "2. Verilerin Kullanım Amaçları": "2. Zwecke der Datennutzung",
+    "3. Veri Paylaşımı ve Güvenlik": "3. Datenweitergabe und Sicherheit",
+    "4. Haklarınız ve İletişim": "4. Ihre Rechte und Kontakt",
+    "1. Genel Kullanım": "1. Allgemeine Nutzung",
+    "2. Fiyat ve Ürün Bilgileri": "2. Preis- und Produktinformationen",
+    "3. Bağlantılar ve Üçüncü Taraf Hizmetler": "3. Links und Dienste Dritter",
+    "4. Sorumluluk Sınırı": "4. Haftungsbeschränkung",
+    "1. Çerez Nedir?": "1. Was ist ein Cookie?",
+    "2. Hangi Çerezleri Kullanıyoruz?": "2. Welche Cookies verwenden wir?",
+    "3. Çerez Tercihleri Nasıl Yönetilir?": "3. Wie verwalten Sie Cookie-Einstellungen?",
+    "4. Politika Güncellemeleri": "4. Aktualisierungen der Richtlinie",
+    "Lütfen tüm alanları doldur.": "Bitte füllen Sie alle Felder aus.",
+    "Mesajın WhatsApp üzerinden hazırlandı ve açıldı.": "Ihre Nachricht wurde vorbereitet und in WhatsApp geöffnet.",
+    "Link kopyalandı.": "Link kopiert.",
+    "Link kopyalanamadı.": "Link konnte nicht kopiert werden.",
+    "Bu cihazda paylaşım özelliği yok.": "Teilen ist auf diesem Gerät nicht verfügbar.",
+    "Paylaşım başarılı.": "Erfolgreich geteilt.",
+    "Paylaşım iptal edildi.": "Teilen wurde abgebrochen.",
+    "Point Croissant Antalya | Cafe, Bakery & İmza Kruvasan": "Point Croissant Antalya | Café, Bäckerei & Signatur-Croissants",
+    "Blog | Point Croissant": "Blog | Point Croissant",
+    "Hikayemiz | Point Croissant": "Unsere Geschichte | Point Croissant",
+    "Lezzetler | Point Croissant": "Sorten | Point Croissant",
+    "Menü | Point Croissant": "Menü | Point Croissant",
+    "Rezervasyon | Point Croissant": "Reservierung | Point Croissant",
+    "Teslimat | Point Croissant": "Lieferung | Point Croissant",
+    "Toptan | Point Croissant": "Großhandel | Point Croissant",
+    "SSS | Point Croissant": "FAQ | Point Croissant",
+    "Kurumsal | Point Croissant": "Unternehmen | Point Croissant",
+    "Etkinlikler | Point Croissant": "Veranstaltungen | Point Croissant",
+    "İmza Kruvasan Rehberi | Point Croissant": "Signatur-Croissant-Ratgeber | Point Croissant",
+    "Kahve Eşleşmesi | Point Croissant": "Kaffee-Pairing | Point Croissant",
+    "Gizlilik Politikası | Point Croissant": "Datenschutzerklärung | Point Croissant",
+    "Kullanım Şartları | Point Croissant": "Nutzungsbedingungen | Point Croissant",
+    "Çerez Politikası | Point Croissant": "Cookie-Richtlinie | Point Croissant",
+    "Her cumartesi 11:00 - 13:00.": "Jeden Samstag 11:00 - 13:00 Uhr.",
+    "Ayda iki kez profesyonel eğitim.": "Professionelle Schulung zweimal im Monat.",
+    "10-30 kişilik kurumsal organizasyon.": "Firmenveranstaltung für 10-30 Personen.",
+    "Ayda iki kez profesyonel egitim.": "Professionelle Schulung zweimal im Monat.",
+    "10-30 kisilik kurumsal organizasyon.": "Firmenveranstaltung für 10-30 Personen.",
+    "“Antalya’da neden hem çıtır hem dengeli kruvasan yok?” sorusu bizim başlangıcımız oldu.": "„Warum gibt es in Antalya kein Croissant, das sowohl knusprig als auch ausgewogen ist?“ Diese Frage war unser Anfang.",
+    "O gün mutfağa girip aylarca denemeler yapacağımızı henüz bilmiyorduk.": "An jenem Tag wussten wir noch nicht, dass wir die Küche betreten und monatelang experimentieren würden.",
+    "İlham aldığımız ilk atmosfer ve servis anlayışı.": "Die erste Atmosphäre und das Serviceverständnis, die uns inspiriert haben.",
+    "Hamuru bazen fazla yorduk, bazen yeterince dinlendiremedik. Tereyağı seçimi, katlama aralıkları ve fırın dereceleri defalarca değişti. Her denemeyi not alarak reçetemizi adım adım geliştirdik.": "Manchmal haben wir den Teig überarbeitet, manchmal konnten wir ihn nicht lange genug ruhen lassen. Die Butterwahl, die Faltintervalle und die Ofentemperaturen haben sich viele Male geändert. Indem wir jeden Versuch notierten, haben wir unser Rezept Schritt für Schritt verbessert.",
+    "“Premium olmak, pahalı görünmek değil; her gün aynı özeni gösterebilmektir.”": "„Premium zu sein bedeutet nicht, teuer auszusehen; es bedeutet, jeden Tag dieselbe Sorgfalt zu zeigen.“",
+    "Deneyimi tamamlayan servis akışı ve alan tasarımı.": "Serviceablauf und Raumgestaltung, die das Erlebnis vollenden.",
+    "Kahve eşleşmeleri, servis hızı, tezgâh düzeni ve ambalaj hissi bir araya geldiğinde Point Croissant, tekrar gelmek isteyeceğiniz bir deneyime dönüştü.": "Als Kaffee-Pairings, Servicegeschwindigkeit, Thekenordnung und das Gefühl der Verpackung zusammenkamen, wurde Point Croissant zu einem Erlebnis, zu dem man gerne zurückkehrt.",
+    "Aynı disiplinle üretmeye devam ediyoruz. Her yeni tarif ve her geri bildirimle hikayemizi daha ileri taşıyoruz.": "Wir produzieren weiterhin mit derselben Disziplin. Mit jedem neuen Rezept und jedem Feedback führen wir unsere Geschichte weiter.",
+    "Point Croissant logosu": "Point Croissant Logo",
+    "İmza kruvasanın temelinde üç şey vardır: doğru hamur yapısı, kontrollü katlama ve sabırlı mayalama. Dışının çıtır, içinin hafif ve katmanlı olması için sürecin her adımı dikkat ister.": "Im Kern eines Signatur-Croissants stehen drei Dinge: die richtige Teigstruktur, kontrolliertes Falten und geduldiges Gehenlassen. Jeder Schritt erfordert Aufmerksamkeit für eine knusprige Kruste und ein leichtes, blättriges Inneres.",
+    "Kruvasanın en kritik adımı hamurun soğuk zincirde dinlenmesidir. Hamur ısındığında tereyağı katmanlara doğru şekilde dağılmaz; bu da pişince kabarmayı ve katman netliğini düşürür.": "Der wichtigste Schritt ist das Ruhen des Teigs in der Kühlkette. Wenn der Teig warm wird, verteilt sich die Butter nicht richtig in den Schichten; das mindert den Auftrieb und die Schichtdefinition nach dem Backen.",
+    "Tereyağı katlarını eşit dağıtmak için her katlamadan sonra hamuru ortalama 25-30 dakika buzdolabında dinlendirin. Bu kısa dinlenme, hamurun tekrar toparlanmasını sağlar ve açma sırasında yırtılmayı azaltır.": "Damit sich die Butterschichten gleichmäßig verteilen, lassen Sie den Teig nach jedem Falten etwa 25-30 Minuten im Kühlschrank ruhen. Diese kurze Pause hilft dem Teig, sich zu erholen, und verringert das Reißen beim Ausrollen.",
+    "Son mayalamada ortam sıcaklığının 24-26 derece aralığında olması önerilir. Çok düşük sıcaklıkta hacim yavaş gelişir, çok yüksek sıcaklıkta ise tereyağı katmanlardan taşarak yapıyı bozabilir.": "Beim finalen Gehenlassen wird eine Umgebungstemperatur von 24-26 °C empfohlen. Bei sehr niedrigen Temperaturen entwickelt sich das Volumen langsam; bei sehr hohen Temperaturen kann Butter aus den Schichten austreten und die Struktur beschädigen.",
+    "Pişirme aşamasında önceden ısıtılmış fırın kullanın ve ilk dakikalarda kapağı açmamaya özen gösterin. Bu sayede kruvasanlar güçlü bir ilk kabarma alır ve dış yüzeyde dengeli bir renk oluşur.": "Backen Sie in einem vorgeheizten Ofen und öffnen Sie die Tür in den ersten Minuten nicht. So erhalten die Croissants einen kräftigen Ofentrieb und eine gleichmäßige Außenfarbe.",
+    "Servis öncesi kruvasanları kısa bir süre tel ızgara üzerinde dinlendirmek, alt yüzeydeki nemi azaltır ve çıtırlığı korur. Özellikle dolgu eklenecekse bu adım lezzet kadar doku için de fark yaratır.": "Wenn Croissants vor dem Servieren kurz auf einem Rost ruhen, verringert das die Feuchtigkeit an der Unterseite und bewahrt die Knusprigkeit. Besonders wenn eine Füllung folgt, verbessert dieser Schritt die Textur ebenso wie den Geschmack.",
+    "Sade tereyağlı kruvasanla filtre kahve daha dengeli bir tat verir.": "Filterkaffee ergibt mit einem schlichten Buttercroissant einen ausgewogeneren Geschmack.",
+    "Çikolatalı lezzetlerde orta kavrum espresso bazlı içecekler öne çıkar.": "Zu Schokoladensorten passen Getränke auf Espresso-Basis mit mittlerer Röstung besonders gut.",
+    "Meyveli kruvasanlar için soğuk demleme kahveler ferah bir seçimdir.": "Zu fruchtigen Croissants sind Cold-Brew-Kaffees eine erfrischende Wahl.",
+    "Point Croissant, Antalya'da kruvasan odaklı bir kafe markasıdır.": "Point Croissant ist eine croissant-fokussierte Café-Marke in Antalya.",
+    "Kaliteli ürün ve hızlı servis sunuyoruz.": "Wir bieten Qualitätsprodukte und schnellen Service.",
+    "Franchise, kurumsal iş birliği ve toplu tedarik görüşmeleri için bizimle iletişime geçebilirsiniz.": "Kontaktieren Sie uns für Franchise, Unternehmenspartnerschaften und Großlieferungen.",
+    "Zorunlu değil, ancak hafta sonu ve akşam saatlerinde rezervasyon önerilir.": "Sie ist nicht verpflichtend, an Wochenenden und in den Abendstunden empfehlen wir jedoch eine Reservierung.",
+    "Rezervasyon sayfasından WhatsApp veya telefon üzerinden hızlıca rezervasyon oluşturabilirsiniz.": "Über die Reservierungsseite können Sie schnell per WhatsApp oder Telefon reservieren.",
+    "Evet. Etkinlik, ofis ve özel günler için toplu sipariş alıyoruz.": "Ja. Wir nehmen Sammelbestellungen für Veranstaltungen, Büros und besondere Anlässe entgegen.",
+    "Yoğun günlerde en az 1 gün, büyük siparişlerde 2-3 gün önce iletişime geçmeniz önerilir.": "An stark nachgefragten Tagen kontaktieren Sie uns bitte mindestens 1 Tag im Voraus; bei großen Bestellungen empfehlen wir 2-3 Tage.",
+    "Evet. Bölgesel teslimat saatleri içinde adrese teslim hizmet sunuyoruz.": "Ja. Innerhalb der regionalen Lieferzeiten liefern wir nach Hause.",
+    "Nakit ve kart ile ödeme yapabilirsiniz. Online yönlendirmelerde ilgili platformun ödeme seçenekleri geçerlidir.": "Sie können bar oder mit Karte bezahlen. Bei Online-Weiterleitungen gelten die Zahlungsmöglichkeiten der jeweiligen Plattform.",
+    "Belirli günlerde sınırlı sayıda glutensiz ürün sunuyoruz.": "An ausgewählten Tagen bieten wir eine begrenzte Anzahl glutenfreier Produkte an.",
+    "Evet. Ürün içerikleri ve alerjen bilgileri için ekibimizden detaylı bilgi alabilirsiniz.": "Ja. Unser Team gibt Ihnen gerne detaillierte Auskunft zu Inhaltsstoffen und Allergenen.",
+    "Menü sayfası düzenli olarak güncellenir. Güncel ürün ve fiyat bilgisi için menü sayfasını takip edebilirsiniz.": "Die Menüseite wird regelmäßig aktualisiert. Aktuelle Produkt- und Preisinformationen finden Sie dort.",
+    "Point Croissant olarak kişisel verilerinizi korumayı önceliğimiz kabul ediyoruz. Bu metin, hangi bilgileri neden topladığımızı ve nasıl koruduğumuzu açıklar.": "Als Point Croissant betrachten wir den Schutz Ihrer personenbezogenen Daten als Priorität. Dieser Text erläutert, welche Informationen wir erheben, warum wir sie erheben und wie wir sie schützen.",
+    "Sitemiz üzerinden bize ilettiğiniz ad, telefon, e-posta ve mesaj içerikleri gibi iletişim bilgileri işlenebilir.": "Kontaktdaten wie Name, Telefon, E-Mail und Nachrichteninhalte, die Sie über unsere Website übermitteln, können verarbeitet werden.",
+    "İletişim formlarında paylaştığınız bilgiler": "Informationen, die Sie in Kontaktformularen mitteilen",
+    "Rezervasyon veya teklif taleplerinde ilettiğiniz veriler": "Daten, die Sie bei Reservierungs- oder Angebotsanfragen angeben",
+    "Teknik kullanım verileri (tarayıcı tipi, cihaz bilgisi vb.)": "Technische Nutzungsdaten (Browsertyp, Geräteinformationen usw.)",
+    "Toplanan veriler yalnızca hizmet sağlama ve iletişim süreçlerini yürütme amacıyla kullanılır.": "Erhobene Daten werden ausschließlich zur Erbringung von Leistungen und zur Abwicklung der Kommunikation verwendet.",
+    "Talep ve rezervasyonlara dönüş yapmak": "Beantwortung von Anfragen und Reservierungen",
+    "Hizmet kalitesini geliştirmek": "Verbesserung der Servicequalität",
+    "Yasal yükümlülükleri yerine getirmek": "Erfüllung gesetzlicher Pflichten",
+    "Kişisel verileriniz, açık rızanız olmadan üçüncü taraflara satılmaz veya pazarlama amacıyla devredilmez.": "Ihre personenbezogenen Daten werden ohne Ihre ausdrückliche Einwilligung nicht an Dritte verkauft oder zu Marketingzwecken weitergegeben.",
+    "Yetkisiz erişimi önlemek için makul teknik ve idari güvenlik önlemleri uygulanır.": "Angemessene technische und organisatorische Sicherheitsmaßnahmen werden angewendet, um unbefugten Zugriff zu verhindern.",
+    "Verilerinize ilişkin erişim, düzeltme veya silme talepleriniz için bizimle iletişime geçebilirsiniz.": "Für Auskunfts-, Berichtigungs- oder Löschungsanträge zu Ihren Daten können Sie uns kontaktieren.",
+    "Güncel iletişim bilgileri için ana sayfadaki iletişim bölümünü kullanabilirsiniz.": "Aktuelle Kontaktdaten finden Sie im Kontaktbereich auf der Startseite.",
+    "Bu sayfada yer alan şartlar, Point Croissant web sitesinin kullanımına ilişkin temel kuralları ve tarafların sorumluluklarını belirtir.": "Die Bedingungen auf dieser Seite legen die grundlegenden Regeln für die Nutzung der Point Croissant Website sowie die Verantwortlichkeiten der Parteien fest.",
+    "Bu siteye erişen her kullanıcı, burada yer alan kullanım şartlarını kabul etmiş sayılır.": "Jede Person, die diese Website aufruft, gilt als mit den hier genannten Nutzungsbedingungen einverstanden.",
+    "İçerikler bilgilendirme amaçlıdır.": "Die Inhalte dienen Informationszwecken.",
+    "Web sitesindeki görsel ve metinler izinsiz kopyalanamaz.": "Bilder und Texte auf der Website dürfen ohne Genehmigung nicht kopiert werden.",
+    "Site üzerinden yapılan işlemler dürüst kullanım esasına tabidir.": "Über die Website vorgenommene Vorgänge unterliegen den Grundsätzen der fairen Nutzung.",
+    "Ürün içerikleri, stok durumu ve fiyatlar operasyonel nedenlerle güncellenebilir.": "Produktinhalte, Lagerbestand und Preise können aus betrieblichen Gründen aktualisiert werden.",
+    "Kesin bilgi için sipariş/rezervasyon sırasında ekibimiz tarafından paylaşılan güncel bilgi esas alınır.": "Maßgeblich sind die aktuellen Angaben, die unser Team bei Bestellung/Reservierung mitteilt.",
+    "Site içinde WhatsApp, harita ve sosyal medya gibi üçüncü taraf bağlantılar bulunabilir.": "Die Website kann Links Dritter enthalten, etwa zu WhatsApp, Karten und sozialen Medien.",
+    "Bu platformların kendi kullanım koşulları geçerlidir ve Point Croissant bu platformların politikalarından sorumlu değildir.": "Es gelten die eigenen Bedingungen dieser Plattformen, und Point Croissant ist für deren Richtlinien nicht verantwortlich.",
+    "Teknik bakım, güncelleme veya mücbir sebepler nedeniyle hizmette geçici kesinti yaşanabilir.": "Vorübergehende Unterbrechungen können durch technische Wartung, Updates oder höhere Gewalt entstehen.",
+    "Bu tür durumlarda doğabilecek dolaylı zararlardan Point Croissant sorumlu tutulamaz.": "Point Croissant haftet nicht für indirekte Schäden, die in solchen Fällen entstehen können.",
+    "Bu politika, web sitemizde kullanılan çerez türlerini ve bu çerezlerin hangi amaçlarla işlendiğini açıklamak için hazırlanmıştır.": "Diese Richtlinie erläutert die auf unserer Website verwendeten Cookie-Arten und die Zwecke, zu denen sie verarbeitet werden.",
+    "Çerezler, ziyaret ettiğiniz web sitesinin tarayıcınıza kaydettiği küçük metin dosyalarıdır. Bu dosyalar, site deneyimini iyileştirmek için kullanılır.": "Cookies sind kleine Textdateien, die die besuchte Website in Ihrem Browser speichert. Diese Dateien dienen der Verbesserung der Nutzungserfahrung.",
+    "Zorunlu Çerezler:": "Essenzielle Cookies:",
+    "Sayfanın temel işlevlerinin çalışması için gereklidir.": "Erforderlich, damit die Kernfunktionen der Seite funktionieren.",
+    "Performans Çerezleri:": "Performance-Cookies:",
+    "Site kullanımını analiz ederek geliştirme yapılmasına destek olur.": "Unterstützen Verbesserungen durch die Analyse der Seitennutzung.",
+    "Tercih Çerezleri:": "Präferenz-Cookies:",
+    "Kullanıcı ayarlarını hatırlayarak kişiselleştirilmiş deneyim sunar.": "Bieten ein personalisiertes Erlebnis, indem Benutzereinstellungen gespeichert werden.",
+    "Çerezleri tarayıcı ayarlarınızdan silebilir, engelleyebilir veya kısıtlayabilirsiniz.": "Sie können Cookies in Ihren Browsereinstellungen löschen, blockieren oder einschränken.",
+    "Ancak bazı çerezleri devre dışı bırakmanız, sitenin bazı işlevlerinde kısıtlama yaratabilir.": "Das Deaktivieren einiger Cookies kann jedoch bestimmte Funktionen der Website einschränken.",
+    "Çerez politikamız zaman zaman güncellenebilir. Güncel metin bu sayfa üzerinden yayımlanır.": "Unsere Cookie-Richtlinie kann von Zeit zu Zeit aktualisiert werden. Der aktuelle Text wird auf dieser Seite veröffentlicht.",
+    "Point Croissant Admin Panel": "Point Croissant Admin-Panel",
+    "Yetkili Girişi": "Autorisierte Anmeldung",
+    "Admin Panel Kilitli": "Admin-Panel gesperrt",
+    "Sadece yetkili kullanıcı şifresi ile erişim sağlanır.": "Der Zugang erfolgt nur mit dem Passwort einer autorisierten Person.",
+    "Şifre": "Passwort",
+    "Giriş Yap": "Anmelden",
+    "Yönetim": "Verwaltung",
+    "Yönetim Menüsü": "Verwaltungsmenü",
+    "Ürün Yönetimi": "Produktverwaltung",
+    "İletişim Ayarları": "Kontakteinstellungen",
+    "İçerik Düzenleme": "Inhaltsbearbeitung",
+    "Ürün Listesi": "Produktliste",
+    "Yönetim Özeti": "Verwaltungsübersicht",
+    "Toplam Ürün": "Produkte insgesamt",
+    "Ortalama Fiyat": "Durchschnittspreis",
+    "En Yüksek Fiyat": "Höchster Preis",
+    "Çeviri Eksiği (EN/RU)": "Fehlende Übersetzung (EN/RU)",
+    "Önce ürün/ayar bilgilerini kaydet, sonra içerik düzenleyiciden ilgili sayfayı aç.": "Speichern Sie zuerst Produkt- und Einstellungsdaten und öffnen Sie anschließend die betreffende Seite im Inhaltseditor.",
+    "Kayıtlı içerik özeti": "Zusammenfassung der gespeicherten Inhalte",
+    "Toplam ürün:": "Produkte insgesamt:",
+    "Ürün önizleme": "Produktvorschau",
+    "Kayıt bulunamadı.": "Keine Einträge gefunden.",
+    "Sayfa": "Seite",
+    "Kayıt": "Eintrag",
+    "Ürün ara (ad/açıklama/etiket)": "Produkt suchen (Name/Beschreibung/Tag)",
+    "TR alanı": "TR-Feld",
+    "EN alanı": "EN-Feld",
+    "RU alanı": "RU-Feld",
+    "Yeni eklenen (son)": "Neueste zuerst",
+    "Fiyat (yüksekten düşüğe)": "Preis (absteigend)",
+    "Fiyat (düşükten yükseğe)": "Preis (aufsteigend)",
+    "Ürün adı (A-Z)": "Produktname (A-Z)",
+    "Filtreleri Sıfırla": "Filter zurücksetzen",
+    "Ürünleri JSON Dışa Aktar": "Produkte als JSON exportieren",
+    "JSON İçeri Aktar": "JSON importieren",
+    "Görsel": "Bild",
+    "Çoğalt": "Duplizieren",
+    "Ürün ve Fiyat Yönetimi": "Produkt- und Preisverwaltung",
+    "Buradan girdiğin ürünler ana sayfa ve menü sayfasına otomatik yansır.": "Hier eingegebene Produkte erscheinen automatisch auf der Startseite und der Menüseite.",
+    "Ürün Ekle / Güncelle": "Produkt hinzufügen / aktualisieren",
+    "Ürün Adı": "Produktname",
+    "Ürün Adı (TR)": "Produktname (TR)",
+    "Ürün Adı (EN)": "Produktname (EN)",
+    "Ürün Adı (RU)": "Produktname (RU)",
+    "Açıklama": "Beschreibung",
+    "Açıklama (TR)": "Beschreibung (TR)",
+    "Açıklama (EN)": "Beschreibung (EN)",
+    "Açıklama (RU)": "Beschreibung (RU)",
+    "Ürün Görsel URL": "Produktbild-URL",
+    "Ürün Görsel URL (TR)": "Produktbild-URL (TR)",
+    "Ürün Görsel URL (EN)": "Produktbild-URL (EN)",
+    "Ürün Görsel URL (RU)": "Produktbild-URL (RU)",
+    "assets/logo-point-croissant.webp veya https://...": "assets/logo-point-croissant.webp oder https://...",
+    "Fiyat (TL)": "Preis (TL)",
+    "Etiket": "Tag",
+    "Etiket (TR)": "Tag (TR)",
+    "Etiket (EN)": "Tag (EN)",
+    "Etiket (RU)": "Tag (RU)",
+    "Boşsa TR kullanılır": "Wenn leer, wird TR verwendet",
+    "Kaydet": "Speichern",
+    "Temizle": "Leeren",
+    "Varsayılana Dön": "Auf Standard zurücksetzen",
+    "İletişim ve Konum Ayarları": "Kontakt- und Standorteinstellungen",
+    "Telefon (gösterim)": "Telefon (Anzeige)",
+    "Telefon (tel format)": "Telefon (tel-Format)",
+    "WhatsApp (gösterim)": "WhatsApp (Anzeige)",
+    "WhatsApp (numara, ülke kodlu)": "WhatsApp (Nummer, mit Ländervorwahl)",
+    "E-Posta": "E-mail",
+    "Adres": "Adresse",
+    "Adres (TR)": "Adresse (TR)",
+    "Adres (EN)": "Adresse (EN)",
+    "Adres (RU)": "Adresse (RU)",
+    "Harita Konum Metni": "Kartenstandorttext",
+    "Harita Konum Metni (TR)": "Kartenstandorttext (TR)",
+    "Harita Konum Metni (EN)": "Kartenstandorttext (EN)",
+    "Harita Konum Metni (RU)": "Kartenstandorttext (RU)",
+    "Ayarları Kaydet": "Einstellungen speichern",
+    "Varsayılan Ayarlar": "Standardeinstellungen",
+    "Canlı İçerik Düzenleyici (Tüm Sayfalar)": "Live-Inhaltseditor (alle Seiten)",
+    "İstediğin sayfayı seçip düzenleme modunu aç. Açılan sayfada": "Wählen Sie die gewünschte Seite und öffnen Sie den Bearbeitungsmodus. Auf der geöffneten Seite",
+    "Shift + Tıkla": "Shift + Click",
+    "ile metin, link ve görselleri anında düzenle.": "können Sie Texte, Links und Bilder sofort bearbeiten.",
+    "Düzenlenecek Sayfa": "Zu bearbeitende Seite",
+    "Gizlilik": "Datenschutz",
+    "Düzenleme Modunu Aç": "Bearbeitungsmodus öffnen",
+    "Düzenleme Modunu Kapat": "Bearbeitungsmodus schließen",
+    "Tüm Düzenlemeleri Sıfırla": "Alle Bearbeitungen zurücksetzen",
+    "Mevcut Ürünler": "Aktuelle Produkte",
+    "Ürün": "Produkt",
+    "Fiyat": "Preis",
+    "İşlem": "Aktion",
+    "Belçika çikolatası dolgusu ve kakao glaze ile yoğun lezzet.": "Intensiver Geschmack mit belgischer Schokoladenfüllung und Kakaoglasur.",
+    "En Çok Satan": "Bestseller",
+    "En Cok Satan": "Bestseller",
+    "Fıstık Supreme": "Pistachio Supreme",
+    "Antep fıstık kreması, çıtır fıstık parçası ve tereyağlı hamur.": "Pistaziencreme, knusprige Pistaziestücke und butteriger Teig.",
+    "Şef Önerisi": "Empfehlung des Küchenchefs",
+    "Yaban Mersinli Danish": "Blueberry Danish",
+    "İpeksi krema ve meyve dolgusu ile ferah, dengeli tat.": "Ein frischer, ausgewogener Geschmack mit seidiger Creme und Fruchtfüllung.",
+    "Yeni": "Neu",
+    "Trüf Mantarlı Tuzlu": "Herzhaft Trüffel-Champignon",
+    "Trüf mantarlı tuzlu kruvasan.": "Herzhaftes Croissant mit Trüffelpilz.",
+    "Öne Çıkan": "Empfohlen",
+    "Düzenle": "Bearbeiten",
+    "Sil": "Löschen",
+    "Lütfen ürün adı, açıklama ve fiyatı doldur.": "Bitte füllen Sie Produktname, Beschreibung und Preis aus.",
+    "Ürün güncellendi. Ön yüzde anında yansır.": "Produkt aktualisiert. Es erscheint sofort auf der Vorderseite.",
+    "Ürün eklendi. Ön yüzde anında yansır.": "Produkt hinzugefügt. Es erscheint sofort auf der Vorderseite.",
+    "Ürün düzenleme için forma getirildi.": "Produkt wurde zum Bearbeiten in das Formular geladen.",
+    "Ürün silindi.": "Produkt gelöscht.",
+    "Form temizlendi.": "Formular geleert.",
+    "Varsayılan ürünler geri yüklendi.": "Standardprodukte wiederhergestellt.",
+    "Lütfen tüm iletişim alanlarını doldur.": "Bitte füllen Sie alle Kontaktfelder aus.",
+    "İletişim ve konum ayarları kaydedildi.": "Kontakt- und Standorteinstellungen gespeichert.",
+    "Ayarlar varsayılana alındı.": "Einstellungen auf Standard zurückgesetzt.",
+    "Şifre gerekli.": "Passwort ist erforderlich.",
+    "Şifre hatalı.": "Falsches Passwort.",
+    "Bu ürünü silmek istediğine emin misin?": "Möchten Sie dieses Produkt wirklich löschen?",
+    "Varsayılan ürünleri geri yüklemek istediğine emin misin?": "Möchten Sie die Standardprodukte wirklich wiederherstellen?",
+    "Tüm sayfalardaki içerik düzenlemeleri sıfırlanacak. Devam etmek istiyor musun?": "Alle Inhaltsbearbeitungen auf allen Seiten werden zurückgesetzt. Möchten Sie fortfahren?",
+    "Listelenen:": "Angezeigt:",
+    "Ürün kopyalandı.": "Produkt dupliziert.",
+    "Ürünler JSON olarak dışa aktarıldı.": "Produkte als JSON exportiert.",
+    "JSON içeriği geçersiz.": "Ungültiger JSON-Inhalt.",
+    "JSON içe aktarıldı.": "JSON importiert.",
+    "JSON dosyası okunamadı.": "JSON-Datei konnte nicht gelesen werden.",
+    "Düzenleme modu açıldı. Yeni sekmede Shift + Tıkla ile metin/link/görsel düzenleyebilirsin.": "Bearbeitungsmodus geöffnet. Im neuen Tab können Sie Text/Link/Bild mit Shift + Click bearbeiten.",
+    "Düzenleme modu kapatıldı.": "Bearbeitungsmodus geschlossen.",
+    "Tüm sayfa içerik düzenlemeleri sıfırlandı.": "Alle Inhaltsbearbeitungen der Seiten wurden zurückgesetzt.",
+    "Görsel URL": "Bild-URL",
+    "Alt metni": "Alt-Text",
+    "Link metni": "Linktext",
+    "Link adresi": "Link-URL",
+    "Metin": "Text",
+    "Yeni, Premium...": "Neu, Premium...",
+    "Güzeloba Mah. Çağlayangil Cad. No:38 / B, Muratpaşa / Antalya": "Stadtteil Güzeloba, Çağlayangil-Straße Nr. 38 / B, Muratpaşa / Antalya",
+    "Merhaba Point Croissant, bilgi almak istiyorum.": "Hallo Point Croissant, ich möchte gerne Informationen erhalten.",
+    "Merhaba Point Croissant,\n\nİstek / Dilek / Öneri Formu:\nAd Soyad: ${data.name}\nE-Posta: ${data.email}\nTelefon: ${data.phone}\nMesaj: ${data.message}": "Hallo Point Croissant,\n\nAnfrage- / Vorschlagsformular:\nVor- und Nachname: ${data.name}\nE-mail: ${data.email}\nTelefon: ${data.phone}\nNachricht: ${data.message}",
+    "Point Croissant Antalya resmi web sitesi. Güzeloba, Muratpaşa’da cafe ve bakery: imza kruvasanlar, menü, rezervasyon ve iletişim.": "Offizielle Website von Point Croissant Antalya. Café und Bäckerei in Güzeloba, Muratpasa: Signatur-Croissants, Menü, Reservierungen und Kontakt.",
+    "Point Croissant Antalya lezzetleri: imza kruvasanlar, öne çıkan ürünler ve sipariş için iletişim bilgileri.": "Point Croissant Antalya Sorten: Signatur-Croissants, empfohlene Produkte und Kontaktdaten zum Bestellen.",
+    "Point Croissant Antalya menü: güncel fiyatlar, kategorili kruvasan ve cafe ürünleri.": "Point Croissant Antalya Menü: aktuelle Preise, kategorisierte Croissants und Café-Artikel.",
+    "Point Croissant hikayesi, üretim anlayışı ve marka yolculuğu.": "Die Geschichte von Point Croissant, die Produktionsphilosophie und die Markenreise.",
+    "Kruvasan, kahve ve servis önerileri için Point Croissant blog içerikleri.": "Point Croissant Blog-Inhalte mit Tipps zu Croissant, Kaffee und Service.",
+    "İmza kruvasan hazırlama rehberi, püf noktaları ve üretim önerileri.": "Zubereitungsratgeber für Signatur-Croissants, Tipps und Produktionsempfehlungen.",
+    "Kahve ve kruvasan eşleşmesi için pratik öneriler ve lezzet uyumları.": "Praktische Tipps und Geschmackskombinationen für Kaffee und Croissants.",
+    "Point Croissant etkinlikleri ve özel gün organizasyon bilgileri.": "Informationen zu Point Croissant Veranstaltungen und Organisation besonderer Anlässe.",
+    "Kurumsal iş birliği, marka bilgisi ve Point Croissant hakkında detaylar.": "Unternehmenskooperation, Markeninformationen und Details zu Point Croissant.",
+    "Sıkça sorulan sorular: rezervasyon, teslimat, toplu sipariş ve daha fazlası.": "Häufig gestellte Fragen: Reservierungen, Lieferung, Sammelbestellungen und mehr.",
+    "Point Croissant masa rezervasyonu için WhatsApp ve telefonla hızlı iletişim.": "Schneller Kontakt per WhatsApp und Telefon für Tischreservierungen bei Point Croissant.",
+    "Antalya içi teslimat saatleri, sipariş detayları ve iletişim seçenekleri.": "Lieferzeiten in Antalya, Bestelldetails und Kontaktmöglichkeiten.",
+    "Toptan ve kurumsal tedarik çözümleri için teklif ve iletişim bilgileri.": "Angebot und Kontaktinformationen für Großhandel und Unternehmensversorgung.",
+    "Point Croissant Gizlilik Politikası metni ve kişisel veri işleme esasları.": "Text der Datenschutzerklärung von Point Croissant und Grundsätze der Verarbeitung personenbezogener Daten.",
+    "Point Croissant Kullanım Şartları ve site kullanımına ilişkin kurallar.": "Nutzungsbedingungen von Point Croissant und Regeln zur Nutzung der Website.",
+    "Point Croissant Çerez Politikası ve çerez tercihleri hakkında bilgiler.": "Cookie-Richtlinie von Point Croissant und Informationen zu Cookie-Einstellungen.",
+    "Web sitesi ve yazılım: SoftenWise": "Website & Software: SoftenWise",
+    "SoftenWise — yazılım ve web geliştirme": "SoftenWise — Software- und Webentwicklung",
+    "Çeviri Eksiği (EN/RU/AR/DE)": "Fehlende Übersetzung (EN/RU/AR/DE)",
+    "AR alanı": "AR-Feld",
+    "DE alanı": "DE-Feld",
+    "Ürün Adı (AR)": "Produktname (AR)",
+    "Ürün Adı (DE)": "Produktname (DE)",
+    "Açıklama (AR)": "Beschreibung (AR)",
+    "Açıklama (DE)": "Beschreibung (DE)",
+    "Etiket (AR)": "Tag (AR)",
+    "Etiket (DE)": "Tag (DE)",
+    "Ürün Görsel URL (AR)": "Produktbild-URL (AR)",
+    "Ürün Görsel URL (DE)": "Produktbild-URL (DE)",
+    "Adres (AR)": "Adresse (AR)",
+    "Adres (DE)": "Adresse (DE)",
+    "Harita Konum Metni (AR)": "Kartenstandorttext (AR)",
+    "Harita Konum Metni (DE)": "Kartenstandorttext (DE)",
+    "Blog Yazıları": "Blogbeiträge",
+    "Facebook URL": "Facebook-URL",
+    "Google çalışma saati (şema)": "Google-Öffnungszeiten (Schema)",
+    "Instagram URL": "Instagram-URL",
+    "Kategori": "Kategorie",
+    "Marka ve Sayaçlar": "Marke und Zähler",
+    "Menü Kategorileri": "Menükategorien",
+    "Menü Yapısı": "Menüstruktur",
+    "SEO ve Google": "SEO und Google",
+    "Tuzlu": "Herzhaft",
+    "WhatsApp hazır mesaj (EN)": "WhatsApp-Begrüßung (EN)",
+    "WhatsApp hazır mesaj (RU)": "WhatsApp-Begrüßung (RU)",
+    "WhatsApp hazır mesaj (TR)": "WhatsApp-Begrüßung (TR)",
+    "WhatsApp hazır mesaj (AR)": "WhatsApp-Begrüßung (AR)",
+    "WhatsApp hazır mesaj (DE)": "WhatsApp-Begrüßung (DE)",
+    "Çalışma Saatleri": "Öffnungszeiten",
+    "Çalışma Saatleri:": "Öffnungszeiten:",
+    "İmza / özel seçkiye ekle": "Zur Signatur- / Spezialauswahl hinzufügen"
+  },
+  ar: {
+    "Anasayfa": "الرئيسية",
+    "Hikayemiz": "قصتنا",
+    "Lezzetler": "النكهات",
+    "Galeri": "المعرض",
+    "Tarifler": "الوصفات",
+    "İletişim": "تواصل معنا",
+    "Sipariş Ver": "اطلب الآن",
+    "Keşfet": "استكشف",
+    "Menü": "القائمة",
+    "Etkinlikler": "الفعاليات",
+    "Hizmetler": "الخدمات",
+    "Rezervasyon": "الحجز",
+    "Teslimat": "التوصيل",
+    "Toptan": "الجملة",
+    "SSS": "FAQ",
+    "Yasal": "قانوني",
+    "Gizlilik Politikası": "سياسة الخصوصية",
+    "Kullanım Şartları": "شروط الاستخدام",
+    "Çerez Politikası": "سياسة ملفات تعريف الارتباط",
+    "Günün en keyifli molası için taptaze kruvasanlar ve özenli kahve.": "كرواسان طازج وقهوة محضّرة بعناية لأفضل استراحة في يومك.",
+    "Antalya, Türkiye": "Antalya، تركيا",
+    "Menüyü aç/kapat": "فتح/إغلاق القائمة",
+    "Dil seçimi": "اختيار اللغة",
+    "Güne Lezzetli Bir Başlangıç": "بداية لذيذة ليومك",
+    "Çıtır katmanlar, özel reçeteler ve özenle hazırlanan sunumlar. Her lokmada kaliteyi hissedin.": "طبقات مقرمشة، وصفات مميزة، وتقديم مُعدّ بعناية. اشعر بالجودة في كل لقمة.",
+    "Antalya · Cafe & Bakery": "Antalya · مقهى ومخبز",
+    "Keşfetmeye devam et": "واصل الاستكشاف",
+    "Katman katman, her sabah taze": "طبقة تلو طبقة، طازج كل صباح",
+    "Tereyağlı": "زبدي",
+    "Çikolatalı": "شوكولاتة",
+    "Fıstıklı": "فستق",
+    "Brunch": "Brunch",
+    "Espresso": "Espresso",
+    "Taze üretim her sabah": "يُحضَّر طازجاً كل صباح",
+    "Kat kat çıtır hamur": "عجينة مقرمشة متعددة الطبقات",
+    "Özenle çekilmiş kahve": "قهوة محضّرة بعناية",
+    "Lara’da imza kruvasan deneyimi": "تجربة الكرواسان المميز في Lara",
+    "Lezzetleri Keşfet": "استكشف النكهات",
+    "Bize Ulaş": "تواصل معنا",
+    "Yıllık Ustalık": "سنوات من الحرفة",
+    "Özel Tarif": "الوصفة المميزة",
+    "Günlük Servis": "خدمة يومية",
+    "Lezzet Sayfası": "صفحة النكهات",
+    "İmza kruvasanlarımız": "كرواساننا المميز",
+    "Tüm ürünleri tek sayfada inceleyebilirsiniz.": "تصفّح جميع المنتجات في صفحة واحدة.",
+    "Lezzet Sayfasına Git": "انتقل إلى صفحة النكهات",
+    "Lezzet Galerisi": "معرض النكهات",
+    "Katman detayı": "تفاصيل الطبقات",
+    "Kahve eşleşmesi": "تناسق القهوة",
+    "Tümü": "الكل",
+    "Tatlı": "حلو",
+    "Meyveli": "فاكهي",
+    "Konum": "الموقع",
+    "Telefon": "الهاتف",
+    "E-posta": "E-mail",
+    "WhatsApp": "WhatsApp",
+    "Konuma Git": "احصل على الاتجاهات",
+    "WhatsApp ile İletişim": "تواصل عبر WhatsApp",
+    "Hemen Ara": "اتصل الآن",
+    "Bize Yazın": "راسلنا",
+    "İstek / Dilek / Öneri Formu": "نموذج الطلب / الاقتراح",
+    "Görüşlerinizi bizimle paylaşın": "شاركنا ملاحظاتك",
+    "Ad Soyad": "الاسم الكامل",
+    "Mesaj": "الرسالة",
+    "Gönder": "إرسال",
+    "WhatsApp ile iletişime geç": "تواصل عبر WhatsApp",
+    "Öne Çıkanlar": "مميز",
+    "İmza Kruvasanlarımız": "كرواساننا المميز",
+    "Günün en sevilen ürünleri tek sayfada.": "أكثر منتجات اليوم حباً في صفحة واحدة.",
+    "Detay ve sipariş için hemen ulaş": "اطّلع على التفاصيل واطلب الآن",
+    "WhatsApp'tan Yaz": "راسلنا على WhatsApp",
+    "Bizi Arayın": "اتصل بنا",
+    "Masa Rezervasyonu": "حجز طاولة",
+    "Rezervasyon için bizi arayabilir veya WhatsApp ile yazabilirsiniz.": "يمكنك الاتصال بنا أو مراسلتنا عبر WhatsApp للحجز.",
+    "WhatsApp ile Rezerve Et": "احجز عبر WhatsApp",
+    "Antalya İçine Hızlı Teslimat": "توصيل سريع داخل Antalya",
+    "Bölgesel teslimat saatleri 09:00 - 22:00 arasındadır.": "ساعات التوصيل في المنطقة بين 09:00 و 22:00.",
+    "Toplu siparişlerde bir gün önce ön sipariş önerilir.": "للطلبات بالجملة يُفضَّل الطلب المسبق قبل يوم واحد.",
+    "Kurumsal Tedarik Çözümleri": "حلول التوريد للشركات",
+    "Oteller, butik cafeler ve restoranlar için özel gramaj ve paketleme seçenekleri.": "خيارات وزن وتعبئة مخصصة للفنادق والمقاهي البوتيكية والمطاعم.",
+    "Detaylı teklif almak için talep formunu doldurabilirsiniz.": "يمكنك تعبئة نموذج الطلب للحصول على عرض سعر مفصّل.",
+    "Point Croissant’in Yolculuğu": "رحلة Point Croissant",
+    "Bir tariften fazlası: özenle inşa edilen bir lezzet kültürü.": "أكثر من وصفة: ثقافة نكهة بُنيت بعناية.",
+    "Bir soruyla başlayan yolculuk": "رحلة بدأت بسؤال",
+    "Katman, sıcaklık ve sabrın dengesi": "توازن الطبقات والحرارة والصبر",
+    "Sadece ürün değil, bütün bir deneyim": "ليس مجرد منتج، بل تجربة كاملة",
+    "Her gün aynı kalite, her sabah taze üretim": "الجودة ذاتها كل يوم، وإنتاج طازج كل صباح",
+    "Blog & Rehber": "Blog والأدلة",
+    "Kruvasan, kahve ve servis önerileri": "نصائح عن الكرواسان والقهوة والخدمة",
+    "İmza kruvasan": "الكرواسان المميز",
+    "İmza Kruvasan Nasıl Yapılır?": "كيف يُحضَّر الكرواسان المميز؟",
+    "Kat kat dokusunu koruyan, hacimli ve dengeli hamur tekniğinin püf noktaları.": "تقنيات أساسية لقوام متعدد الطبقات وعجينة متوازنة.",
+    "Devamını Oku": "اقرأ المزيد",
+    "Kahve eşleşmesi": "توافق القهوة",
+    "Kahve ile Kruvasan Eşleşmesi": "توافق القهوة والكرواسان",
+    "Damak zevkine uygun en doğru kahve ve kruvasan uyumunu keşfedin.": "اكتشف التوافق المناسب بين القهوة والكرواسان لذوقك.",
+    "Sıkça Sorulan Sorular": "الأسئلة الشائعة",
+    "Kahve ve Kruvasan Eşleşmesi": "توافق القهوة والكرواسان",
+    "İmza Kruvasan Rehberi": "دليل الكرواسان المميز",
+    "Blog listesine dön": "العودة إلى قائمة Blog",
+    "Düzenleme modu açık - Shift + Tıkla düzenle": "وضع التحرير مفعّل - Shift + Click للتحرير",
+    "Kapat": "إغلاق",
+    "Bu sayfayı sıfırla": "إعادة تعيين هذه الصفحة",
+    "İçeriğe geç": "انتقل إلى المحتوى",
+    "Blog": "Blog",
+    "Blog: İmza Kruvasan": "Blog: الكرواسان المميز",
+    "Blog: Kahve Eşleşmesi": "Blog: توافق القهوة",
+    "İletişim & Konum Bilgileri": "معلومات التواصل والموقع",
+    "Telefon ile ara": "اتصل هاتفياً",
+    "WhatsApp'tan yazabilir veya direkt arayabilirsin.": "يمكنك المراسلة عبر WhatsApp أو الاتصال مباشرة.",
+    "Tarif": "وصفة",
+    "Rehber": "دليل",
+    "Etkinlik": "فعالية",
+    "Atölye ve Özel Davetler": "ورش العمل والفعاليات الخاصة",
+    "Kruvasan Atölyesi": "ورشة الكرواسان",
+    "Atolye ve Ozel Davetler": "ورش العمل والفعاليات الخاصة",
+    "Kruvasan Atolyesi": "ورشة الكرواسان",
+    "Kurumsal": "الشركات",
+    "Point Croissant Hakkında": "عن Point Croissant",
+    "Taze Üretim Kruvasanlar": "كرواسان محضَّر طازجاً",
+    "İmza lezzetlerimizi kategorili, modern ve şık bir menü düzeninde keşfedin.": "اكتشف نكهاتنا المميزة في قائمة مصنّفة بتصميم حديث وأنيق.",
+    "Lezzet Haritası": "خريطة النكهات",
+    "Point Croissant Menü Seçkisi": "مختارات قائمة Point Croissant",
+    "Ürünler içerik yapısına göre kategorilendirilir ve admin panelindeki güncel fiyatlarla otomatik listelenir.": "تُصنَّف المنتجات حسب محتواها وتُعرض تلقائياً بالأسعار الحالية من لوحة الإدارة.",
+    "Taze üretim": "محضَّر طازجاً",
+    "Güncel fiyat": "السعر الحالي",
+    "Kategorili görünüm": "عرض مصنّف",
+    "Detay Al": "اطلب التفاصيل",
+    "Özel Lezzet": "نكهة خاصة",
+    "Seçki": "مختارات",
+    "Tatlı Kruvasanlar": "كرواسان حلو",
+    "Meyveli, çikolatalı ve özel dolgulu tatlı seçenekler.": "خيارات حلوة بالفاكهة والشوكولاتة والحشوات الخاصة.",
+    "Tuzlu Kruvasanlar": "كرواسان مالح",
+    "Dengeli tuzlu tarifler ve brunch için ideal seçenekler.": "وصفات مالحة متوازنة وخيارات مثالية لـ Brunch.",
+    "İmza ve Özel Seçkiler": "المختارات المميزة والخاصة",
+    "Şef önerileri, premium tarifler ve vitrinin yıldızları.": "توصيات الشيف، ووصفات فاخرة، ونجوم الواجهة.",
+    "Rezervasyon gerekli mi?": "هل الحجز مطلوب؟",
+    "Rezervasyon nasıl yapabilirim?": "كيف يمكنني إجراء حجز؟",
+    "Toplu sipariş alıyor musunuz?": "هل تقبلون الطلبات بالجملة؟",
+    "Toplu sipariş için ne kadar önce iletişime geçmeliyim?": "متى ينبغي التواصل معكم للطلبات بالجملة؟",
+    "Teslimat hizmetiniz var mı?": "هل تقدّمون خدمة التوصيل؟",
+    "Ödeme seçenekleri nelerdir?": "ما خيارات الدفع المتاحة؟",
+    "Glutensiz seçenek var mı?": "هل تتوفر خيارات خالية من الغلوتين؟",
+    "Alerjen bilgisi alabilir miyim?": "هل يمكنني الحصول على معلومات مسببات الحساسية؟",
+    "Menü ve fiyatlar güncel mi?": "هل القائمة والأسعار محدَّثة؟",
+    "1. Toplanan Bilgiler": "1. المعلومات التي تُجمع",
+    "2. Verilerin Kullanım Amaçları": "2. أغراض استخدام البيانات",
+    "3. Veri Paylaşımı ve Güvenlik": "3. مشاركة البيانات والأمان",
+    "4. Haklarınız ve İletişim": "4. حقوقكم والتواصل",
+    "1. Genel Kullanım": "1. الاستخدام العام",
+    "2. Fiyat ve Ürün Bilgileri": "2. معلومات الأسعار والمنتجات",
+    "3. Bağlantılar ve Üçüncü Taraf Hizmetler": "3. الروابط وخدمات الأطراف الثالثة",
+    "4. Sorumluluk Sınırı": "4. تحديد المسؤولية",
+    "1. Çerez Nedir?": "1. ما هو ملف تعريف الارتباط؟",
+    "2. Hangi Çerezleri Kullanıyoruz?": "2. أي ملفات تعريف ارتباط نستخدم؟",
+    "3. Çerez Tercihleri Nasıl Yönetilir?": "3. كيف تُدار تفضيلات ملفات تعريف الارتباط؟",
+    "4. Politika Güncellemeleri": "4. تحديثات السياسة",
+    "Lütfen tüm alanları doldur.": "يرجى تعبئة جميع الحقول.",
+    "Mesajın WhatsApp üzerinden hazırlandı ve açıldı.": "تم إعداد رسالتك وفتحها في WhatsApp.",
+    "Link kopyalandı.": "تم نسخ الرابط.",
+    "Link kopyalanamadı.": "تعذّر نسخ الرابط.",
+    "Bu cihazda paylaşım özelliği yok.": "المشاركة غير متاحة على هذا الجهاز.",
+    "Paylaşım başarılı.": "تمت المشاركة بنجاح.",
+    "Paylaşım iptal edildi.": "تم إلغاء المشاركة.",
+    "Point Croissant Antalya | Cafe, Bakery & İmza Kruvasan": "Point Croissant Antalya | مقهى ومخبز وكرواسان مميز",
+    "Blog | Point Croissant": "Blog | Point Croissant",
+    "Hikayemiz | Point Croissant": "قصتنا | Point Croissant",
+    "Lezzetler | Point Croissant": "النكهات | Point Croissant",
+    "Menü | Point Croissant": "القائمة | Point Croissant",
+    "Rezervasyon | Point Croissant": "الحجز | Point Croissant",
+    "Teslimat | Point Croissant": "التوصيل | Point Croissant",
+    "Toptan | Point Croissant": "الجملة | Point Croissant",
+    "SSS | Point Croissant": "FAQ | Point Croissant",
+    "Kurumsal | Point Croissant": "الشركات | Point Croissant",
+    "Etkinlikler | Point Croissant": "الفعاليات | Point Croissant",
+    "İmza Kruvasan Rehberi | Point Croissant": "دليل الكرواسان المميز | Point Croissant",
+    "Kahve Eşleşmesi | Point Croissant": "توافق القهوة | Point Croissant",
+    "Gizlilik Politikası | Point Croissant": "سياسة الخصوصية | Point Croissant",
+    "Kullanım Şartları | Point Croissant": "شروط الاستخدام | Point Croissant",
+    "Çerez Politikası | Point Croissant": "سياسة ملفات تعريف الارتباط | Point Croissant",
+    "Her cumartesi 11:00 - 13:00.": "كل يوم سبت من 11:00 إلى 13:00.",
+    "Ayda iki kez profesyonel eğitim.": "تدريب احترافي مرتين في الشهر.",
+    "10-30 kişilik kurumsal organizasyon.": "تنظيم شركات لـ 10-30 شخصاً.",
+    "Ayda iki kez profesyonel egitim.": "تدريب احترافي مرتين في الشهر.",
+    "10-30 kisilik kurumsal organizasyon.": "تنظيم شركات لـ 10-30 شخصاً.",
+    "“Antalya’da neden hem çıtır hem dengeli kruvasan yok?” sorusu bizim başlangıcımız oldu.": "«لماذا لا يوجد في Antalya كرواسان يجمع بين القرمشة والتوازن؟» كان هذا السؤال بدايتنا.",
+    "O gün mutfağa girip aylarca denemeler yapacağımızı henüz bilmiyorduk.": "في ذلك اليوم لم نكن نعلم بعد أننا سندخل المطبخ ونجرّب لأشهر.",
+    "İlham aldığımız ilk atmosfer ve servis anlayışı.": "أول أجواء وأسلوب خدمة ألهمانا.",
+    "Hamuru bazen fazla yorduk, bazen yeterince dinlendiremedik. Tereyağı seçimi, katlama aralıkları ve fırın dereceleri defalarca değişti. Her denemeyi not alarak reçetemizi adım adım geliştirdik.": "أحياناً أرهقنا العجينة، وأحياناً لم نُرحها بما يكفي. تغيّر اختيار الزبدة وفترات الطي ودرجات حرارة الفرن مرات كثيرة. وبتدوين كل تجربة حسّنّا وصفتنا خطوة بخطوة.",
+    "“Premium olmak, pahalı görünmek değil; her gün aynı özeni gösterebilmektir.”": "«أن تكون مميزاً لا يعني أن تبدو باهظ الثمن؛ بل أن تُظهر القدر نفسه من العناية كل يوم.»",
+    "Deneyimi tamamlayan servis akışı ve alan tasarımı.": "تدفق الخدمة وتصميم المكان اللذان يكتمل بهما التجربة.",
+    "Kahve eşleşmeleri, servis hızı, tezgâh düzeni ve ambalaj hissi bir araya geldiğinde Point Croissant, tekrar gelmek isteyeceğiniz bir deneyime dönüştü.": "عندما اجتمعت توافقات القهوة وسرعة الخدمة وترتيب المنصة وإحساس التغليف، أصبح Point Croissant تجربة يرغب المرء في العودة إليها.",
+    "Aynı disiplinle üretmeye devam ediyoruz. Her yeni tarif ve her geri bildirimle hikayemizi daha ileri taşıyoruz.": "نواصل الإنتاج بالانضباط نفسه. مع كل وصفة جديدة وكل ملاحظة ندفع قصتنا إلى الأمام.",
+    "Point Croissant logosu": "شعار Point Croissant",
+    "İmza kruvasanın temelinde üç şey vardır: doğru hamur yapısı, kontrollü katlama ve sabırlı mayalama. Dışının çıtır, içinin hafif ve katmanlı olması için sürecin her adımı dikkat ister.": "في جوهر الكرواسان المميز ثلاثة أمور: بنية عجينة سليمة، وطيّ منضبط، وتخمير صبور. كل خطوة تتطلب انتباهاً للحصول على قشرة مقرمشة وداخل خفيف متعدد الطبقات.",
+    "Kruvasanın en kritik adımı hamurun soğuk zincirde dinlenmesidir. Hamur ısındığında tereyağı katmanlara doğru şekilde dağılmaz; bu da pişince kabarmayı ve katman netliğini düşürür.": "الخطوة الأهم هي إراحة العجينة ضمن السلسلة الباردة. عندما تدفأ العجينة لا تتوزع الزبدة في الطبقات كما ينبغي، فيقلّ الانتفاخ ووضوح الطبقات بعد الخبز.",
+    "Tereyağı katlarını eşit dağıtmak için her katlamadan sonra hamuru ortalama 25-30 dakika buzdolabında dinlendirin. Bu kısa dinlenme, hamurun tekrar toparlanmasını sağlar ve açma sırasında yırtılmayı azaltır.": "لتوزيع طبقات الزبدة بانتظام، أرح العجينة في الثلاجة نحو 25-30 دقيقة بعد كل طيّ. هذه الاستراحة القصيرة تساعد العجينة على التعافي وتقلّل التمزق أثناء الفرد.",
+    "Son mayalamada ortam sıcaklığının 24-26 derece aralığında olması önerilir. Çok düşük sıcaklıkta hacim yavaş gelişir, çok yüksek sıcaklıkta ise tereyağı katmanlardan taşarak yapıyı bozabilir.": "في التخمير النهائي يُفضَّل أن تكون حرارة المحيط 24-26C. في الحرارة المنخفضة جداً يتطور الحجم ببطء؛ وفي الحرارة المرتفعة جداً قد تتسرّب الزبدة من الطبقات وتُفسد البنية.",
+    "Pişirme aşamasında önceden ısıtılmış fırın kullanın ve ilk dakikalarda kapağı açmamaya özen gösterin. Bu sayede kruvasanlar güçlü bir ilk kabarma alır ve dış yüzeyde dengeli bir renk oluşur.": "أثناء الخبز استخدم فرناً مسخَّناً مسبقاً وتجنّب فتح الباب في الدقائق الأولى. يمنح ذلك الكرواسان انتفاخاً أولياً قوياً ولوناً خارجياً متساوياً.",
+    "Servis öncesi kruvasanları kısa bir süre tel ızgara üzerinde dinlendirmek, alt yüzeydeki nemi azaltır ve çıtırlığı korur. Özellikle dolgu eklenecekse bu adım lezzet kadar doku için de fark yaratır.": "إراحة الكرواسان قليلاً على شبكة سلكية قبل التقديم تقلّل الرطوبة في الوجه السفلي وتحفظ القرمشة. وخصوصاً إذا أُضيفت حشوة، يحسّن هذه الخطوة القوام بقدر ما يحسّن النكهة.",
+    "Sade tereyağlı kruvasanla filtre kahve daha dengeli bir tat verir.": "القهوة المقطّرة تمنح مذاقاً أكثر توازناً مع كرواسان الزبدة السادة.",
+    "Çikolatalı lezzetlerde orta kavrum espresso bazlı içecekler öne çıkar.": "مع نكهات الشوكولاتة تبرز المشروبات القائمة على Espresso بدرجة تحميص متوسطة.",
+    "Meyveli kruvasanlar için soğuk demleme kahveler ferah bir seçimdir.": "للكرواسان الفاكهي تُعدّ قهوة التحضير البارد خياراً منعشاً.",
+    "Point Croissant, Antalya'da kruvasan odaklı bir kafe markasıdır.": "Point Croissant علامة مقاهٍ تركز على الكرواسان في Antalya.",
+    "Kaliteli ürün ve hızlı servis sunuyoruz.": "نقدّم منتجات عالية الجودة وخدمة سريعة.",
+    "Franchise, kurumsal iş birliği ve toplu tedarik görüşmeleri için bizimle iletişime geçebilirsiniz.": "يمكنكم التواصل معنا لمناقشات الامتياز والشراكة المؤسسية والتوريد بالجملة.",
+    "Zorunlu değil, ancak hafta sonu ve akşam saatlerinde rezervasyon önerilir.": "ليس إلزامياً، لكن يُفضَّل الحجز في عطلة نهاية الأسبوع وفي ساعات المساء.",
+    "Rezervasyon sayfasından WhatsApp veya telefon üzerinden hızlıca rezervasyon oluşturabilirsiniz.": "يمكنكم إجراء حجز سريع عبر WhatsApp أو الهاتف من صفحة الحجز.",
+    "Evet. Etkinlik, ofis ve özel günler için toplu sipariş alıyoruz.": "نعم. نقبل الطلبات بالجملة للفعاليات والمكاتب والمناسبات الخاصة.",
+    "Yoğun günlerde en az 1 gün, büyük siparişlerde 2-3 gün önce iletişime geçmeniz önerilir.": "في الأيام المزدحمة يُفضَّل التواصل قبل يوم واحد على الأقل؛ وللطلبات الكبيرة يُنصح بـ 2-3 أيام.",
+    "Evet. Bölgesel teslimat saatleri içinde adrese teslim hizmet sunuyoruz.": "نعم. نقدّم التوصيل إلى العنوان ضمن ساعات التوصيل في المنطقة.",
+    "Nakit ve kart ile ödeme yapabilirsiniz. Online yönlendirmelerde ilgili platformun ödeme seçenekleri geçerlidir.": "يمكن الدفع نقداً أو بالبطاقة. وعند التوجيه عبر الإنترنت تسري خيارات الدفع الخاصة بالمنصة المعنية.",
+    "Belirli günlerde sınırlı sayıda glutensiz ürün sunuyoruz.": "في أيام محددة نقدّم عدداً محدوداً من المنتجات الخالية من الغلوتين.",
+    "Evet. Ürün içerikleri ve alerjen bilgileri için ekibimizden detaylı bilgi alabilirsiniz.": "نعم. يمكنكم الحصول من فريقنا على معلومات مفصّلة عن مكونات المنتجات ومسببات الحساسية.",
+    "Menü sayfası düzenli olarak güncellenir. Güncel ürün ve fiyat bilgisi için menü sayfasını takip edebilirsiniz.": "تُحدَّث صفحة القائمة بانتظام. يمكنكم متابعة صفحة القائمة لمعرفة المنتجات والأسعار الحالية.",
+    "Point Croissant olarak kişisel verilerinizi korumayı önceliğimiz kabul ediyoruz. Bu metin, hangi bilgileri neden topladığımızı ve nasıl koruduğumuzu açıklar.": "في Point Croissant نعدّ حماية بياناتكم الشخصية أولوية. يوضح هذا النص المعلومات التي نجمعها وسبب جمعها وكيفية حمايتها.",
+    "Sitemiz üzerinden bize ilettiğiniz ad, telefon, e-posta ve mesaj içerikleri gibi iletişim bilgileri işlenebilir.": "قد تُعالَج معلومات التواصل مثل الاسم والهاتف والبريد الإلكتروني ومحتوى الرسالة التي ترسلونها عبر موقعنا.",
+    "İletişim formlarında paylaştığınız bilgiler": "المعلومات التي تشاركونها في نماذج التواصل",
+    "Rezervasyon veya teklif taleplerinde ilettiğiniz veriler": "البيانات التي تقدّمونها في طلبات الحجز أو عروض الأسعار",
+    "Teknik kullanım verileri (tarayıcı tipi, cihaz bilgisi vb.)": "بيانات الاستخدام التقنية (نوع المتصفح، معلومات الجهاز، إلخ)",
+    "Toplanan veriler yalnızca hizmet sağlama ve iletişim süreçlerini yürütme amacıyla kullanılır.": "تُستخدم البيانات المجمّعة فقط لتقديم الخدمات وإدارة عمليات التواصل.",
+    "Talep ve rezervasyonlara dönüş yapmak": "الرد على الطلبات والحجوزات",
+    "Hizmet kalitesini geliştirmek": "تحسين جودة الخدمة",
+    "Yasal yükümlülükleri yerine getirmek": "الوفاء بالالتزامات القانونية",
+    "Kişisel verileriniz, açık rızanız olmadan üçüncü taraflara satılmaz veya pazarlama amacıyla devredilmez.": "لا تُباع بياناتكم الشخصية ولا تُنقل إلى أطراف ثالثة لأغراض تسويقية دون موافقتكم الصريحة.",
+    "Yetkisiz erişimi önlemek için makul teknik ve idari güvenlik önlemleri uygulanır.": "تُطبَّق تدابير أمنية تقنية وإدارية معقولة لمنع الوصول غير المصرّح به.",
+    "Verilerinize ilişkin erişim, düzeltme veya silme talepleriniz için bizimle iletişime geçebilirsiniz.": "يمكنكم التواصل معنا لطلبات الاطلاع على بياناتكم أو تصحيحها أو حذفها.",
+    "Güncel iletişim bilgileri için ana sayfadaki iletişim bölümünü kullanabilirsiniz.": "يمكنكم استخدام قسم التواصل في الصفحة الرئيسية للحصول على أحدث معلومات الاتصال.",
+    "Bu sayfada yer alan şartlar, Point Croissant web sitesinin kullanımına ilişkin temel kuralları ve tarafların sorumluluklarını belirtir.": "تحدد الشروط الواردة في هذه الصفحة القواعد الأساسية لاستخدام موقع Point Croissant ومسؤوليات الأطراف.",
+    "Bu siteye erişen her kullanıcı, burada yer alan kullanım şartlarını kabul etmiş sayılır.": "يُعدّ كل مستخدم يدخل هذا الموقع موافقاً على شروط الاستخدام الواردة هنا.",
+    "İçerikler bilgilendirme amaçlıdır.": "المحتويات لأغراض إعلامية.",
+    "Web sitesindeki görsel ve metinler izinsiz kopyalanamaz.": "لا يجوز نسخ الصور والنصوص على الموقع دون إذن.",
+    "Site üzerinden yapılan işlemler dürüst kullanım esasına tabidir.": "تخضع المعاملات عبر الموقع لمبادئ الاستخدام العادل.",
+    "Ürün içerikleri, stok durumu ve fiyatlar operasyonel nedenlerle güncellenebilir.": "قد تُحدَّث محتويات المنتجات وحالة المخزون والأسعار لأسباب تشغيلية.",
+    "Kesin bilgi için sipariş/rezervasyon sırasında ekibimiz tarafından paylaşılan güncel bilgi esas alınır.": "للمعلومة القطعية يُعتدّ بالمعلومات الحالية التي يشاركها فريقنا أثناء الطلب/الحجز.",
+    "Site içinde WhatsApp, harita ve sosyal medya gibi üçüncü taraf bağlantılar bulunabilir.": "قد يحتوي الموقع على روابط لأطراف ثالثة مثل WhatsApp والخريطة ووسائل التواصل الاجتماعي.",
+    "Bu platformların kendi kullanım koşulları geçerlidir ve Point Croissant bu platformların politikalarından sorumlu değildir.": "تسري شروط هذه المنصات الخاصة، وPoint Croissant غير مسؤول عن سياساتها.",
+    "Teknik bakım, güncelleme veya mücbir sebepler nedeniyle hizmette geçici kesinti yaşanabilir.": "قد تحدث انقطاعات مؤقتة في الخدمة بسبب الصيانة التقنية أو التحديثات أو القوة القاهرة.",
+    "Bu tür durumlarda doğabilecek dolaylı zararlardan Point Croissant sorumlu tutulamaz.": "لا يتحمل Point Croissant المسؤولية عن الأضرار غير المباشرة التي قد تنشأ في مثل هذه الحالات.",
+    "Bu politika, web sitemizde kullanılan çerez türlerini ve bu çerezlerin hangi amaçlarla işlendiğini açıklamak için hazırlanmıştır.": "أُعدّت هذه السياسة لشرح أنواع ملفات تعريف الارتباط المستخدمة على موقعنا والأغراض التي تُعالَج من أجلها.",
+    "Çerezler, ziyaret ettiğiniz web sitesinin tarayıcınıza kaydettiği küçük metin dosyalarıdır. Bu dosyalar, site deneyimini iyileştirmek için kullanılır.": "ملفات تعريف الارتباط ملفات نصية صغيرة يخزّنها الموقع الذي تزورونه في المتصفح. تُستخدم هذه الملفات لتحسين تجربة الموقع.",
+    "Zorunlu Çerezler:": "ملفات تعريف الارتباط الأساسية:",
+    "Sayfanın temel işlevlerinin çalışması için gereklidir.": "مطلوبة لعمل الوظائف الأساسية للصفحة.",
+    "Performans Çerezleri:": "ملفات تعريف الارتباط الخاصة بالأداء:",
+    "Site kullanımını analiz ederek geliştirme yapılmasına destek olur.": "تساعد على التحسين عبر تحليل استخدام الموقع.",
+    "Tercih Çerezleri:": "ملفات تعريف الارتباط الخاصة بالتفضيلات:",
+    "Kullanıcı ayarlarını hatırlayarak kişiselleştirilmiş deneyim sunar.": "توفّر تجربة مخصّصة عبر تذكّر إعدادات المستخدم.",
+    "Çerezleri tarayıcı ayarlarınızdan silebilir, engelleyebilir veya kısıtlayabilirsiniz.": "يمكنكم حذف ملفات تعريف الارتباط أو حظرها أو تقييدها من إعدادات المتصفح.",
+    "Ancak bazı çerezleri devre dışı bırakmanız, sitenin bazı işlevlerinde kısıtlama yaratabilir.": "غير أن تعطيل بعض ملفات تعريف الارتباط قد يقيّد بعض وظائف الموقع.",
+    "Çerez politikamız zaman zaman güncellenebilir. Güncel metin bu sayfa üzerinden yayımlanır.": "قد تُحدَّث سياسة ملفات تعريف الارتباط من حين لآخر. يُنشر النص الحالي على هذه الصفحة.",
+    "Point Croissant Admin Panel": "لوحة إدارة Point Croissant",
+    "Yetkili Girişi": "دخول مصرّح به",
+    "Admin Panel Kilitli": "لوحة الإدارة مقفلة",
+    "Sadece yetkili kullanıcı şifresi ile erişim sağlanır.": "يُمنح الوصول فقط بكلمة مرور مستخدم مصرّح به.",
+    "Şifre": "كلمة المرور",
+    "Giriş Yap": "تسجيل الدخول",
+    "Yönetim": "الإدارة",
+    "Yönetim Menüsü": "قائمة الإدارة",
+    "Ürün Yönetimi": "إدارة المنتجات",
+    "İletişim Ayarları": "إعدادات التواصل",
+    "İçerik Düzenleme": "تحرير المحتوى",
+    "Ürün Listesi": "قائمة المنتجات",
+    "Yönetim Özeti": "نظرة عامة على الإدارة",
+    "Toplam Ürün": "إجمالي المنتجات",
+    "Ortalama Fiyat": "متوسط السعر",
+    "En Yüksek Fiyat": "أعلى سعر",
+    "Çeviri Eksiği (EN/RU)": "ترجمة ناقصة (EN/RU)",
+    "Önce ürün/ayar bilgilerini kaydet, sonra içerik düzenleyiciden ilgili sayfayı aç.": "احفظ أولاً معلومات المنتج/الإعدادات، ثم افتح الصفحة المعنية من محرر المحتوى.",
+    "Kayıtlı içerik özeti": "ملخص المحتوى المحفوظ",
+    "Toplam ürün:": "إجمالي المنتجات:",
+    "Ürün önizleme": "معاينة المنتج",
+    "Kayıt bulunamadı.": "لا توجد سجلات.",
+    "Sayfa": "الصفحة",
+    "Kayıt": "سجل",
+    "Ürün ara (ad/açıklama/etiket)": "ابحث عن منتج (الاسم/الوصف/الوسم)",
+    "TR alanı": "حقل TR",
+    "EN alanı": "حقل EN",
+    "RU alanı": "حقل RU",
+    "Yeni eklenen (son)": "الأحدث أولاً",
+    "Fiyat (yüksekten düşüğe)": "السعر (من الأعلى إلى الأدنى)",
+    "Fiyat (düşükten yükseğe)": "السعر (من الأدنى إلى الأعلى)",
+    "Ürün adı (A-Z)": "اسم المنتج (A-Z)",
+    "Filtreleri Sıfırla": "إعادة تعيين عوامل التصفية",
+    "Ürünleri JSON Dışa Aktar": "تصدير المنتجات JSON",
+    "JSON İçeri Aktar": "استيراد JSON",
+    "Görsel": "صورة",
+    "Çoğalt": "تكرار",
+    "Ürün ve Fiyat Yönetimi": "إدارة المنتجات والأسعار",
+    "Buradan girdiğin ürünler ana sayfa ve menü sayfasına otomatik yansır.": "المنتجات المُدخلة هنا تظهر تلقائياً في الصفحة الرئيسية وصفحة القائمة.",
+    "Ürün Ekle / Güncelle": "إضافة / تحديث منتج",
+    "Ürün Adı": "اسم المنتج",
+    "Ürün Adı (TR)": "اسم المنتج (TR)",
+    "Ürün Adı (EN)": "اسم المنتج (EN)",
+    "Ürün Adı (RU)": "اسم المنتج (RU)",
+    "Açıklama": "الوصف",
+    "Açıklama (TR)": "الوصف (TR)",
+    "Açıklama (EN)": "الوصف (EN)",
+    "Açıklama (RU)": "الوصف (RU)",
+    "Ürün Görsel URL": "URL صورة المنتج",
+    "Ürün Görsel URL (TR)": "URL صورة المنتج (TR)",
+    "Ürün Görsel URL (EN)": "URL صورة المنتج (EN)",
+    "Ürün Görsel URL (RU)": "URL صورة المنتج (RU)",
+    "assets/logo-point-croissant.webp veya https://...": "assets/logo-point-croissant.webp أو https://...",
+    "Fiyat (TL)": "السعر (TL)",
+    "Etiket": "الوسم",
+    "Etiket (TR)": "الوسم (TR)",
+    "Etiket (EN)": "الوسم (EN)",
+    "Etiket (RU)": "الوسم (RU)",
+    "Boşsa TR kullanılır": "إذا كان فارغاً يُستخدم TR",
+    "Kaydet": "حفظ",
+    "Temizle": "مسح",
+    "Varsayılana Dön": "العودة إلى الافتراضي",
+    "İletişim ve Konum Ayarları": "إعدادات التواصل والموقع",
+    "Telefon (gösterim)": "الهاتف (العرض)",
+    "Telefon (tel format)": "الهاتف (تنسيق tel)",
+    "WhatsApp (gösterim)": "WhatsApp (العرض)",
+    "WhatsApp (numara, ülke kodlu)": "WhatsApp (الرقم، مع رمز الدولة)",
+    "E-Posta": "E-mail",
+    "Adres": "العنوان",
+    "Adres (TR)": "العنوان (TR)",
+    "Adres (EN)": "العنوان (EN)",
+    "Adres (RU)": "العنوان (RU)",
+    "Harita Konum Metni": "نص موقع الخريطة",
+    "Harita Konum Metni (TR)": "نص موقع الخريطة (TR)",
+    "Harita Konum Metni (EN)": "نص موقع الخريطة (EN)",
+    "Harita Konum Metni (RU)": "نص موقع الخريطة (RU)",
+    "Ayarları Kaydet": "حفظ الإعدادات",
+    "Varsayılan Ayarlar": "الإعدادات الافتراضية",
+    "Canlı İçerik Düzenleyici (Tüm Sayfalar)": "محرر المحتوى المباشر (جميع الصفحات)",
+    "İstediğin sayfayı seçip düzenleme modunu aç. Açılan sayfada": "اختر الصفحة المطلوبة وافتح وضع التحرير. في الصفحة المفتوحة",
+    "Shift + Tıkla": "Shift + Click",
+    "ile metin, link ve görselleri anında düzenle.": "لتحرير النصوص والروابط والصور فوراً.",
+    "Düzenlenecek Sayfa": "الصفحة المراد تحريرها",
+    "Gizlilik": "الخصوصية",
+    "Düzenleme Modunu Aç": "فتح وضع التحرير",
+    "Düzenleme Modunu Kapat": "إغلاق وضع التحرير",
+    "Tüm Düzenlemeleri Sıfırla": "إعادة تعيين كل التعديلات",
+    "Mevcut Ürünler": "المنتجات الحالية",
+    "Ürün": "المنتج",
+    "Fiyat": "السعر",
+    "İşlem": "الإجراء",
+    "Belçika çikolatası dolgusu ve kakao glaze ile yoğun lezzet.": "نكهة كثيفة بحشوة الشوكولاتة البلجيكية وتغطية الكاكاو.",
+    "En Çok Satan": "الأكثر مبيعاً",
+    "En Cok Satan": "الأكثر مبيعاً",
+    "Fıstık Supreme": "Pistachio Supreme",
+    "Antep fıstık kreması, çıtır fıstık parçası ve tereyağlı hamur.": "كريمة فستق، قطع فستق مقرمشة، وعجينة زبدية.",
+    "Şef Önerisi": "توصية الشيف",
+    "Yaban Mersinli Danish": "Blueberry Danish",
+    "İpeksi krema ve meyve dolgusu ile ferah, dengeli tat.": "مذاق منعش ومتوازن مع كريمة حريرية وحشوة فاكهة.",
+    "Yeni": "جديد",
+    "Trüf Mantarlı Tuzlu": "مالح بفطر الكمأة",
+    "Trüf mantarlı tuzlu kruvasan.": "كرواسان مالح بفطر الكمأة.",
+    "Öne Çıkan": "مميز",
+    "Düzenle": "تحرير",
+    "Sil": "حذف",
+    "Lütfen ürün adı, açıklama ve fiyatı doldur.": "يرجى تعبئة اسم المنتج والوصف والسعر.",
+    "Ürün güncellendi. Ön yüzde anında yansır.": "تم تحديث المنتج. يظهر فوراً في الواجهة.",
+    "Ürün eklendi. Ön yüzde anında yansır.": "تمت إضافة المنتج. يظهر فوراً في الواجهة.",
+    "Ürün düzenleme için forma getirildi.": "تم تحميل المنتج في النموذج للتحرير.",
+    "Ürün silindi.": "تم حذف المنتج.",
+    "Form temizlendi.": "تم مسح النموذج.",
+    "Varsayılan ürünler geri yüklendi.": "تمت استعادة المنتجات الافتراضية.",
+    "Lütfen tüm iletişim alanlarını doldur.": "يرجى تعبئة جميع حقول التواصل.",
+    "İletişim ve konum ayarları kaydedildi.": "تم حفظ إعدادات التواصل والموقع.",
+    "Ayarlar varsayılana alındı.": "تمت إعادة الإعدادات إلى الافتراضي.",
+    "Şifre gerekli.": "كلمة المرور مطلوبة.",
+    "Şifre hatalı.": "كلمة المرور غير صحيحة.",
+    "Bu ürünü silmek istediğine emin misin?": "هل أنت متأكد أنك تريد حذف هذا المنتج؟",
+    "Varsayılan ürünleri geri yüklemek istediğine emin misin?": "هل أنت متأكد أنك تريد استعادة المنتجات الافتراضية؟",
+    "Tüm sayfalardaki içerik düzenlemeleri sıfırlanacak. Devam etmek istiyor musun?": "ستُعاد تعيين كل تعديلات المحتوى في جميع الصفحات. هل تريد المتابعة؟",
+    "Listelenen:": "المعروض:",
+    "Ürün kopyalandı.": "تم تكرار المنتج.",
+    "Ürünler JSON olarak dışa aktarıldı.": "تم تصدير المنتجات كـ JSON.",
+    "JSON içeriği geçersiz.": "محتوى JSON غير صالح.",
+    "JSON içe aktarıldı.": "تم استيراد JSON.",
+    "JSON dosyası okunamadı.": "تعذّر قراءة ملف JSON.",
+    "Düzenleme modu açıldı. Yeni sekmede Shift + Tıkla ile metin/link/görsel düzenleyebilirsin.": "تم فتح وضع التحرير. في التبويب الجديد يمكنك تحرير النص/الرابط/الصورة بـ Shift + Click.",
+    "Düzenleme modu kapatıldı.": "تم إغلاق وضع التحرير.",
+    "Tüm sayfa içerik düzenlemeleri sıfırlandı.": "تمت إعادة تعيين كل تعديلات محتوى الصفحات.",
+    "Görsel URL": "URL الصورة",
+    "Alt metni": "النص البديل",
+    "Link metni": "نص الرابط",
+    "Link adresi": "URL الرابط",
+    "Metin": "النص",
+    "Yeni, Premium...": "جديد، Premium...",
+    "Güzeloba Mah. Çağlayangil Cad. No:38 / B, Muratpaşa / Antalya": "حي Guzeloba، شارع Caglayangil رقم:38 / B، Muratpasa / Antalya",
+    "Merhaba Point Croissant, bilgi almak istiyorum.": "مرحباً Point Croissant، أود الحصول على معلومات.",
+    "Merhaba Point Croissant,\n\nİstek / Dilek / Öneri Formu:\nAd Soyad: ${data.name}\nE-Posta: ${data.email}\nTelefon: ${data.phone}\nMesaj: ${data.message}": "مرحباً Point Croissant،\n\nنموذج الطلب / الاقتراح:\nالاسم الكامل: ${data.name}\nE-mail: ${data.email}\nالهاتف: ${data.phone}\nالرسالة: ${data.message}",
+    "Point Croissant Antalya resmi web sitesi. Güzeloba, Muratpaşa’da cafe ve bakery: imza kruvasanlar, menü, rezervasyon ve iletişim.": "الموقع الرسمي لـ Point Croissant Antalya. مقهى ومخبز في Guzeloba، Muratpasa: كرواسان مميز، قائمة، حجوزات، وتواصل.",
+    "Point Croissant Antalya lezzetleri: imza kruvasanlar, öne çıkan ürünler ve sipariş için iletişim bilgileri.": "نكهات Point Croissant Antalya: كرواسان مميز، منتجات بارزة، وبيانات تواصل للطلب.",
+    "Point Croissant Antalya menü: güncel fiyatlar, kategorili kruvasan ve cafe ürünleri.": "قائمة Point Croissant Antalya: أسعار حالية، كرواسان مصنّف ومنتجات المقهى.",
+    "Point Croissant hikayesi, üretim anlayışı ve marka yolculuğu.": "قصة Point Croissant، فلسفة الإنتاج، ورحلة العلامة.",
+    "Kruvasan, kahve ve servis önerileri için Point Croissant blog içerikleri.": "محتوى Blog من Point Croissant لنصائح الكرواسان والقهوة والخدمة.",
+    "İmza kruvasan hazırlama rehberi, püf noktaları ve üretim önerileri.": "دليل تحضير الكرواسان المميز، ونصائح، وتوصيات الإنتاج.",
+    "Kahve ve kruvasan eşleşmesi için pratik öneriler ve lezzet uyumları.": "نصائح عملية وتوافقات نكهة للقهوة والكرواسان.",
+    "Point Croissant etkinlikleri ve özel gün organizasyon bilgileri.": "معلومات فعاليات Point Croissant وتنظيم المناسبات الخاصة.",
+    "Kurumsal iş birliği, marka bilgisi ve Point Croissant hakkında detaylar.": "التعاون المؤسسي، ومعلومات العلامة، وتفاصيل عن Point Croissant.",
+    "Sıkça sorulan sorular: rezervasyon, teslimat, toplu sipariş ve daha fazlası.": "أسئلة شائعة: الحجوزات، التوصيل، الطلبات بالجملة، والمزيد.",
+    "Point Croissant masa rezervasyonu için WhatsApp ve telefonla hızlı iletişim.": "تواصل سريع عبر WhatsApp والهاتف لحجز طاولة في Point Croissant.",
+    "Antalya içi teslimat saatleri, sipariş detayları ve iletişim seçenekleri.": "ساعات التوصيل داخل Antalya، وتفاصيل الطلب، وخيارات التواصل.",
+    "Toptan ve kurumsal tedarik çözümleri için teklif ve iletişim bilgileri.": "عرض السعر ومعلومات التواصل لحلول الجملة والتوريد للشركات.",
+    "Point Croissant Gizlilik Politikası metni ve kişisel veri işleme esasları.": "نص سياسة الخصوصية لـ Point Croissant ومبادئ معالجة البيانات الشخصية.",
+    "Point Croissant Kullanım Şartları ve site kullanımına ilişkin kurallar.": "شروط استخدام Point Croissant وقواعد استخدام الموقع.",
+    "Point Croissant Çerez Politikası ve çerez tercihleri hakkında bilgiler.": "سياسة ملفات تعريف الارتباط لـ Point Croissant ومعلومات عن تفضيلات ملفات تعريف الارتباط.",
+    "Web sitesi ve yazılım: SoftenWise": "الموقع والبرمجيات: SoftenWise",
+    "SoftenWise — yazılım ve web geliştirme": "SoftenWise — البرمجيات وتطوير الويب",
+    "Çeviri Eksiği (EN/RU/AR/DE)": "ترجمة ناقصة (EN/RU/AR/DE)",
+    "AR alanı": "حقل AR",
+    "DE alanı": "حقل DE",
+    "Ürün Adı (AR)": "اسم المنتج (AR)",
+    "Ürün Adı (DE)": "اسم المنتج (DE)",
+    "Açıklama (AR)": "الوصف (AR)",
+    "Açıklama (DE)": "الوصف (DE)",
+    "Etiket (AR)": "الوسم (AR)",
+    "Etiket (DE)": "الوسم (DE)",
+    "Ürün Görsel URL (AR)": "URL صورة المنتج (AR)",
+    "Ürün Görsel URL (DE)": "URL صورة المنتج (DE)",
+    "Adres (AR)": "العنوان (AR)",
+    "Adres (DE)": "العنوان (DE)",
+    "Harita Konum Metni (AR)": "نص موقع الخريطة (AR)",
+    "Harita Konum Metni (DE)": "نص موقع الخريطة (DE)",
+    "Blog Yazıları": "مقالات المدونة",
+    "Facebook URL": "رابط Facebook",
+    "Google çalışma saati (şema)": "ساعات العمل في Google (schema)",
+    "Instagram URL": "رابط Instagram",
+    "Kategori": "الفئة",
+    "Marka ve Sayaçlar": "العلامة والعدادات",
+    "Menü Kategorileri": "فئات القائمة",
+    "Menü Yapısı": "هيكل القائمة",
+    "SEO ve Google": "SEO و Google",
+    "Tuzlu": "مالح",
+    "WhatsApp hazır mesaj (EN)": "رسالة WhatsApp الجاهزة (EN)",
+    "WhatsApp hazır mesaj (RU)": "رسالة WhatsApp الجاهزة (RU)",
+    "WhatsApp hazır mesaj (TR)": "رسالة WhatsApp الجاهزة (TR)",
+    "WhatsApp hazır mesaj (AR)": "رسالة WhatsApp الجاهزة (AR)",
+    "WhatsApp hazır mesaj (DE)": "رسالة WhatsApp الجاهزة (DE)",
+    "Çalışma Saatleri": "ساعات العمل",
+    "Çalışma Saatleri:": "ساعات العمل:",
+    "İmza / özel seçkiye ekle": "أضف إلى التشكيلة المميزة / الخاصة"
   }
 };
 
@@ -913,23 +1950,34 @@ const ensureSeoMeta = () => {
   const isHome = pageFile === "index.html";
   const pagePath = isHome ? "/" : `/${pageFile}`;
   const canonicalUrl = `${SITE_ORIGIN}${pagePath}`;
-  const description = SEO_DESCRIPTIONS[pageFile] || SEO_DESCRIPTIONS["index.html"];
-  const seoTitle = document.title || "Point Croissant";
-  const ogImage = `${SITE_ORIGIN}/assets/logo-point-croissant.webp`;
+  const settings = getStoreSettings();
+  const seoEntry = settings?.seo?.[pageFile];
+  const description =
+    (seoEntry && getStoreLocalized(seoEntry.description)) ||
+    SEO_DESCRIPTIONS[pageFile] ||
+    SEO_DESCRIPTIONS["index.html"];
+  const seoTitle =
+    (seoEntry && getStoreLocalized(seoEntry.title)) || document.title || "Point Croissant";
+  const ogType = OG_ARTICLE_PAGES.has(pageFile) ? "article" : "website";
 
   ensureMetaTag('meta[name="description"]', { name: "description" }, description);
-  ensureMetaTag('meta[property="og:type"]', { property: "og:type" }, "website");
+  ensureMetaTag('meta[property="og:type"]', { property: "og:type" }, ogType);
   ensureMetaTag('meta[property="og:title"]', { property: "og:title" }, seoTitle);
   ensureMetaTag('meta[property="og:description"]', { property: "og:description" }, description);
   ensureMetaTag('meta[property="og:url"]', { property: "og:url" }, canonicalUrl);
-  ensureMetaTag('meta[property="og:image"]', { property: "og:image" }, ogImage);
+  ensureMetaTag('meta[property="og:image"]', { property: "og:image" }, OG_IMAGE);
+  ensureMetaTag('meta[property="og:image:secure_url"]', { property: "og:image:secure_url" }, OG_IMAGE);
+  ensureMetaTag('meta[property="og:image:type"]', { property: "og:image:type" }, "image/jpeg");
+  ensureMetaTag('meta[property="og:image:width"]', { property: "og:image:width" }, "1200");
+  ensureMetaTag('meta[property="og:image:height"]', { property: "og:image:height" }, "630");
   ensureMetaTag('meta[property="og:site_name"]', { property: "og:site_name" }, "Point Croissant");
   ensureMetaTag('meta[name="twitter:card"]', { name: "twitter:card" }, "summary_large_image");
   ensureMetaTag('meta[name="twitter:title"]', { name: "twitter:title" }, seoTitle);
   ensureMetaTag('meta[name="twitter:description"]', { name: "twitter:description" }, description);
-  ensureMetaTag('meta[name="twitter:image"]', { name: "twitter:image" }, ogImage);
-  ensureMetaTag('meta[property="og:image:alt"]', { property: "og:image:alt" }, "Point Croissant logosu");
-  ensureMetaTag('meta[property="og:locale"]', { property: "og:locale" }, "tr_TR");
+  ensureMetaTag('meta[name="twitter:image"]', { name: "twitter:image" }, OG_IMAGE);
+  ensureMetaTag('meta[name="twitter:image:alt"]', { name: "twitter:image:alt" }, OG_IMAGE_ALT);
+  ensureMetaTag('meta[property="og:image:alt"]', { property: "og:image:alt" }, OG_IMAGE_ALT);
+  ensureMetaTag('meta[property="og:locale"]', { property: "og:locale" }, OG_LOCALES[activeLang] || "tr_TR");
   ensureMetaTag('meta[name="robots"]', { name: "robots" }, "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1");
   ensureMetaTag('meta[name="theme-color"]', { name: "theme-color" }, "#3d2914");
   ensureMetaTag('meta[name="author"]', { name: "author" }, "Point Croissant");
@@ -940,7 +1988,10 @@ const ensureSeoMeta = () => {
   }
 
   document.querySelectorAll('meta[property="og:locale:alternate"][data-pc-seo="1"]').forEach((node) => node.remove());
-  ["en_US", "ru_RU"].forEach((locale) => {
+  Object.entries(OG_LOCALES)
+    .filter(([lang]) => lang !== activeLang)
+    .forEach(([, locale]) => {
+    if (document.head.querySelector(`meta[property="og:locale:alternate"][content="${locale}"]`)) return;
     const alt = document.createElement("meta");
     alt.setAttribute("property", "og:locale:alternate");
     alt.setAttribute("content", locale);
@@ -976,28 +2027,36 @@ const buildSeoJsonLd = (pageFile, canonicalUrl, seoTitle, description) => {
       "Profesyonel yazılım ve web geliştirme. Point Croissant web sitesinin tasarım ve geliştirme ortağı."
   };
 
+  const settings = getStoreSettings();
+  const logoPath = settings?.logo || "assets/logo-point-croissant.webp";
+  const logoUrl = logoPath.startsWith("http") ? logoPath : `${SITE_ORIGIN}/${logoPath.replace(/^\//, "")}`;
+  const sameAs = [settings?.instagram, settings?.facebook].filter(Boolean);
   const localBusiness = {
     "@type": ["Bakery", "CafeOrCoffeeShop", "FoodEstablishment"],
     "@id": SCHEMA_IDS.localBusiness,
-    name: "Point Croissant",
+    name: settings?.brandName || "Point Croissant",
     alternateName: BRAND_ALTERNATE_NAMES,
-    description: SEO_DESCRIPTIONS["index.html"],
+    description:
+      (settings?.seo?.["index.html"] && getStoreLocalized(settings.seo["index.html"].description)) ||
+      SEO_DESCRIPTIONS["index.html"],
     url: SITE_ORIGIN,
-    image: [`${SITE_ORIGIN}/assets/logo-point-croissant.webp`],
-    logo: `${SITE_ORIGIN}/assets/logo-point-croissant.webp`,
-    telephone: SCHEMA_CONTACT.telephone,
-    email: SCHEMA_CONTACT.email,
+    image: [OG_IMAGE, logoUrl],
+    logo: logoUrl,
+    telephone: settings?.phoneTel || SCHEMA_CONTACT.telephone,
+    email: settings?.email || SCHEMA_CONTACT.email,
     servesCuisine: "French",
     priceRange: "$$",
+    openingHours: settings?.openingHoursSpec || "Mo-Su 09:00-22:00",
     address: {
       "@type": "PostalAddress",
-      streetAddress: SCHEMA_CONTACT.streetAddress,
-      addressLocality: SCHEMA_CONTACT.addressLocality,
-      addressRegion: SCHEMA_CONTACT.addressRegion,
-      postalCode: SCHEMA_CONTACT.postalCode,
+      streetAddress: settings?.schemaStreet || SCHEMA_CONTACT.streetAddress,
+      addressLocality: settings?.schemaLocality || SCHEMA_CONTACT.addressLocality,
+      addressRegion: settings?.schemaRegion || SCHEMA_CONTACT.addressRegion,
+      postalCode: settings?.schemaPostal || SCHEMA_CONTACT.postalCode,
       addressCountry: SCHEMA_CONTACT.addressCountry
     }
   };
+  if (sameAs.length) localBusiness.sameAs = sameAs;
 
   const website = {
     "@type": "WebSite",
@@ -1005,7 +2064,7 @@ const buildSeoJsonLd = (pageFile, canonicalUrl, seoTitle, description) => {
     url: SITE_ORIGIN,
     name: "Point Croissant",
     alternateName: BRAND_ALTERNATE_NAMES,
-    inLanguage: ["tr", "en", "ru"],
+    inLanguage: [...SUPPORTED_LANGS],
     publisher: { "@id": SCHEMA_IDS.localBusiness }
   };
 
@@ -1057,8 +2116,14 @@ const ensureJsonLd = () => {
   const isHome = pageFile === "index.html";
   const pagePath = isHome ? "/" : `/${pageFile}`;
   const canonicalUrl = `${SITE_ORIGIN}${pagePath}`;
-  const description = SEO_DESCRIPTIONS[pageFile] || SEO_DESCRIPTIONS["index.html"];
-  const seoTitle = document.title || "Point Croissant";
+  const settings = getStoreSettings();
+  const seoEntry = settings?.seo?.[pageFile];
+  const description =
+    (seoEntry && getStoreLocalized(seoEntry.description)) ||
+    SEO_DESCRIPTIONS[pageFile] ||
+    SEO_DESCRIPTIONS["index.html"];
+  const seoTitle =
+    (seoEntry && getStoreLocalized(seoEntry.title)) || document.title || "Point Croissant";
 
   const script = document.createElement("script");
   script.type = "application/ld+json";
@@ -1191,14 +2256,47 @@ const updateLanguageButtons = () => {
   });
 };
 
+const applySeoFromStore = (lang = activeLang) => {
+  const settings = getStoreSettings();
+  if (!settings) return;
+  const pageFile = getPageFile();
+  const entry = settings.seo && settings.seo[pageFile];
+  const title = entry ? getStoreLocalized(entry.title, lang) : "";
+  const description = entry ? getStoreLocalized(entry.description, lang) : "";
+  if (title) document.title = title;
+  if (description) {
+    ensureMetaTag('meta[name="description"]', { name: "description" }, description);
+    ensureMetaTag('meta[property="og:title"]', { property: "og:title" }, title || document.title);
+    ensureMetaTag('meta[property="og:description"]', { property: "og:description" }, description);
+    ensureMetaTag('meta[name="twitter:title"]', { name: "twitter:title" }, title || document.title);
+    ensureMetaTag('meta[name="twitter:description"]', { name: "twitter:description" }, description);
+  }
+};
+
 const applyLanguage = (lang, persist = true) => {
   activeLang = SUPPORTED_LANGS.includes(lang) ? lang : "tr";
   if (persist) localStorage.setItem(I18N_STORAGE_KEY, activeLang);
   document.documentElement.lang = activeLang;
+  document.documentElement.dir = activeLang === "ar" ? "rtl" : "ltr";
+  renderHeader();
+  renderFooter();
   document.title = translateString(originalTitle, activeLang);
+  applySeoFromStore(activeLang);
   translateSubtree(document.body);
   updateLanguageButtons();
   updateI18nObserverState();
+  const ogLocale = document.head.querySelector('meta[property="og:locale"]');
+  if (ogLocale) ogLocale.setAttribute("content", OG_LOCALES[activeLang] || "tr_TR");
+  document.querySelectorAll('meta[property="og:locale:alternate"][data-pc-seo="1"]').forEach((node) => node.remove());
+  Object.entries(OG_LOCALES)
+    .filter(([code]) => code !== activeLang)
+    .forEach(([, locale]) => {
+      const alt = document.createElement("meta");
+      alt.setAttribute("property", "og:locale:alternate");
+      alt.setAttribute("content", locale);
+      alt.setAttribute("data-pc-seo", "1");
+      document.head.appendChild(alt);
+    });
 };
 
 const mountI18nObserver = () => {
@@ -1224,6 +2322,42 @@ const updateI18nObserverState = () => {
   });
 };
 
+const ensureBrandFonts = () => {
+  if (document.getElementById("pc-brand-fonts")) return;
+  [
+    ["https://fonts.googleapis.com", ""],
+    ["https://fonts.gstatic.com", "anonymous"]
+  ].forEach(([href, cross]) => {
+    const link = document.createElement("link");
+    link.rel = "preconnect";
+    link.href = href;
+    if (cross) link.crossOrigin = cross;
+    document.head.appendChild(link);
+  });
+  const fonts = document.createElement("link");
+  fonts.id = "pc-brand-fonts";
+  fonts.rel = "stylesheet";
+  fonts.href =
+    "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap";
+  document.head.appendChild(fonts);
+};
+
+const injectAtmosphere = () => {
+  document.body.classList.add("lux-body");
+  if (!document.querySelector(".film-grain")) {
+    const grain = document.createElement("div");
+    grain.className = "film-grain";
+    grain.setAttribute("aria-hidden", "true");
+    document.body.appendChild(grain);
+  }
+  if (!document.querySelector(".cursor-glow")) {
+    const glow = document.createElement("div");
+    glow.className = "cursor-glow";
+    glow.setAttribute("aria-hidden", "true");
+    document.body.appendChild(glow);
+  }
+};
+
 const renderHeader = () => {
   const host = document.getElementById("site-header");
   if (!host) return;
@@ -1247,6 +2381,8 @@ const renderHeader = () => {
           <button type="button" class="lang-btn" data-lang="tr">TR</button>
           <button type="button" class="lang-btn" data-lang="en">EN</button>
           <button type="button" class="lang-btn" data-lang="ru">RU</button>
+          <button type="button" class="lang-btn" data-lang="ar">AR</button>
+          <button type="button" class="lang-btn" data-lang="de">DE</button>
         </div>
         <a class="btn btn-small" href="reservation.html">Sipariş Ver</a>
       </nav>
@@ -1257,11 +2393,28 @@ const renderHeader = () => {
 const renderFooter = () => {
   const host = document.getElementById("site-footer");
   if (!host) return;
+  const settings = getStoreSettings();
+  const brandName = settings?.brandName || "Point Croissant";
+  const footerText = settings
+    ? getStoreLocalized(settings.footerText)
+    : "Günün en keyifli molası için taptaze kruvasanlar ve özenli kahve.";
+  const hours = settings ? getStoreLocalized(settings.workingHours) : "";
+  const socials = [];
+  if (settings?.instagram) {
+    socials.push(`<a href="${escapeChrome(settings.instagram)}" target="_blank" rel="noopener noreferrer" data-no-i18n>Instagram</a>`);
+  }
+  if (settings?.facebook) {
+    socials.push(`<a href="${escapeChrome(settings.facebook)}" target="_blank" rel="noopener noreferrer" data-no-i18n>Facebook</a>`);
+  }
   host.innerHTML = `
+    <div class="footer-ornament" aria-hidden="true"></div>
     <div class="container footer-grid">
-      <div>
-        <h3>Point Croissant</h3>
-        <p>Günün en keyifli molası için taptaze kruvasanlar ve özenli kahve.</p>
+      <div class="footer-brand-col">
+        <p class="eyebrow">Antalya</p>
+        <h3 data-no-i18n>${escapeChrome(brandName)}</h3>
+        <p data-no-i18n>${escapeChrome(footerText)}</p>
+        ${hours ? `<p data-no-i18n>${escapeChrome(hours)}</p>` : ""}
+        ${socials.length ? `<div class="footer-socials">${socials.join("")}</div>` : ""}
       </div>
       <div>
         <h4>Keşfet</h4>
@@ -1287,7 +2440,7 @@ const renderFooter = () => {
       </div>
     </div>
     <div class="container footer-bottom">
-      <span>© 2026 Point Croissant Cafe & Bakery</span>
+      <span>© 2026 ${escapeChrome(brandName)} Cafe & Bakery</span>
       <span>Antalya, Türkiye</span>
       <a class="designed-by" href="${SOFTENWISE_ORIGIN}/" target="_blank" rel="noopener noreferrer" title="SoftenWise — yazılım ve web geliştirme">Web sitesi ve yazılım: SoftenWise</a>
     </div>
@@ -1307,17 +2460,19 @@ const initLanguageControls = () => {
 };
 
 const initMobileMenuInteractions = () => {
-  const toggle = document.getElementById("menu-toggle");
-  if (!(toggle instanceof HTMLInputElement)) return;
+  const closeMenu = () => {
+    const toggle = document.getElementById("menu-toggle");
+    if (toggle instanceof HTMLInputElement) toggle.checked = false;
+  };
 
   document.addEventListener("click", (event) => {
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
-    if (target.closest(".nav-links a")) toggle.checked = false;
+    if (target.closest(".nav-links a")) closeMenu();
   });
 
   window.addEventListener("resize", () => {
-    if (window.innerWidth > 980) toggle.checked = false;
+    if (window.innerWidth > 1180) closeMenu();
   });
 };
 
@@ -1334,6 +2489,16 @@ const applyA11yEnhancements = () => {
   });
 };
 
+const ensureMotionScript = () => {
+  const hasScript = [...document.scripts].some((node) => (node.getAttribute("src") || "").includes("script.js"));
+  if (hasScript) return;
+  const motion = document.createElement("script");
+  motion.src = "script.js";
+  document.body.appendChild(motion);
+};
+
+ensureBrandFonts();
+injectAtmosphere();
 renderHeader();
 renderFooter();
 ensureMobileViewport();
@@ -1349,3 +2514,4 @@ applyLanguage(localStorage.getItem(I18N_STORAGE_KEY) || "tr", false);
 window.__pcApplyLanguage = applyLanguage;
 window.__pcGetLang = () => activeLang;
 window.__pcApplyLazyMedia = () => applyLazyMediaDefaults(document);
+ensureMotionScript();

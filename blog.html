@@ -1,16 +1,45 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="Kruvasan, kahve ve servis önerileri için Point Croissant blog içerikleri." />
     <link rel="canonical" href="https://pointcroissant.com/blog.html" />
     <title>Blog | Point Croissant</title>
+    <meta name="theme-color" content="#3d2914" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="author" content="Point Croissant" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Point Croissant" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:locale:alternate" content="ru_RU" />
+    <meta property="og:locale:alternate" content="ar_SA" />
+    <meta property="og:locale:alternate" content="de_DE" />
+    <meta property="og:title" content="Blog | Point Croissant" />
+    <meta property="og:description" content="Kruvasan, kahve ve servis önerileri için Point Croissant blog içerikleri." />
+    <meta property="og:url" content="https://pointcroissant.com/blog.html" />
+    <meta property="og:image" content="https://pointcroissant.com/assets/og-share.jpg" />
+    <meta property="og:image:secure_url" content="https://pointcroissant.com/assets/og-share.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Point Croissant Antalya cafe ve bakery" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Blog | Point Croissant" />
+    <meta name="twitter:description" content="Kruvasan, kahve ve servis önerileri için Point Croissant blog içerikleri." />
+    <meta name="twitter:image" content="https://pointcroissant.com/assets/og-share.jpg" />
+    <meta name="twitter:image:alt" content="Point Croissant Antalya cafe ve bakery" />
+    <link rel="image_src" href="https://pointcroissant.com/assets/og-share.jpg" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png" />
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header class="topbar" id="site-header"></header>
-    <main class="subpage-main">
+    <main id="main-content" class="subpage-main">
       <section class="page-hero">
         <div class="container">
           <p class="eyebrow">Blog & Rehber</p>
@@ -18,16 +47,16 @@
         </div>
       </section>
       <section class="section">
-        <div class="container article-grid">
+        <div class="container article-grid" id="blog-grid">
           <article class="card article-card">
-            <img src="assets/logo-point-croissant.webp" alt="Point Croissant logosu" loading="lazy" />
+            <img src="assets/croissant-layers.png" alt="Katman detayı" loading="lazy" />
             <p class="eyebrow">İmza kruvasan</p>
             <h2>İmza Kruvasan Nasıl Yapılır?</h2>
             <p>Kat kat dokusunu koruyan, hacimli ve dengeli hamur tekniğinin püf noktaları.</p>
             <a class="btn btn-small" href="blog-imza-kruvasan.html">Devamını Oku</a>
           </article>
           <article class="card article-card">
-            <img src="assets/logo-point-croissant.webp" alt="Point Croissant logosu" loading="lazy" />
+            <img src="assets/croissant-coffee.png" alt="Kahve eşleşmesi" loading="lazy" />
             <p class="eyebrow">Kahve eşleşmesi</p>
             <h2>Kahve ile Kruvasan Eşleşmesi</h2>
             <p>Damak zevkine uygun en doğru kahve ve kruvasan uyumunu keşfedin.</p>
@@ -37,7 +66,9 @@
       </section>
     </main>
     <footer class="footer-detailed" id="site-footer"></footer>
+    <script src="pc-store.js" defer></script>
     <script src="layout.js" defer></script>
     <script src="cms-runtime.js" defer></script>
+    <script src="content-runtime.js" defer></script>
   </body>
 </html>

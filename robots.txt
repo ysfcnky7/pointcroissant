@@ -2,6 +2,7 @@ User-agent: *
 Allow: /
 
 # Admin panel should not be indexed
+Disallow: /admin
 Disallow: /admin.html
 
 Sitemap: https://pointcroissant.com/sitemap.xml

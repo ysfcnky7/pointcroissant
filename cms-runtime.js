@@ -51,7 +51,7 @@ const applyRecord = (el, record) => {
 
 const ensureCmsIds = () => {
   const candidates = document.querySelectorAll(
-    "h1,h2,h3,h4,p,span,li,a,label,button,th,td,strong,img"
+    "h1,h2,h3,h4,p,span,li,a,label,button,th,td,strong,img,figcaption"
   );
   let idx = 0;
   candidates.forEach((el) => {

@@ -62,7 +62,9 @@ const getActiveLang = () => {
 const CMS_DIALOG_TEXT = {
   tr: "Tüm sayfalardaki içerik düzenlemeleri sıfırlanacak. Devam etmek istiyor musun?",
   en: "All content edits on all pages will be reset. Do you want to continue?",
-  ru: "Все изменения контента на всех страницах будут сброшены. Продолжить?"
+  ru: "Все изменения контента на всех страницах будут сброшены. Продолжить?",
+  ar: "سيتم إعادة تعيين جميع تعديلات المحتوى في جميع الصفحات. هل تريد المتابعة؟",
+  de: "Alle Inhaltsbearbeitungen auf allen Seiten werden zurückgesetzt. Möchten Sie fortfahren?"
 };
 
 if (openEditorBtn && pageSelector) {

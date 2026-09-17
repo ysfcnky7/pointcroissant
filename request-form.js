@@ -1,15 +1,21 @@
 (() => {
 const requestForm = document.getElementById("request-form");
 const requestFeedback = document.getElementById("request-feedback");
-const requestSettingsRaw = localStorage.getItem("pc_settings_v1");
 
 let requestSettings = {
   whatsappNumber: "905323150777"
 };
 
 try {
-  if (requestSettingsRaw) {
-    requestSettings = { ...requestSettings, ...JSON.parse(requestSettingsRaw) };
+  if (window.PCStore && typeof window.PCStore.loadSettings === "function") {
+    const stored = window.PCStore.loadSettings();
+    if (stored?.whatsappNumber) requestSettings.whatsappNumber = stored.whatsappNumber;
+  } else {
+    const requestSettingsRaw =
+      localStorage.getItem("pc_settings_v3") || localStorage.getItem("pc_settings_v2");
+    if (requestSettingsRaw) {
+      requestSettings = { ...requestSettings, ...JSON.parse(requestSettingsRaw) };
+    }
   }
 } catch {
   // Keep default settings
@@ -49,6 +55,18 @@ const REQUEST_TEXT = {
     success: "Ваше сообщение подготовлено и открыто в WhatsApp.",
     template:
       "Здравствуйте, Point Croissant,\n\nФорма запроса / предложения:\nИмя и фамилия: ${name}\nE-mail: ${email}\nТелефон: ${phone}\nСообщение: ${message}"
+  },
+  ar: {
+    fillAll: "يرجى تعبئة جميع الحقول.",
+    success: "تم إعداد رسالتك وفتحها في WhatsApp.",
+    template:
+      "مرحباً Point Croissant،\n\nنموذج الطلب / الاقتراح:\nالاسم الكامل: ${name}\nالبريد الإلكتروني: ${email}\nالهاتف: ${phone}\nالرسالة: ${message}"
+  },
+  de: {
+    fillAll: "Bitte füllen Sie alle Felder aus.",
+    success: "Ihre Nachricht wurde vorbereitet und in WhatsApp geöffnet.",
+    template:
+      "Hallo Point Croissant,\n\nAnfrage- / Vorschlagsformular:\nVollständiger Name: ${name}\nE-Mail: ${email}\nTelefon: ${phone}\nNachricht: ${message}"
   }
 };
 

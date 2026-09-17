@@ -1,22 +1,69 @@
-const revealItems = document.querySelectorAll(".reveal");
-const counters = document.querySelectorAll("[data-target]");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const finePointer = window.matchMedia("(pointer: fine)").matches;
 const root = document.documentElement;
+const header = document.getElementById("site-header");
+const cursorGlow = document.querySelector(".cursor-glow");
+const observedReveals = new WeakSet();
+let revealObserver = null;
+let revealIndex = 0;
 
-if (revealItems.length) {
-  revealItems.forEach((item, index) => {
-    const delay = Math.min(index * 45, 420);
-    item.style.transitionDelay = `${delay}ms`;
-  });
+const bindReveal = (item) => {
+  if (!(item instanceof HTMLElement) || observedReveals.has(item)) return;
+  observedReveals.add(item);
+  const delay = Math.min(revealIndex * 55, 480);
+  item.style.transitionDelay = `${delay}ms`;
+  revealIndex += 1;
+
+  if (!("IntersectionObserver" in window) || reducedMotion) {
+    item.classList.add("visible");
+    return;
+  }
+
+  if (!revealObserver) {
+    revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.16, rootMargin: "0px 0px -8% 0px" }
+    );
+  }
+
+  revealObserver.observe(item);
+};
+
+document.querySelectorAll(".reveal").forEach(bindReveal);
+
+if ("MutationObserver" in window) {
+  new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (!(node instanceof HTMLElement)) return;
+        if (node.classList.contains("reveal")) bindReveal(node);
+        node.querySelectorAll?.(".reveal").forEach(bindReveal);
+      });
+    });
+  }).observe(document.body, { childList: true, subtree: true });
 }
 
 if (!reducedMotion) {
   let ticking = false;
-  const updateScrollProgress = () => {
+  const updateScrollChrome = () => {
     const scrollTop = window.scrollY || 0;
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
     const progress = maxScroll > 0 ? scrollTop / maxScroll : 0;
     root.style.setProperty("--scroll-progress", progress.toFixed(4));
+    header?.classList.toggle("is-scrolled", scrollTop > 18);
+
+    const heroImage = document.querySelector(".hero-image");
+    if (heroImage) {
+      const shift = Math.min(scrollTop * 0.18, 120);
+      heroImage.style.setProperty("--hero-shift", `${shift}px`);
+    }
     ticking = false;
   };
 
@@ -25,36 +72,23 @@ if (!reducedMotion) {
     () => {
       if (!ticking) {
         ticking = true;
-        window.requestAnimationFrame(updateScrollProgress);
+        window.requestAnimationFrame(updateScrollChrome);
       }
     },
     { passive: true }
   );
-  updateScrollProgress();
-}
-
-if (!("IntersectionObserver" in window) || reducedMotion) {
-  revealItems.forEach((item) => item.classList.add("visible"));
+  updateScrollChrome();
 } else {
-  const revealObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("visible");
-          revealObserver.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.2 }
-  );
-
-  revealItems.forEach((item) => revealObserver.observe(item));
+  document.querySelectorAll(".reveal").forEach((item) => item.classList.add("visible"));
+  header?.classList.add("is-scrolled");
 }
+
+const counters = document.querySelectorAll("[data-target]");
 
 const runCounter = (counter) => {
   const target = Number(counter.dataset.target);
-  const duration = 1200;
-  const stepTime = 20;
+  const duration = 1400;
+  const stepTime = 18;
   const increment = Math.max(1, Math.ceil(target / (duration / stepTime)));
   let current = 0;
 
@@ -82,6 +116,10 @@ if (!reducedMotion && "IntersectionObserver" in window && counters.length) {
   );
 
   counters.forEach((counter) => counterObserver.observe(counter));
+} else {
+  counters.forEach((counter) => {
+    counter.textContent = Number(counter.dataset.target).toLocaleString("tr-TR");
+  });
 }
 
 const toiTrack = document.getElementById("toi-track");
@@ -98,7 +136,9 @@ if (toiTrack && toiDots) {
   const slideLabelMap = {
     tr: "Görsel",
     en: "Slide",
-    ru: "Слайд"
+    ru: "Слайд",
+    ar: "شريحة",
+    de: "Folie"
   };
   const slideLabel = slideLabelMap[lang] || slideLabelMap.tr;
 
@@ -142,36 +182,59 @@ if (toiTrack && toiDots) {
   startAutoPlay();
 }
 
-const galleryFilters = document.getElementById("gallery-filters");
-const galleryGrid = document.getElementById("gallery-grid");
+if (!reducedMotion && finePointer) {
+  document.body.classList.add("has-cursor-glow");
 
-if (galleryFilters && galleryGrid) {
-  const filterButtons = [...galleryFilters.querySelectorAll(".gallery-filter")];
-  const galleryItems = [...galleryGrid.querySelectorAll(".gallery-item")];
+  if (cursorGlow) {
+    let glowX = 0;
+    let glowY = 0;
+    let targetX = 0;
+    let targetY = 0;
+    let glowTick = false;
 
-  filterButtons.forEach((btn) => {
-    const isActive = btn.classList.contains("active");
-    btn.setAttribute("aria-pressed", String(isActive));
-  });
+    const followGlow = () => {
+      glowX += (targetX - glowX) * 0.16;
+      glowY += (targetY - glowY) * 0.16;
+      cursorGlow.style.transform = `translate3d(${glowX}px, ${glowY}px, 0)`;
+      glowTick = false;
+    };
 
-  galleryFilters.addEventListener("click", (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLElement)) return;
-    const selected = target.dataset.filter;
-    if (!selected) return;
-
-    filterButtons.forEach((btn) =>
-      {
-        const isActive = btn.dataset.filter === selected;
-        btn.classList.toggle("active", isActive);
-        btn.setAttribute("aria-pressed", String(isActive));
-      }
+    window.addEventListener(
+      "pointermove",
+      (event) => {
+        targetX = event.clientX;
+        targetY = event.clientY;
+        if (!glowTick) {
+          glowTick = true;
+          window.requestAnimationFrame(followGlow);
+        }
+      },
+      { passive: true }
     );
+  }
 
-    galleryItems.forEach((item) => {
-      const categories = item.dataset.category || "";
-      const visible = selected === "all" || categories.includes(selected);
-      item.classList.toggle("hidden", !visible);
+  const magnetics = document.querySelectorAll(".btn.magnetic, a.magnetic");
+  magnetics.forEach((el) => {
+    el.addEventListener("pointermove", (event) => {
+      const rect = el.getBoundingClientRect();
+      const x = event.clientX - rect.left - rect.width / 2;
+      const y = event.clientY - rect.top - rect.height / 2;
+      el.style.setProperty("--tilt-x", `${(x / rect.width) * 8}deg`);
+      el.style.setProperty("--tilt-y", `${(y / rect.height) * -8}deg`);
+      el.style.setProperty("--magnet-x", `${x * 0.12}px`);
+      el.style.setProperty("--magnet-y", `${y * 0.14}px`);
+    });
+    el.addEventListener("pointerleave", () => {
+      el.style.setProperty("--tilt-x", "0deg");
+      el.style.setProperty("--tilt-y", "0deg");
+      el.style.setProperty("--magnet-x", "0px");
+      el.style.setProperty("--magnet-y", "0px");
     });
   });
 }
+
+document.querySelectorAll(".page-hero").forEach((hero) => hero.classList.add("reveal", "visible"));
+document.querySelectorAll(".article-card, .menu-premium-head, .prose.card, .cta-band").forEach((el) => {
+  if (!el.classList.contains("reveal")) el.classList.add("reveal");
+  bindReveal(el);
+});

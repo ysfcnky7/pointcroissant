@@ -5,11 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="robots" content="noindex,nofollow" />
     <title>Point Croissant Admin Panel</title>
+    <meta name="theme-color" content="#3d2914" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png" />
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header class="topbar" id="site-header"></header>
-    <main class="subpage-main">
+    <main id="main-content" class="subpage-main">
       <section class="page-section" id="admin-lock-screen">
         <div class="container">
           <article class="card admin-auth-card">
@@ -44,6 +49,13 @@
               <nav class="admin-nav">
                 <a href="#panel-products">Ürün Yönetimi</a>
                 <a href="#panel-contact">İletişim Ayarları</a>
+                <a href="#panel-brand">Marka ve Sayaçlar</a>
+                <a href="#panel-nav">Menü Yapısı</a>
+                <a href="#panel-gallery">Galeri</a>
+                <a href="#panel-events">Etkinlikler</a>
+                <a href="#panel-blog">Blog Yazıları</a>
+                <a href="#panel-menucats">Menü Kategorileri</a>
+                <a href="#panel-seo">SEO ve Google</a>
                 <a href="#panel-cms">İçerik Düzenleme</a>
                 <a href="#panel-list">Ürün Listesi</a>
               </nav>
@@ -72,7 +84,7 @@
                     <strong id="kpi-max-price">0 TL</strong>
                   </article>
                   <article class="admin-kpi-card">
-                    <small>Çeviri Eksiği (EN/RU)</small>
+                    <small>Çeviri Eksiği (EN/RU/AR/DE)</small>
                     <strong id="kpi-missing-i18n">0</strong>
                   </article>
                 </div>
@@ -89,6 +101,8 @@
                   <button type="button" class="admin-lang-tab active" data-tab-group="product" data-lang="tr" aria-selected="true">TR</button>
                   <button type="button" class="admin-lang-tab" data-tab-group="product" data-lang="en" aria-selected="false">EN</button>
                   <button type="button" class="admin-lang-tab" data-tab-group="product" data-lang="ru" aria-selected="false">RU</button>
+                  <button type="button" class="admin-lang-tab" data-tab-group="product" data-lang="ar" aria-selected="false">AR</button>
+                  <button type="button" class="admin-lang-tab" data-tab-group="product" data-lang="de" aria-selected="false">DE</button>
                 </div>
 
                 <div class="admin-lang-pane active" data-tab-group="product" data-lang="tr">
@@ -139,12 +153,55 @@
                   />
                 </div>
 
+                <div class="admin-lang-pane" data-tab-group="product" data-lang="ar">
+                  <label for="product-name-ar">Ürün Adı (AR)</label>
+                  <input id="product-name-ar" type="text" maxlength="70" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                  <label for="product-desc-ar">Açıklama (AR)</label>
+                  <textarea id="product-desc-ar" rows="2" maxlength="320" placeholder="Boşsa TR kullanılır" dir="rtl"></textarea>
+                  <label for="product-tag-ar">Etiket (AR)</label>
+                  <input id="product-tag-ar" type="text" maxlength="26" placeholder="جديد، مميز..." dir="rtl" />
+                  <label for="product-image-ar">Ürün Görsel URL (AR)</label>
+                  <input
+                    id="product-image-ar"
+                    type="url"
+                    maxlength="500"
+                    placeholder="Boşsa TR kullanılır"
+                  />
+                </div>
+
+                <div class="admin-lang-pane" data-tab-group="product" data-lang="de">
+                  <label for="product-name-de">Ürün Adı (DE)</label>
+                  <input id="product-name-de" type="text" maxlength="70" placeholder="Boşsa TR kullanılır" />
+                  <label for="product-desc-de">Açıklama (DE)</label>
+                  <textarea id="product-desc-de" rows="2" maxlength="320" placeholder="Boşsa TR kullanılır"></textarea>
+                  <label for="product-tag-de">Etiket (DE)</label>
+                  <input id="product-tag-de" type="text" maxlength="26" placeholder="Neu, Premium..." />
+                  <label for="product-image-de">Ürün Görsel URL (DE)</label>
+                  <input
+                    id="product-image-de"
+                    type="url"
+                    maxlength="500"
+                    placeholder="Boşsa TR kullanılır"
+                  />
+                </div>
+
                 <div class="admin-form-grid">
                   <div>
                     <label for="product-price">Fiyat (TL)</label>
                     <input id="product-price" type="number" min="0" max="100000" step="1" required />
                   </div>
+                  <div>
+                    <label for="product-category">Kategori</label>
+                    <select id="product-category">
+                      <option value="sweet">Tatlı</option>
+                      <option value="savory">Tuzlu</option>
+                    </select>
+                  </div>
                 </div>
+                <label class="admin-check">
+                  <input id="product-signature" type="checkbox" />
+                  İmza / özel seçkiye ekle
+                </label>
 
                 <div class="admin-actions">
                   <button class="btn" type="submit">Kaydet</button>
@@ -176,10 +233,21 @@
                 <label for="setting-email">E-Posta</label>
                 <input id="setting-email" type="email" maxlength="120" required />
 
+                <label for="setting-instagram">Instagram URL</label>
+                <input id="setting-instagram" type="url" maxlength="220" placeholder="https://instagram.com/..." />
+
+                <label for="setting-facebook">Facebook URL</label>
+                <input id="setting-facebook" type="url" maxlength="220" placeholder="https://facebook.com/..." />
+
+                <label for="setting-opening-spec">Google çalışma saati (şema)</label>
+                <input id="setting-opening-spec" type="text" maxlength="80" placeholder="Mo-Su 09:00-22:00" />
+
                 <div class="admin-lang-tabs" role="tablist" aria-label="Adres dilleri">
                   <button type="button" class="admin-lang-tab active" data-tab-group="settings" data-lang="tr" aria-selected="true">TR</button>
                   <button type="button" class="admin-lang-tab" data-tab-group="settings" data-lang="en" aria-selected="false">EN</button>
                   <button type="button" class="admin-lang-tab" data-tab-group="settings" data-lang="ru" aria-selected="false">RU</button>
+                  <button type="button" class="admin-lang-tab" data-tab-group="settings" data-lang="ar" aria-selected="false">AR</button>
+                  <button type="button" class="admin-lang-tab" data-tab-group="settings" data-lang="de" aria-selected="false">DE</button>
                 </div>
 
                 <div class="admin-lang-pane active" data-tab-group="settings" data-lang="tr">
@@ -187,6 +255,10 @@
                   <textarea id="setting-address-tr" rows="2" maxlength="220" required></textarea>
                   <label for="setting-map-query-tr">Harita Konum Metni (TR)</label>
                   <input id="setting-map-query-tr" type="text" maxlength="220" />
+                  <label for="setting-hours-tr">Çalışma Saatleri (TR)</label>
+                  <input id="setting-hours-tr" type="text" maxlength="80" />
+                  <label for="setting-wa-tr">WhatsApp hazır mesaj (TR)</label>
+                  <textarea id="setting-wa-tr" rows="2" maxlength="220"></textarea>
                 </div>
 
                 <div class="admin-lang-pane" data-tab-group="settings" data-lang="en">
@@ -194,6 +266,10 @@
                   <textarea id="setting-address-en" rows="2" maxlength="220" placeholder="Boşsa TR kullanılır"></textarea>
                   <label for="setting-map-query-en">Harita Konum Metni (EN)</label>
                   <input id="setting-map-query-en" type="text" maxlength="220" placeholder="Boşsa TR kullanılır" />
+                  <label for="setting-hours-en">Çalışma Saatleri (EN)</label>
+                  <input id="setting-hours-en" type="text" maxlength="80" placeholder="Boşsa TR kullanılır" />
+                  <label for="setting-wa-en">WhatsApp hazır mesaj (EN)</label>
+                  <textarea id="setting-wa-en" rows="2" maxlength="220" placeholder="Boşsa TR kullanılır"></textarea>
                 </div>
 
                 <div class="admin-lang-pane" data-tab-group="settings" data-lang="ru">
@@ -201,6 +277,32 @@
                   <textarea id="setting-address-ru" rows="2" maxlength="220" placeholder="Boşsa TR kullanılır"></textarea>
                   <label for="setting-map-query-ru">Harita Konum Metni (RU)</label>
                   <input id="setting-map-query-ru" type="text" maxlength="220" placeholder="Boşsa TR kullanılır" />
+                  <label for="setting-hours-ru">Çalışma Saatleri (RU)</label>
+                  <input id="setting-hours-ru" type="text" maxlength="80" placeholder="Boşsa TR kullanılır" />
+                  <label for="setting-wa-ru">WhatsApp hazır mesaj (RU)</label>
+                  <textarea id="setting-wa-ru" rows="2" maxlength="220" placeholder="Boşsa TR kullanılır"></textarea>
+                </div>
+
+                <div class="admin-lang-pane" data-tab-group="settings" data-lang="ar">
+                  <label for="setting-address-ar">Adres (AR)</label>
+                  <textarea id="setting-address-ar" rows="2" maxlength="220" placeholder="Boşsa TR kullanılır" dir="rtl"></textarea>
+                  <label for="setting-map-query-ar">Harita Konum Metni (AR)</label>
+                  <input id="setting-map-query-ar" type="text" maxlength="220" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                  <label for="setting-hours-ar">Çalışma Saatleri (AR)</label>
+                  <input id="setting-hours-ar" type="text" maxlength="80" placeholder="Boşsa TR kullanılır" dir="rtl" />
+                  <label for="setting-wa-ar">WhatsApp hazır mesaj (AR)</label>
+                  <textarea id="setting-wa-ar" rows="2" maxlength="220" placeholder="Boşsa TR kullanılır" dir="rtl"></textarea>
+                </div>
+
+                <div class="admin-lang-pane" data-tab-group="settings" data-lang="de">
+                  <label for="setting-address-de">Adres (DE)</label>
+                  <textarea id="setting-address-de" rows="2" maxlength="220" placeholder="Boşsa TR kullanılır"></textarea>
+                  <label for="setting-map-query-de">Harita Konum Metni (DE)</label>
+                  <input id="setting-map-query-de" type="text" maxlength="220" placeholder="Boşsa TR kullanılır" />
+                  <label for="setting-hours-de">Çalışma Saatleri (DE)</label>
+                  <input id="setting-hours-de" type="text" maxlength="80" placeholder="Boşsa TR kullanılır" />
+                  <label for="setting-wa-de">WhatsApp hazır mesaj (DE)</label>
+                  <textarea id="setting-wa-de" rows="2" maxlength="220" placeholder="Boşsa TR kullanılır"></textarea>
                 </div>
 
                 <div class="admin-actions">
@@ -209,6 +311,373 @@
                 </div>
               </form>
               <p id="settings-feedback"></p>
+              </section>
+
+              <section class="card admin-form-card admin-panel" id="panel-brand">
+                <div class="admin-panel-head">
+                  <h2>Marka, Logo ve Sayaçlar</h2>
+                  <span class="admin-badge">Brand</span>
+                </div>
+                <form id="brand-form" class="admin-form">
+                  <label for="brand-name">Marka adı</label>
+                  <input id="brand-name" type="text" maxlength="80" required />
+                  <label for="brand-logo">Logo URL</label>
+                  <input id="brand-logo" type="text" maxlength="500" />
+                  <label for="brand-hero-image">Anasayfa arka plan görseli</label>
+                  <input id="brand-hero-image" type="text" maxlength="500" />
+                  <label for="brand-cta-href">Üst menü buton linki</label>
+                  <input id="brand-cta-href" type="text" maxlength="180" />
+                  <div class="admin-form-grid">
+                    <div>
+                      <label for="stat-years">Yıllık ustalık</label>
+                      <input id="stat-years" type="number" min="0" max="100000" step="1" />
+                    </div>
+                    <div>
+                      <label for="stat-recipes">Özel tarif</label>
+                      <input id="stat-recipes" type="number" min="0" max="100000" step="1" />
+                    </div>
+                    <div>
+                      <label for="stat-daily">Günlük servis</label>
+                      <input id="stat-daily" type="number" min="0" max="1000000" step="1" />
+                    </div>
+                  </div>
+                  <div class="admin-lang-tabs" role="tablist" aria-label="Marka dilleri">
+                    <button type="button" class="admin-lang-tab active" data-tab-group="brand" data-lang="tr" aria-selected="true">TR</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="brand" data-lang="en" aria-selected="false">EN</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="brand" data-lang="ru" aria-selected="false">RU</button>
+                  </div>
+                  <div class="admin-lang-pane active" data-tab-group="brand" data-lang="tr">
+                    <label for="brand-tagline-tr">Slogan (TR)</label>
+                    <input id="brand-tagline-tr" type="text" maxlength="80" />
+                    <label for="brand-footer-tr">Footer metni (TR)</label>
+                    <textarea id="brand-footer-tr" rows="2" maxlength="220"></textarea>
+                    <label for="brand-cta-tr">Üst menü buton metni (TR)</label>
+                    <input id="brand-cta-tr" type="text" maxlength="40" />
+                    <label for="stat-years-label-tr">Sayaç 1 etiketi (TR)</label>
+                    <input id="stat-years-label-tr" type="text" maxlength="40" />
+                    <label for="stat-recipes-label-tr">Sayaç 2 etiketi (TR)</label>
+                    <input id="stat-recipes-label-tr" type="text" maxlength="40" />
+                    <label for="stat-daily-label-tr">Sayaç 3 etiketi (TR)</label>
+                    <input id="stat-daily-label-tr" type="text" maxlength="40" />
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="brand" data-lang="en">
+                    <label for="brand-tagline-en">Slogan (EN)</label>
+                    <input id="brand-tagline-en" type="text" maxlength="80" />
+                    <label for="brand-footer-en">Footer metni (EN)</label>
+                    <textarea id="brand-footer-en" rows="2" maxlength="220"></textarea>
+                    <label for="brand-cta-en">Üst menü buton metni (EN)</label>
+                    <input id="brand-cta-en" type="text" maxlength="40" />
+                    <label for="stat-years-label-en">Sayaç 1 etiketi (EN)</label>
+                    <input id="stat-years-label-en" type="text" maxlength="40" />
+                    <label for="stat-recipes-label-en">Sayaç 2 etiketi (EN)</label>
+                    <input id="stat-recipes-label-en" type="text" maxlength="40" />
+                    <label for="stat-daily-label-en">Sayaç 3 etiketi (EN)</label>
+                    <input id="stat-daily-label-en" type="text" maxlength="40" />
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="brand" data-lang="ru">
+                    <label for="brand-tagline-ru">Slogan (RU)</label>
+                    <input id="brand-tagline-ru" type="text" maxlength="80" />
+                    <label for="brand-footer-ru">Footer metni (RU)</label>
+                    <textarea id="brand-footer-ru" rows="2" maxlength="220"></textarea>
+                    <label for="brand-cta-ru">Üst menü buton metni (RU)</label>
+                    <input id="brand-cta-ru" type="text" maxlength="40" />
+                    <label for="stat-years-label-ru">Sayaç 1 etiketi (RU)</label>
+                    <input id="stat-years-label-ru" type="text" maxlength="40" />
+                    <label for="stat-recipes-label-ru">Sayaç 2 etiketi (RU)</label>
+                    <input id="stat-recipes-label-ru" type="text" maxlength="40" />
+                    <label for="stat-daily-label-ru">Sayaç 3 etiketi (RU)</label>
+                    <input id="stat-daily-label-ru" type="text" maxlength="40" />
+                  </div>
+                  <div class="admin-actions">
+                    <button class="btn" type="submit">Marka Ayarlarını Kaydet</button>
+                  </div>
+                </form>
+                <p id="brand-feedback"></p>
+              </section>
+
+              <section class="card admin-form-card admin-panel" id="panel-nav">
+                <div class="admin-panel-head">
+                  <h2>Üst Menü Yapısı</h2>
+                  <span class="admin-badge">Nav</span>
+                </div>
+                <p>Görünen menü linklerini düzenle, gizle veya yeni link ekle.</p>
+                <form id="nav-form" class="admin-form">
+                  <div id="nav-rows"></div>
+                  <div class="admin-actions">
+                    <button class="btn" type="button" id="nav-add-row">Link Ekle</button>
+                    <button class="btn" type="submit">Menüyü Kaydet</button>
+                    <button class="btn" type="button" id="nav-reset">Varsayılan Menü</button>
+                  </div>
+                </form>
+                <p id="nav-feedback"></p>
+              </section>
+
+              <section class="card admin-form-card admin-panel" id="panel-gallery">
+                <div class="admin-panel-head">
+                  <h2>Galeri Yönetimi</h2>
+                  <span class="admin-badge">Gallery</span>
+                </div>
+                <form id="gallery-form" class="admin-form">
+                  <input type="hidden" id="gallery-id" />
+                  <label for="gallery-src">Görsel URL</label>
+                  <input id="gallery-src" type="text" maxlength="500" required />
+                  <div class="admin-lang-tabs" role="tablist" aria-label="Galeri dilleri">
+                    <button type="button" class="admin-lang-tab active" data-tab-group="gallery" data-lang="tr" aria-selected="true">TR</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="gallery" data-lang="en" aria-selected="false">EN</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="gallery" data-lang="ru" aria-selected="false">RU</button>
+                  </div>
+                  <div class="admin-lang-pane active" data-tab-group="gallery" data-lang="tr">
+                    <label for="gallery-alt-tr">Alt metin (TR)</label>
+                    <input id="gallery-alt-tr" type="text" maxlength="120" />
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="gallery" data-lang="en">
+                    <label for="gallery-alt-en">Alt metin (EN)</label>
+                    <input id="gallery-alt-en" type="text" maxlength="120" />
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="gallery" data-lang="ru">
+                    <label for="gallery-alt-ru">Alt metin (RU)</label>
+                    <input id="gallery-alt-ru" type="text" maxlength="120" />
+                  </div>
+                  <p>Filtreler</p>
+                  <div class="admin-check-row">
+                    <label class="admin-check"><input type="checkbox" id="gallery-cat-tatli" value="tatli" /> Tatlı</label>
+                    <label class="admin-check"><input type="checkbox" id="gallery-cat-meyveli" value="meyveli" /> Meyveli</label>
+                    <label class="admin-check"><input type="checkbox" id="gallery-cat-premium" value="premium" /> Premium</label>
+                  </div>
+                  <div class="admin-actions">
+                    <button class="btn" type="submit">Görseli Kaydet</button>
+                    <button class="btn" type="button" id="gallery-clear">Temizle</button>
+                  </div>
+                </form>
+                <p id="gallery-feedback"></p>
+                <div class="table-wrap">
+                  <table class="menu-table">
+                    <thead>
+                      <tr><th>Görsel</th><th>Filtre</th><th>İşlem</th></tr>
+                    </thead>
+                    <tbody id="gallery-body"></tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section class="card admin-form-card admin-panel" id="panel-events">
+                <div class="admin-panel-head">
+                  <h2>Etkinlikler</h2>
+                  <span class="admin-badge">Events</span>
+                </div>
+                <form id="event-form" class="admin-form">
+                  <input type="hidden" id="event-id" />
+                  <div class="admin-lang-tabs" role="tablist" aria-label="Etkinlik dilleri">
+                    <button type="button" class="admin-lang-tab active" data-tab-group="event" data-lang="tr" aria-selected="true">TR</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="event" data-lang="en" aria-selected="false">EN</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="event" data-lang="ru" aria-selected="false">RU</button>
+                  </div>
+                  <div class="admin-lang-pane active" data-tab-group="event" data-lang="tr">
+                    <label for="event-title-tr">Başlık (TR)</label>
+                    <input id="event-title-tr" type="text" maxlength="80" required />
+                    <label for="event-desc-tr">Açıklama (TR)</label>
+                    <textarea id="event-desc-tr" rows="2" maxlength="220" required></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="event" data-lang="en">
+                    <label for="event-title-en">Başlık (EN)</label>
+                    <input id="event-title-en" type="text" maxlength="80" />
+                    <label for="event-desc-en">Açıklama (EN)</label>
+                    <textarea id="event-desc-en" rows="2" maxlength="220"></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="event" data-lang="ru">
+                    <label for="event-title-ru">Başlık (RU)</label>
+                    <input id="event-title-ru" type="text" maxlength="80" />
+                    <label for="event-desc-ru">Açıklama (RU)</label>
+                    <textarea id="event-desc-ru" rows="2" maxlength="220"></textarea>
+                  </div>
+                  <div class="admin-actions">
+                    <button class="btn" type="submit">Etkinliği Kaydet</button>
+                    <button class="btn" type="button" id="event-clear">Temizle</button>
+                  </div>
+                </form>
+                <p id="event-feedback"></p>
+                <div class="table-wrap">
+                  <table class="menu-table">
+                    <thead>
+                      <tr><th>Başlık</th><th>Açıklama</th><th>İşlem</th></tr>
+                    </thead>
+                    <tbody id="events-body"></tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section class="card admin-form-card admin-panel" id="panel-blog">
+                <div class="admin-panel-head">
+                  <h2>Blog Yazıları</h2>
+                  <span class="admin-badge">Blog</span>
+                </div>
+                <form id="blog-form" class="admin-form">
+                  <input type="hidden" id="blog-id" />
+                  <label for="blog-image">Kapak görseli</label>
+                  <input id="blog-image" type="text" maxlength="500" />
+                  <div class="admin-lang-tabs" role="tablist" aria-label="Blog dilleri">
+                    <button type="button" class="admin-lang-tab active" data-tab-group="blog" data-lang="tr" aria-selected="true">TR</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="blog" data-lang="en" aria-selected="false">EN</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="blog" data-lang="ru" aria-selected="false">RU</button>
+                  </div>
+                  <div class="admin-lang-pane active" data-tab-group="blog" data-lang="tr">
+                    <label for="blog-tag-tr">Etiket (TR)</label>
+                    <input id="blog-tag-tr" type="text" maxlength="40" />
+                    <label for="blog-title-tr">Başlık (TR)</label>
+                    <input id="blog-title-tr" type="text" maxlength="120" required />
+                    <label for="blog-excerpt-tr">Özet (TR)</label>
+                    <textarea id="blog-excerpt-tr" rows="2" maxlength="280"></textarea>
+                    <label for="blog-body-tr">Yazı (TR)</label>
+                    <textarea id="blog-body-tr" rows="7" maxlength="8000" required></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="blog" data-lang="en">
+                    <label for="blog-tag-en">Etiket (EN)</label>
+                    <input id="blog-tag-en" type="text" maxlength="40" />
+                    <label for="blog-title-en">Başlık (EN)</label>
+                    <input id="blog-title-en" type="text" maxlength="120" />
+                    <label for="blog-excerpt-en">Özet (EN)</label>
+                    <textarea id="blog-excerpt-en" rows="2" maxlength="280"></textarea>
+                    <label for="blog-body-en">Yazı (EN)</label>
+                    <textarea id="blog-body-en" rows="7" maxlength="8000"></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="blog" data-lang="ru">
+                    <label for="blog-tag-ru">Etiket (RU)</label>
+                    <input id="blog-tag-ru" type="text" maxlength="40" />
+                    <label for="blog-title-ru">Başlık (RU)</label>
+                    <input id="blog-title-ru" type="text" maxlength="120" />
+                    <label for="blog-excerpt-ru">Özet (RU)</label>
+                    <textarea id="blog-excerpt-ru" rows="2" maxlength="280"></textarea>
+                    <label for="blog-body-ru">Yazı (RU)</label>
+                    <textarea id="blog-body-ru" rows="7" maxlength="8000"></textarea>
+                  </div>
+                  <div class="admin-actions">
+                    <button class="btn" type="submit">Yazıyı Kaydet</button>
+                    <button class="btn" type="button" id="blog-clear">Temizle</button>
+                  </div>
+                </form>
+                <p id="blog-feedback"></p>
+                <div class="table-wrap">
+                  <table class="menu-table">
+                    <thead>
+                      <tr><th>Başlık</th><th>Link</th><th>İşlem</th></tr>
+                    </thead>
+                    <tbody id="blog-body-table"></tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section class="card admin-form-card admin-panel" id="panel-menucats">
+                <div class="admin-panel-head">
+                  <h2>Menü Kategorileri</h2>
+                  <span class="admin-badge">Menu</span>
+                </div>
+                <p>Menü sayfasındaki Tatlı / Tuzlu / İmza başlıklarını buradan değiştir.</p>
+                <form id="menucat-form" class="admin-form">
+                  <div class="admin-lang-tabs" role="tablist" aria-label="Menü kategori dilleri">
+                    <button type="button" class="admin-lang-tab active" data-tab-group="menucat" data-lang="tr" aria-selected="true">TR</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="menucat" data-lang="en" aria-selected="false">EN</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="menucat" data-lang="ru" aria-selected="false">RU</button>
+                  </div>
+                  <div class="admin-lang-pane active" data-tab-group="menucat" data-lang="tr">
+                    <label for="menucat-sweet-title-tr">Tatlı başlık (TR)</label>
+                    <input id="menucat-sweet-title-tr" type="text" maxlength="80" />
+                    <label for="menucat-sweet-note-tr">Tatlı not (TR)</label>
+                    <input id="menucat-sweet-note-tr" type="text" maxlength="180" />
+                    <label for="menucat-savory-title-tr">Tuzlu başlık (TR)</label>
+                    <input id="menucat-savory-title-tr" type="text" maxlength="80" />
+                    <label for="menucat-savory-note-tr">Tuzlu not (TR)</label>
+                    <input id="menucat-savory-note-tr" type="text" maxlength="180" />
+                    <label for="menucat-signature-title-tr">İmza başlık (TR)</label>
+                    <input id="menucat-signature-title-tr" type="text" maxlength="80" />
+                    <label for="menucat-signature-note-tr">İmza not (TR)</label>
+                    <input id="menucat-signature-note-tr" type="text" maxlength="180" />
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="menucat" data-lang="en">
+                    <label for="menucat-sweet-title-en">Tatlı başlık (EN)</label>
+                    <input id="menucat-sweet-title-en" type="text" maxlength="80" />
+                    <label for="menucat-sweet-note-en">Tatlı not (EN)</label>
+                    <input id="menucat-sweet-note-en" type="text" maxlength="180" />
+                    <label for="menucat-savory-title-en">Tuzlu başlık (EN)</label>
+                    <input id="menucat-savory-title-en" type="text" maxlength="80" />
+                    <label for="menucat-savory-note-en">Tuzlu not (EN)</label>
+                    <input id="menucat-savory-note-en" type="text" maxlength="180" />
+                    <label for="menucat-signature-title-en">İmza başlık (EN)</label>
+                    <input id="menucat-signature-title-en" type="text" maxlength="80" />
+                    <label for="menucat-signature-note-en">İmza not (EN)</label>
+                    <input id="menucat-signature-note-en" type="text" maxlength="180" />
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="menucat" data-lang="ru">
+                    <label for="menucat-sweet-title-ru">Tatlı başlık (RU)</label>
+                    <input id="menucat-sweet-title-ru" type="text" maxlength="80" />
+                    <label for="menucat-sweet-note-ru">Tatlı not (RU)</label>
+                    <input id="menucat-sweet-note-ru" type="text" maxlength="180" />
+                    <label for="menucat-savory-title-ru">Tuzlu başlık (RU)</label>
+                    <input id="menucat-savory-title-ru" type="text" maxlength="80" />
+                    <label for="menucat-savory-note-ru">Tuzlu not (RU)</label>
+                    <input id="menucat-savory-note-ru" type="text" maxlength="180" />
+                    <label for="menucat-signature-title-ru">İmza başlık (RU)</label>
+                    <input id="menucat-signature-title-ru" type="text" maxlength="80" />
+                    <label for="menucat-signature-note-ru">İmza not (RU)</label>
+                    <input id="menucat-signature-note-ru" type="text" maxlength="180" />
+                  </div>
+                  <div class="admin-actions">
+                    <button class="btn" type="submit">Kategorileri Kaydet</button>
+                  </div>
+                </form>
+                <p id="menucat-feedback"></p>
+              </section>
+
+              <section class="card admin-form-card admin-panel" id="panel-seo">
+                <div class="admin-panel-head">
+                  <h2>SEO, Başlık ve Google Bilgisi</h2>
+                  <span class="admin-badge">SEO</span>
+                </div>
+                <form id="seo-form" class="admin-form">
+                  <label for="seo-page">Sayfa</label>
+                  <select id="seo-page"></select>
+                  <div class="admin-lang-tabs" role="tablist" aria-label="SEO dilleri">
+                    <button type="button" class="admin-lang-tab active" data-tab-group="seo" data-lang="tr" aria-selected="true">TR</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="seo" data-lang="en" aria-selected="false">EN</button>
+                    <button type="button" class="admin-lang-tab" data-tab-group="seo" data-lang="ru" aria-selected="false">RU</button>
+                  </div>
+                  <div class="admin-lang-pane active" data-tab-group="seo" data-lang="tr">
+                    <label for="seo-title-tr">Sayfa başlığı (TR)</label>
+                    <input id="seo-title-tr" type="text" maxlength="120" />
+                    <label for="seo-desc-tr">Açıklama (TR)</label>
+                    <textarea id="seo-desc-tr" rows="3" maxlength="280"></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="seo" data-lang="en">
+                    <label for="seo-title-en">Sayfa başlığı (EN)</label>
+                    <input id="seo-title-en" type="text" maxlength="120" />
+                    <label for="seo-desc-en">Açıklama (EN)</label>
+                    <textarea id="seo-desc-en" rows="3" maxlength="280"></textarea>
+                  </div>
+                  <div class="admin-lang-pane" data-tab-group="seo" data-lang="ru">
+                    <label for="seo-title-ru">Sayfa başlığı (RU)</label>
+                    <input id="seo-title-ru" type="text" maxlength="120" />
+                    <label for="seo-desc-ru">Açıklama (RU)</label>
+                    <textarea id="seo-desc-ru" rows="3" maxlength="280"></textarea>
+                  </div>
+                  <h3 class="admin-subtitle">Google işletme adresi</h3>
+                  <label for="schema-street">Sokak / cadde</label>
+                  <input id="schema-street" type="text" maxlength="180" />
+                  <div class="admin-form-grid">
+                    <div>
+                      <label for="schema-locality">İlçe</label>
+                      <input id="schema-locality" type="text" maxlength="80" />
+                    </div>
+                    <div>
+                      <label for="schema-region">Şehir</label>
+                      <input id="schema-region" type="text" maxlength="80" />
+                    </div>
+                  </div>
+                  <label for="schema-postal">Posta kodu</label>
+                  <input id="schema-postal" type="text" maxlength="16" />
+                  <div class="admin-actions">
+                    <button class="btn" type="submit">SEO Ayarlarını Kaydet</button>
+                  </div>
+                </form>
+                <p id="seo-feedback"></p>
               </section>
 
               <section class="card admin-form-card admin-panel" id="panel-cms">
@@ -238,6 +707,7 @@
                 <option value="privacy.html">Gizlilik</option>
                 <option value="terms.html">Kullanım Şartları</option>
                 <option value="cookies.html">Çerez Politikası</option>
+                <option value="blog-post.html">Yeni blog yazısı şablonu</option>
               </select>
               <div class="admin-actions">
                 <button class="btn" id="cms-open-editor" type="button">Düzenleme Modunu Aç</button>
@@ -260,6 +730,8 @@
                   <option value="tr">TR alanı</option>
                   <option value="en">EN alanı</option>
                   <option value="ru">RU alanı</option>
+                  <option value="ar">AR alanı</option>
+                  <option value="de">DE alanı</option>
                 </select>
                 <select id="product-sort">
                   <option value="created-desc">Yeni eklenen (son)</option>
@@ -283,6 +755,7 @@
                       <th>Ürün</th>
                       <th>Fiyat</th>
                       <th>Etiket</th>
+                      <th>Kategori</th>
                       <th>İşlem</th>
                     </tr>
                   </thead>
@@ -300,6 +773,7 @@
 
     <footer class="footer-detailed" id="site-footer"></footer>
 
+    <script src="pc-store.js" defer></script>
     <script src="layout.js" defer></script>
     <script src="admin-auth.js" defer></script>
   </body>
